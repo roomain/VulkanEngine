@@ -46,7 +46,7 @@ namespace Vulkan
 	{
 		VkSurfaceCapabilitiesKHR surfaceCapabilities;		/*!< surface properties eg image size / extent*/
 		std::vector<VkSurfaceFormatKHR> supportedFormats;	/*!< supported image formats eg RGBA and size of each color*/
-		std::vector<VkPresentModeKHR> supportedModes;		/*!< supportes presentation modes*/
+		std::vector<VkPresentModeKHR> supportedModes;		/*!< supported presentation modes*/
 	};
 
 	/*@brief image format properties*/

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "vk_propFun.h"
 #include "vk_ext_struct.h"
+#include "IDisplayer.h"
 
 namespace Vulkan
 {
@@ -22,9 +23,25 @@ namespace Vulkan
 		}
 	}
 
-	void getSwapChainCapabilities(const Device& a_device, SwapchainCapabilities& a_swapChainCap)
+	void getSwapChainCapabilities(const Device& a_device, const VkSurfaceKHR& a_surface, SwapchainCapabilities& a_swapChainCap)
 	{
-		// TODO
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_device.physical, a_surface, &a_swapChainCap.surfaceCapabilities);
+
+		uint32_t formatCount = 0;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(a_device.physical, a_surface, &formatCount, nullptr);
+		if(formatCount > 0)
+		{
+			a_swapChainCap.supportedFormats.resize(static_cast<int>(formatCount));
+			vkGetPhysicalDeviceSurfaceFormatsKHR(a_device.physical, a_surface, &formatCount, a_swapChainCap.supportedFormats.data());
+		}
+
+		uint32_t presentCount = 0;
+		vkGetPhysicalDeviceSurfacePresentModesKHR(a_device.physical, a_surface, &presentCount, nullptr);
+		if(presentCount > 0)
+		{
+			a_swapChainCap.supportedModes.resize(static_cast<int>(presentCount));
+			vkGetPhysicalDeviceSurfacePresentModesKHR(a_device.physical, a_surface, &presentCount, a_swapChainCap.supportedModes.data());
+		}
 	}
 
 	void getDeviceCapabilities(const Device& a_device, EngineDeviceCapabilities& a_capabilities)
@@ -37,7 +54,7 @@ namespace Vulkan
 		getQueueFamiliesProperties(a_device, a_capabilities.queueFamilies);
 	}
 
-	void displayDeviceCapabilities(const EngineDeviceCapabilities& a_capabilities, std::istream& a_stream)
+	void displayDeviceCapabilities(const EngineDeviceCapabilities& a_capabilities, IDisplayer& a_displayer)
 	{
 		// TODO
 	}
