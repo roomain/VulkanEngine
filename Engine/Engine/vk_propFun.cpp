@@ -14,9 +14,12 @@ namespace Vulkan
 
 	void getFormatsProperties(const Device& a_device, std::vector<FormatProperty>& a_formatsProperties)
 	{
-		// TODO
-		//VkFormatProperties properties;
-		//vkGetPhysicalDeviceFormatProperties(mainDevice.physicalDevice, format, &properties);
+		for (int iterFormat = VK_FORMAT_R4G4_UNORM_PACK8; iterFormat < VK_FORMAT_MAX_ENUM; ++iterFormat)
+		{
+			FormatProperty formatProp;
+			vkGetPhysicalDeviceFormatProperties(a_device.physical, static_cast<VkFormat>(iterFormat), &formatProp.properties);
+			a_formatsProperties.push_back(formatProp);
+		}
 	}
 
 	void getSwapChainCapabilities(const Device& a_device, SwapchainCapabilities& a_swapChainCap)
