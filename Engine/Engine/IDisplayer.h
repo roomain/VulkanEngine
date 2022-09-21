@@ -1,6 +1,5 @@
 #pragma  once
 #include <string>
-#include "vulkan/vulkan.h"
 
 namespace Vulkan
 {
@@ -8,12 +7,16 @@ namespace Vulkan
     class IDisplayer
     {
     public:
-        virtual void beginChildren() = 0; /*!< begin writing children*/
-        virtual void endChildren() = 0; /*!< end writing children (return to parent)*/
-        virtual void operator << (const std::string& a_value) = 0;
-        virtual void operator << (const int a_value) = 0;
-        virtual void operator << (const float a_value) = 0;
-        virtual void operator << (const double& a_value) = 0;
-        //
+        virtual void beginNode(const std::string& a_name) = 0;                                      /*!< begin writing node*/
+        virtual void endNode() = 0;                                                                 /*!< end writing node (return to parent)*/
+        virtual void attribute(const std::string& a_name, const std::string& a_value) = 0;          /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const int a_value) = 0;                   /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const unsigned int a_value) = 0;          /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const float a_value) = 0;                 /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const double& a_value) = 0;               /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const unsigned char a_value) = 0;         /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const short a_value) = 0;                 /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const unsigned short a_value) = 0;        /*!< set attribude value*/
+        virtual void attribute(const std::string& a_name, const size_t a_value) = 0;                /*!< set attribude value*/
     };
 }

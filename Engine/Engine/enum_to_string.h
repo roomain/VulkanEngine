@@ -11,7 +11,7 @@ static inline std::string to_string(const Type a_value) \
 
 #define ENUM_TO_STRING(value) \
     case value: \
-        strValue += "::" + #value; \
+        strValue += std::string("::") + #value; \
         break;
 
 
@@ -19,3 +19,29 @@ static inline std::string to_string(const Type a_value) \
     } \
     return strValue; \
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+template<typename T> class Flag {};
+
+#define BEGIN_FLAG_TO_STRING(Base, Type) \
+template<> \
+class Flag<Base>\
+{\
+public: \
+    static std::string to_string(const Type a_value) \
+    { \
+        unsigned int iValue = static_cast<unsigned int>(a_value);\
+        std::string strValue;
+   
+#define FLAG_TO_STRING(value) \
+        if((iValue & static_cast<unsigned int>(value)) ==  static_cast<unsigned int>(value)) \
+        {\
+            if(strValue.size() > 0) \
+                strValue += std::string("|"); \
+            strValue += to_string(value); \
+        }
+    
+#define END_FLAG_TO_STRING \
+        return strValue; \
+    }\
+};
