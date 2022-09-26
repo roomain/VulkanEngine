@@ -18,6 +18,8 @@ namespace Vulkan
 	void getDeviceCapabilities(const Device& a_device, EngineDeviceCapabilities& a_capabilities);
 	void enumerateDevices(VkInstance a_vulkan, std::vector<Device>& a_devices);
 	//--------------------------------------------------------------------------------------------------------------------------
+	void displayInstanceLayerProps(IDisplayer& a_displayer);
+	void displayInstanceExtensionProps(IDisplayer& a_displayer);
 	void displayVulkanCapabilities(VkInstance a_vulkan, IDisplayer& a_displayer);
 	void displayDeviceCapabilities(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer);
 	void displayDeviceLimits(const VkPhysicalDeviceLimits& a_limits, IDisplayer& a_displayer);

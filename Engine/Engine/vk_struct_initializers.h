@@ -11,7 +11,7 @@ namespace Vulkan::Initializers
 
 	inline VkInstanceCreateInfo&& instanceCreateInfo()
 	{
-		return VkInstanceCreateInfo{ .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, .pNext = nullptr };
+		return VkInstanceCreateInfo{ .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, .pNext = nullptr, .flags = 0 };
 	}
 
 	inline VkDebugReportCallbackCreateInfoEXT&& debugCallbackCreateInfo()

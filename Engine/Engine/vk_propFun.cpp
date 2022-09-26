@@ -112,6 +112,42 @@ namespace Vulkan
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------
+	void displayInstanceLayerProps(IDisplayer& a_displayer)
+	{
+		uint32_t propCount = 0;
+		vkEnumerateInstanceLayerProperties(&propCount, nullptr);
+		std::vector<VkLayerProperties> vLayerProp;
+		vLayerProp.resize(propCount);
+		vkEnumerateInstanceLayerProperties(&propCount, vLayerProp.data());
+
+		a_displayer.beginNode("Instance Layer Properties");
+		for (const auto& prop : vLayerProp)
+		{
+			a_displayer.beginNode(prop.layerName);
+			a_displayer.attribute("Description", prop.description);
+			a_displayer.attribute("Implementation version", prop.implementationVersion);
+			a_displayer.attribute("Specific version", prop.specVersion);
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
+	}
+
+	void displayInstanceExtensionProps(IDisplayer& a_displayer)
+	{
+		uint32_t extensionCount = 0;
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		std::vector<VkExtensionProperties> vProperties(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vProperties.data());
+
+		a_displayer.beginNode("Instance Extensions");
+		for (const auto& extend : vProperties)
+		{
+			a_displayer.beginNode(extend.extensionName);
+			a_displayer.attribute("Specific version", extend.specVersion);
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
+	}
 
 	void displayDeviceLimits(const VkPhysicalDeviceLimits& a_limits, IDisplayer& a_displayer)
 	{
