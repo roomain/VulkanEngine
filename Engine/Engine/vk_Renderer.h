@@ -11,6 +11,12 @@ namespace Vulkan
 		int appVersion;
 	};
 
+	struct RendererProps
+	{
+		std::vector<std::string> instanceProps;
+		std::vector<std::string> instanceLayers;
+	};
+
 	/*@brief vulkan renderer*/
 	class VK_Renderer
 	{
@@ -26,7 +32,7 @@ namespace Vulkan
 
 		static VK_Renderer* m_pInstance;
 
-		VK_Renderer(const ApplicationInfo& a_appInfo, const bool a_enableValidationLayer);
+		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props);
 		virtual ~VK_Renderer();
 	};
 }

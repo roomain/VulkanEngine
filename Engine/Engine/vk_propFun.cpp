@@ -111,14 +111,28 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	//--------------------------------------------------------------------------------------------------------------------------
-	void displayInstanceLayerProps(IDisplayer& a_displayer)
+	void getInstanceLayerProps(std::vector<VkLayerProperties>& a_properties)
 	{
 		uint32_t propCount = 0;
 		vkEnumerateInstanceLayerProperties(&propCount, nullptr);
+		a_properties.resize(propCount);
+		vkEnumerateInstanceLayerProperties(&propCount, a_properties.data());
+
+	}
+
+	void getInstanceExtProps(std::vector<VkExtensionProperties>& a_properties)
+	{
+		uint32_t extensionCount = 0;
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		a_properties.resize(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, a_properties.data());
+	}
+
+	//--------------------------------------------------------------------------------------------------------------------------
+	void displayInstanceLayerProps(IDisplayer& a_displayer)
+	{
 		std::vector<VkLayerProperties> vLayerProp;
-		vLayerProp.resize(propCount);
-		vkEnumerateInstanceLayerProperties(&propCount, vLayerProp.data());
+		getInstanceLayerProps(vLayerProp);
 
 		a_displayer.beginNode("Instance Layer Properties");
 		for (const auto& prop : vLayerProp)
@@ -134,10 +148,8 @@ namespace Vulkan
 
 	void displayInstanceExtensionProps(IDisplayer& a_displayer)
 	{
-		uint32_t extensionCount = 0;
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-		std::vector<VkExtensionProperties> vProperties(extensionCount);
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vProperties.data());
+		std::vector<VkExtensionProperties> vProperties;
+		getInstanceExtProps(vProperties);
 
 		a_displayer.beginNode("Instance Extensions");
 		for (const auto& extend : vProperties)
@@ -147,6 +159,41 @@ namespace Vulkan
 			a_displayer.endNode();
 		}
 		a_displayer.endNode();
+	}
+
+	bool checkInstanceLayerProps(const std::vector<std::string>& a_properties)
+	{
+		bool bRet = false;
+
+		std::vector<VkLayerProperties> vLayerProp;
+		getInstanceLayerProps(vLayerProp);
+		for (auto& prop : a_properties)
+		{
+			if (vLayerProp.end() == std::find_if(vLayerProp.begin(), vLayerProp.end(), [&](auto layer)
+				{
+					return prop.compare(layer.layerName) == 0;
+				}))
+				return false;
+		}
+		return bRet;
+	}
+
+	bool checkInstanceExtensionProps(const std::vector<std::string>& a_properties)
+	{
+		bool bRet = false;
+		
+		std::vector<VkExtensionProperties> vProperties;
+		getInstanceExtProps(vProperties);
+
+		for (auto& prop : a_properties)
+		{
+			if (vProperties.end() == std::find_if(vProperties.begin(), vProperties.end(), [&](auto curProp)
+				{
+					return prop.compare(curProp.extensionName) == 0;
+				}))
+				return false;
+		}
+		return bRet;
 	}
 
 	void displayDeviceLimits(const VkPhysicalDeviceLimits& a_limits, IDisplayer& a_displayer)

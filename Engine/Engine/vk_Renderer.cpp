@@ -8,7 +8,7 @@ namespace Vulkan
 {
 	VK_Renderer* VK_Renderer::m_pInstance = nullptr;
 
-	VK_Renderer::VK_Renderer(const ApplicationInfo& a_appInfo, const bool a_enableValidationLayer)
+	VK_Renderer::VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props)
 	{
 		VkApplicationInfo appInfo = Vulkan::Initializers::applicationInfo();
 		appInfo.apiVersion = VK_API_VERSION_1_3;
@@ -26,10 +26,10 @@ namespace Vulkan
 		instCreateInfo.enabledLayerCount = 0;
 		instCreateInfo.ppEnabledLayerNames = nullptr;
 
-		if (a_enableValidationLayer)
-		{
-			//
-		}
+		// check instance properties
+
+		// check layers
+
 
 		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &m_vulkanInst));
 	}
