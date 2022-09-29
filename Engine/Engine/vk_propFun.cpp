@@ -161,7 +161,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	bool checkInstanceLayerProps(const std::vector<std::string>& a_properties)
+	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties)
 	{
 		bool bRet = false;
 
@@ -171,14 +171,14 @@ namespace Vulkan
 		{
 			if (vLayerProp.end() == std::find_if(vLayerProp.begin(), vLayerProp.end(), [&](auto layer)
 				{
-					return prop.compare(layer.layerName) == 0;
+					return strncmp(prop, layer.layerName) == 0;
 				}))
 				return false;
 		}
 		return bRet;
 	}
 
-	bool checkInstanceExtensionProps(const std::vector<std::string>& a_properties)
+	bool checkInstanceExtensionProps(const std::vector<const char*>& a_properties)
 	{
 		bool bRet = false;
 		
@@ -189,7 +189,7 @@ namespace Vulkan
 		{
 			if (vProperties.end() == std::find_if(vProperties.begin(), vProperties.end(), [&](auto curProp)
 				{
-					return prop.compare(curProp.extensionName) == 0;
+					return strncmp(prop, curProp.extensionName) == 0;
 				}))
 				return false;
 		}

@@ -13,8 +13,8 @@ namespace Vulkan
 
 	struct RendererProps
 	{
-		std::vector<std::string> instanceProps;
-		std::vector<std::string> instanceLayers;
+		std::vector<const char*> instanceProps;
+		std::vector<const char*> instanceLayers;
 	};
 
 	/*@brief vulkan renderer*/

@@ -2,6 +2,7 @@
 #include "vk_Renderer.h"
 #include "vk_struct_initializers.h"
 #include "vk_macros.h"
+#include "vk_propFun.h"
 
 
 namespace Vulkan
@@ -27,9 +28,18 @@ namespace Vulkan
 		instCreateInfo.ppEnabledLayerNames = nullptr;
 
 		// check instance properties
+		if (checkInstanceExtensionProps(a_props.instanceProps))
+			throw;
 
 		// check layers
+		if (checkInstanceLayerProps(a_props.instanceLayers))
+			throw;
 
+		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_props.instanceProps.size());
+		instCreateInfo.ppEnabledExtensionNames = a_props.instanceProps.data();
+
+		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(a_props.instanceLayers.size());
+		instCreateInfo.ppEnabledLayerNames = a_props.instanceLayers.data();
 
 		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &m_vulkanInst));
 	}
