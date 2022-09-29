@@ -23,17 +23,19 @@ namespace Vulkan
 	public:
 		static constexpr uint32_t ENGINE_VERSION = 1;
 
-		// LOADING FUNCTIONS
-		/*@brief load a shader*/
+		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props);
+		virtual ~VK_Renderer();
 
 	private:
 		VkInstance m_vulkanInst;
 		Device m_device;
 
 		static VK_Renderer* m_pInstance;
+		static VkBool32 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+			VkDebugUtilsMessageTypeFlagsEXT messageType,
+			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+			void* pUserData);
 
-		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props);
-		virtual ~VK_Renderer();
 	};
 }
 
