@@ -39,9 +39,6 @@
     <ClInclude Include="vk_globals.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="vk_string.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="vk_files.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>

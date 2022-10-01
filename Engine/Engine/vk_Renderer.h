@@ -4,6 +4,8 @@
 
 namespace Vulkan
 {
+	class VK_Logger;
+
 	/*@brief info about host application*/
 	struct ApplicationInfo
 	{
@@ -22,8 +24,12 @@ namespace Vulkan
 	{
 	public:
 		static constexpr uint32_t ENGINE_VERSION = 1;
+		static PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT;
+		static PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
 
-		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props);
+		VkDebugUtilsMessengerEXT m_debugMessangerHandle;
+
+		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props, VK_Logger* const a_pLogger);
 		virtual ~VK_Renderer();
 
 	private:

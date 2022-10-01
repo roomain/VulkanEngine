@@ -161,19 +161,23 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties)
+	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties, bool& a_hasDebugLayer)
 	{
 		bool bRet = false;
-
+		a_hasDebugLayer = false;
 		std::vector<VkLayerProperties> vLayerProp;
 		getInstanceLayerProps(vLayerProp);
 		for (auto& prop : a_properties)
 		{
+			std::string strProp = prop;
 			if (vLayerProp.end() == std::find_if(vLayerProp.begin(), vLayerProp.end(), [&](auto layer)
 				{
-					return std::string(prop).compare(layer.layerName) == 0;
+					return strProp.compare(layer.layerName) == 0;
 				}))
 				return false;
+
+				if (strProp.compare("VK_LAYER_KHRONOS_validation") == 0)
+					a_hasDebugLayer = true;
 		}
 		return bRet;
 	}
@@ -187,9 +191,10 @@ namespace Vulkan
 
 		for (auto& prop : a_properties)
 		{
+			std::string strProp = prop;
 			if (vProperties.end() == std::find_if(vProperties.begin(), vProperties.end(), [&](auto curProp)
 				{
-					return std::string(prop).compare(curProp.extensionName) == 0;
+					return strProp.compare(curProp.extensionName) == 0;
 				}))
 				return false;
 		}

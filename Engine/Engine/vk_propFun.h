@@ -24,7 +24,7 @@ namespace Vulkan
 	void displayInstanceLayerProps(IDisplayer& a_displayer);
 	void displayInstanceExtensionProps(IDisplayer& a_displayer);
 
-	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties);
+	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties, bool& a_hasDebugLayer);
 	bool checkInstanceExtensionProps(const std::vector<const char*>& a_layers);
 
 	void displayVulkanCapabilities(VkInstance a_vulkan, IDisplayer& a_displayer);

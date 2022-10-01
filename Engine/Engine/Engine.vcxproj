@@ -182,7 +182,6 @@
     <ClInclude Include="vk_macros.h" />
     <ClInclude Include="vk_propFun.h" />
     <ClInclude Include="vk_Renderer.h" />
-    <ClInclude Include="vk_string.h" />
     <ClInclude Include="vk_struct_initializers.h" />
   </ItemGroup>
   <ItemGroup>

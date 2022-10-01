@@ -19,6 +19,11 @@ namespace Vulkan::Initializers
 		return VkDebugReportCallbackCreateInfoEXT{ .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT };
 	}
 
+	inline VkDebugUtilsMessengerCreateInfoEXT&& messageCallbackCreateInfo()
+	{
+		return VkDebugUtilsMessengerCreateInfoEXT{ .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT, .pNext = nullptr , .pUserData = nullptr};
+	}
+
 	inline VkDeviceCreateInfo&& deviceCreateInfo()
 	{
 		return VkDeviceCreateInfo{ .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, .pNext = nullptr };
