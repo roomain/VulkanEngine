@@ -178,6 +178,7 @@
     <ClInclude Include="vk_ext_struct.h" />
     <ClInclude Include="vk_files.h" />
     <ClInclude Include="vk_globals.h" />
+    <ClInclude Include="vk_logger.h" />
     <ClInclude Include="vk_macros.h" />
     <ClInclude Include="vk_propFun.h" />
     <ClInclude Include="vk_Renderer.h" />
@@ -194,6 +195,7 @@
     </ClCompile>
     <ClCompile Include="vk_Exception.cpp" />
     <ClCompile Include="vk_files.cpp" />
+    <ClCompile Include="vk_logger.cpp" />
     <ClCompile Include="vk_propFun.cpp" />
     <ClCompile Include="vk_Renderer.cpp" />
   </ItemGroup>

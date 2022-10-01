@@ -171,7 +171,7 @@ namespace Vulkan
 		{
 			if (vLayerProp.end() == std::find_if(vLayerProp.begin(), vLayerProp.end(), [&](auto layer)
 				{
-					return strncmp(prop, layer.layerName) == 0;
+					return std::string(prop).compare(layer.layerName) == 0;
 				}))
 				return false;
 		}
@@ -189,7 +189,7 @@ namespace Vulkan
 		{
 			if (vProperties.end() == std::find_if(vProperties.begin(), vProperties.end(), [&](auto curProp)
 				{
-					return strncmp(prop, curProp.extensionName) == 0;
+					return std::string(prop).compare(curProp.extensionName) == 0;
 				}))
 				return false;
 		}
