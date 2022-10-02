@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros">
-    <ASSIMP_DIR>D:\Libraries\assimp</ASSIMP_DIR>
-    <ASSIMP_INC>$(ASSIMP_DIR)\include</ASSIMP_INC>
-    <ASSIMP_LIB>$(ASSIMP_DIR)\VS2019\lib\Release</ASSIMP_LIB>
-    <ASSIMP_BIN>$(ASSIMP_DIR)\VS2019\bin\Release</ASSIMP_BIN>
-  </PropertyGroup>
+  
+  <Choose>
+    <When Condition="exists('D:\Libraries\assimp') ">
+      <PropertyGroup Label="UserMacros">
+        <ASSIMP_DIR>D:\Libraries\assimp</ASSIMP_DIR>
+        <ASSIMP_INC>$(ASSIMP_DIR)\include</ASSIMP_INC>
+        <ASSIMP_LIB>$(ASSIMP_DIR)\VS2019\lib\Release</ASSIMP_LIB>
+        <ASSIMP_BIN>$(ASSIMP_DIR)\VS2019\bin\Release</ASSIMP_BIN>
+      </PropertyGroup>
+    </When>
+    <When Condition="NOT exists('D:\Libraries\assimp') ">
+      <PropertyGroup Label="UserMacros">
+        <ASSIMP_DIR>C:\Libraries\assimp</ASSIMP_DIR>
+        <ASSIMP_INC>$(ASSIMP_DIR)\include</ASSIMP_INC>
+        <ASSIMP_LIB>$(ASSIMP_DIR)\VS2019\lib\Release</ASSIMP_LIB>
+        <ASSIMP_BIN>$(ASSIMP_DIR)\VS2019\bin\Release</ASSIMP_BIN>
+      </PropertyGroup>
+    </When>
+  </Choose> 
+
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>

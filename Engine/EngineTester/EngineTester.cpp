@@ -40,7 +40,7 @@ int main(const int a_argc, const char** a_argv)
 	// get GLFW vulkan extension required
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExt = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (int i = 0; i < glfwExtensionCount; ++i)
+	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
 		renderProps.instanceProps.push_back(glfwExt[i]);
 	renderProps.instanceProps.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
