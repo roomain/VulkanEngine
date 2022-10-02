@@ -1,10 +1,11 @@
 #pragma  once
 #include <string>
+#include "vk_globals.h"
 
 namespace Vulkan
 {
     /*@brief interface class to display device capabilities organized in tree*/
-    class IDisplayer
+    class ENGINE_EXPORT IDisplayer
     {
     public:
         virtual void beginNode(const std::string& a_name) = 0;                                      /*!< begin writing node*/

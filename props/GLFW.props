@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <GLFW_DIR>D:\Libraries\glfw</GLFW_DIR>
+    <GLFW_INC>$(GLFW_DIR)\include</GLFW_INC>
+    <GLFW_LIB>$(GLFW_DIR)\VS2019\src\Release</GLFW_LIB>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(GLFW_INC);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(GLFW_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command></Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="GLFW_DIR">
+      <Value>$(GLFW_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GLFW_INC">
+      <Value>$(GLFW_INC)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GLFW_LIB">
+      <Value>$(GLFW_LIB)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

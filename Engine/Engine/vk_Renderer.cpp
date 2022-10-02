@@ -9,17 +9,19 @@
 
 namespace Vulkan
 {
+	PFN_vkCreateDebugReportCallbackEXT VK_Renderer::vkCreateDebugReportCallbackEXT = nullptr;
+	PFN_vkDestroyDebugReportCallbackEXT VK_Renderer::vkDestroyDebugReportCallbackEXT = nullptr;
 
-	VK_Renderer* VK_Renderer::m_pInstance = nullptr;
-	PFN_vkCreateDebugUtilsMessengerEXT VK_Renderer::vkCreateDebugUtilsMessengerEXT = nullptr;
-	PFN_vkDestroyDebugUtilsMessengerEXT VK_Renderer::vkDestroyDebugUtilsMessengerEXT = nullptr;
-
-	VkBool32  VK_Renderer::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-		VkDebugUtilsMessageTypeFlagsEXT messageType,
-		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-		void* pUserData)
+	VkBool32 VKAPI_ATTR VK_Renderer::messageCallback(VkDebugReportFlagsEXT flags,				// Type of error
+		VkDebugReportObjectTypeEXT objType,			// Type of object causing error
+		uint64_t obj,								// ID of object
+		size_t location,
+		int32_t code,
+		const char* layerPrefix,
+		const char* message,						// Validation Information
+		void* userData)
 	{
-		VK_Logger* const pLogger = static_cast<VK_Logger*>(pUserData);
+		VK_Logger* const pLogger = static_cast<VK_Logger*>(userData);
 		/*switch (messageSeverity)
 		{
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
@@ -52,10 +54,10 @@ namespace Vulkan
 		}
 		std::cerr << std::endl << pCallbackData->pMessageIdName << std::endl << pCallbackData->pMessage << std::endl;
 		std::cerr << "-------------------------------------------" << std::endl;*/
-		return 0;
+		return VK_FALSE;
 	}
 
-	VK_Renderer::VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps a_props, VK_Logger* const a_pLogger) : m_debugMessangerHandle{ VK_NULL_HANDLE }
+	VK_Renderer::VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps& a_props, VK_Logger* const a_pLogger) : m_debugCallbackHandle{ VK_NULL_HANDLE }
 	{
 		VkApplicationInfo appInfo = Vulkan::Initializers::applicationInfo();
 		appInfo.apiVersion = VK_API_VERSION_1_3;
@@ -74,36 +76,34 @@ namespace Vulkan
 		instCreateInfo.ppEnabledLayerNames = nullptr;
 
 		// check instance properties
-		if (checkInstanceExtensionProps(a_props.instanceProps))
+		bool hasDebugExt = false;
+		if (!checkInstanceExtensionProps(a_props.instanceProps, hasDebugExt))
 			throw Vulkan::VK_Exception("unsupported extensions", std::source_location::current());
 
 		// check layers
-		bool hasDebugLayer = false;
-		if (checkInstanceLayerProps(a_props.instanceLayers, hasDebugLayer))
+		if (!checkInstanceLayerProps(a_props.instanceLayers))
 			throw Vulkan::VK_Exception("unsupported layers", std::source_location::current());
 
 		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_props.instanceProps.size());
 		instCreateInfo.ppEnabledExtensionNames = a_props.instanceProps.data();
-
+		
 		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(a_props.instanceLayers.size());
 		instCreateInfo.ppEnabledLayerNames = a_props.instanceLayers.data();
 
 		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &m_vulkanInst));
 
-		if (hasDebugLayer)
+		if (hasDebugExt)
 		{
-			// add debug callback
-			VkDebugUtilsMessengerCreateInfoEXT debugExt = Vulkan::Initializers::messageCallbackCreateInfo();
-			debugExt.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-			debugExt.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-			debugExt.pfnUserCallback = VK_Renderer::debugCallback;
-			debugExt.pUserData = a_pLogger;
-
-			VK_Renderer::vkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkCreateDebugUtilsMessengerEXT");
-			VK_Renderer::vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkDestroyDebugUtilsMessengerEXT");
-			if (vkCreateDebugUtilsMessengerEXT != nullptr && vkDestroyDebugUtilsMessengerEXT != nullptr)
+			VK_Renderer::vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkCreateDebugReportCallbackEXT");
+			VK_Renderer::vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkDestroyDebugReportCallbackEXT");
+			if (vkCreateDebugReportCallbackEXT != nullptr && vkDestroyDebugReportCallbackEXT != nullptr)
 			{
-				VK_CHECK(vkCreateDebugUtilsMessengerEXT(m_vulkanInst, &debugExt, nullptr, &m_debugMessangerHandle));
+				// add debug callback
+				VkDebugReportCallbackCreateInfoEXT debugExt = Vulkan::Initializers::debugCallbackCreateInfo();
+				debugExt.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+				debugExt.pfnCallback = VK_Renderer::messageCallback;
+				debugExt.pUserData = a_pLogger;
+				VK_CHECK(vkCreateDebugReportCallbackEXT(m_vulkanInst, &debugExt, nullptr, &m_debugCallbackHandle));
 			}
 			else
 			{
@@ -114,13 +114,18 @@ namespace Vulkan
 
 	VK_Renderer::~VK_Renderer()
 	{
-		if (m_debugMessangerHandle != VK_NULL_HANDLE)// optional
-			vkDestroyDebugUtilsMessengerEXT(m_vulkanInst, m_debugMessangerHandle, nullptr);
+		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
+			vkDestroyDebugReportCallbackEXT(m_vulkanInst, m_debugCallbackHandle, nullptr);
 
 		// release resources
 
 		vkDestroyDevice(m_device.logicalDevice, nullptr);
 
 		vkDestroyInstance(m_vulkanInst, nullptr);
+	}
+
+	VkInstance VK_Renderer::vulkanInstance()const noexcept
+	{
+		return m_vulkanInst;
 	}
 }

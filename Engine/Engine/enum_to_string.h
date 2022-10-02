@@ -38,7 +38,7 @@ public: \
         {\
             if(strValue.size() > 0) \
                 strValue += std::string("|"); \
-            strValue += to_string(value); \
+            strValue += ::to_string(value); \
         }
     
 #define END_FLAG_TO_STRING \

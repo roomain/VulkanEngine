@@ -161,10 +161,9 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties, bool& a_hasDebugLayer)
+	bool checkInstanceLayerProps(const std::vector<const char*>& a_properties)
 	{
-		bool bRet = false;
-		a_hasDebugLayer = false;
+		bool bRet = true;
 		std::vector<VkLayerProperties> vLayerProp;
 		getInstanceLayerProps(vLayerProp);
 		for (auto& prop : a_properties)
@@ -176,16 +175,15 @@ namespace Vulkan
 				}))
 				return false;
 
-				if (strProp.compare("VK_LAYER_KHRONOS_validation") == 0)
-					a_hasDebugLayer = true;
+				
 		}
 		return bRet;
 	}
 
-	bool checkInstanceExtensionProps(const std::vector<const char*>& a_properties)
+	bool checkInstanceExtensionProps(const std::vector<const char*>& a_properties, bool& a_hasDebugExt)
 	{
-		bool bRet = false;
-		
+		bool bRet = true;
+		a_hasDebugExt = false;
 		std::vector<VkExtensionProperties> vProperties;
 		getInstanceExtProps(vProperties);
 
@@ -197,6 +195,9 @@ namespace Vulkan
 					return strProp.compare(curProp.extensionName) == 0;
 				}))
 				return false;
+
+			if (strProp.compare(VK_EXT_DEBUG_REPORT_EXTENSION_NAME) == 0)
+				a_hasDebugExt = true;
 		}
 		return bRet;
 	}
