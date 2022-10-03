@@ -21,6 +21,33 @@ GLFWwindow* createWindow(std::string wName = "Test Window", const int width = 80
 
 	return glfwCreateWindow(width, height, wName.c_str(), nullptr, nullptr);
 }
+
+bool chooseDevice(const Vulkan::VK_Renderer& a_renderer)
+{
+	int iDev = -1;
+
+	std::vector<Vulkan::DeviceInfo> vdevices;
+	Vulkan::enumerateDevicesInfo(a_renderer.vulkanInstance(), vdevices);
+	
+	int iSize = static_cast<int>(vdevices.size());
+	do
+	{
+		std::cout << "Choose device:" << std::endl;
+		int iIndex = 0;
+		for (auto& dev : vdevices)
+			std::cout << "\t" << iIndex << " - " << dev.deviceName << std::endl;
+
+		std::cout << "choose: ";
+		std::cin >> iDev;
+		std::cout << std::endl;
+	} while (iDev >= iSize);
+
+	// TODO
+
+	return iDev > 0;
+}
+
+
 //------------------------------------------------------------------------
 
 int main(const int a_argc, const char** a_argv)
@@ -49,6 +76,9 @@ int main(const int a_argc, const char** a_argv)
 	// display instance properties
 	displayer.reset();
 	Vulkan::displayVulkanCapabilities(renderer.vulkanInstance(), displayer);
+	if (!chooseDevice(renderer))
+		return 0;
+	
 
 	// GLFW loop
 	while (!glfwWindowShouldClose(pGLFW_window))

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <string>
 #include "vulkan/vulkan.h"
 #include "vk_globals.h"
 
@@ -13,11 +14,19 @@ namespace Vulkan
 	struct EngineDeviceCapabilities;
 	class IDisplayer;
 
+	/*@brief short device info*/
+	struct DeviceInfo
+	{
+		std::string deviceName;	/*!< device name*/
+		std::string deviceType;	/*!< device type*/
+	};
+
 	void ENGINE_EXPORT getQueueFamiliesProperties(const Device& a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties);
 	void ENGINE_EXPORT getFormatsProperties(const Device& a_device, std::vector<FormatProperty>& a_formatsProperties);
 	void ENGINE_EXPORT getSwapChainCapabilities(const Device& a_device, const VkSurfaceKHR& a_surface, SwapchainCapabilities& a_swapChainCap);
 	void ENGINE_EXPORT getDeviceCapabilities(const Device& a_device, EngineDeviceCapabilities& a_capabilities);
 	void ENGINE_EXPORT enumerateDevices(VkInstance a_vulkan, std::vector<Device>& a_devices);
+	void ENGINE_EXPORT enumerateDevicesInfo(VkInstance a_vulkan, std::vector<DeviceInfo>& a_info);
 
 	void ENGINE_EXPORT getInstanceLayerProps(std::vector<VkLayerProperties>& a_properties);
 	void ENGINE_EXPORT getInstanceExtProps(std::vector<VkExtensionProperties>& a_properties);

@@ -68,16 +68,27 @@ namespace Vulkan
 		// TODO
 	};
 
+	/*@brief Queue configuration*/
+	struct QueueConfiguration
+	{
+		VkQueueFlags type;	/*!< queue type*/
+		int index = -1;		/*!< queue location index*/
+	};
+
 	//----------------------------------------------------------------------------
 	/*@brief Queues configuration corresponding to the needs*/
-	struct QueuesConfiguration
+	struct RendererQueuesConfiguration
 	{
-		int queuesFamily_graphics = -1;		/*!< index of a graphics family*/
-		int queuesFamily_presentation = -1;	/*!< index of presentation family*/
+		std::vector<QueueConfiguration> vQueueConf;
 
 		inline bool isValid()const noexcept
 		{
-			return (queuesFamily_graphics >= 0) && (queuesFamily_presentation >= 0);
+			for (auto queue : vQueueConf)
+			{
+				if (queue.index < 0)
+					return false;
+			}
+			return true;
 		}
 	};
 
