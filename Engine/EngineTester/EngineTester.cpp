@@ -4,7 +4,8 @@
 #include <iostream>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include "vk_propFun.h"
+#include "vk_display.h"
+#include "vk_enumerate.h"
 #include "ConsoleDisplayer.h"
 #include "vk_Renderer.h"
 

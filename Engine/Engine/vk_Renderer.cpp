@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "vk_Renderer.h"
 #include "vk_struct_initializers.h"
-#include "vk_macros.h"
-#include "vk_propFun.h"
 #include "vk_logger.h"
 #include <exception>
 
