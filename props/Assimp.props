@@ -4,9 +4,13 @@
   <PropertyGroup Label="UserMacros">
     <ASSIMP_DIR Condition="exists('D:\Libraries\assimp')">D:\Libraries\assimp</ASSIMP_DIR>
     <ASSIMP_DIR Condition="exists('C:\libraries\assimp')">C:\libraries\assimp</ASSIMP_DIR>
+    <ASSIMP_SLN_DIR Condition="exists('$(ASSIMP_DIR)\VS2019')">$(ASSIMP_DIR)\VS2019</ASSIMP_SLN_DIR>
+    <ASSIMP_SLN_DIR Condition="exists('$(ASSIMP_DIR)\VS2022')">$(ASSIMP_DIR)\VS2022</ASSIMP_SLN_DIR>
     <ASSIMP_INC>$(ASSIMP_DIR)\include</ASSIMP_INC>
-    <ASSIMP_LIB>$(ASSIMP_DIR)\VS2019\lib\Release</ASSIMP_LIB>
-    <ASSIMP_BIN>$(ASSIMP_DIR)\VS2019\bin\Release</ASSIMP_BIN>
+    <ASSIMP_LIB>$(ASSIMP_SLN_DIR)\lib\Release</ASSIMP_LIB>
+    <ASSIMP_BIN>$(ASSIMP_SLN_DIR)\bin\Release</ASSIMP_BIN>
+    <ASSIMP_LIBFILE Condition="exists('$(ASSIMP_DIR)\VS2019')">assimp-vc142-mt.lib</ASSIMP_LIBFILE>
+    <ASSIMP_LIBFILE Condition="exists('$(ASSIMP_DIR)\VS2022')">assimp-vc143-mt.lib</ASSIMP_LIBFILE>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
@@ -15,7 +19,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ASSIMP_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ASSIMP_LIBFILE);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command></Command>
@@ -25,6 +29,9 @@
     <BuildMacro Include="ASSIMP_DIR">
       <Value>$(ASSIMP_DIR)</Value>
     </BuildMacro>
+    <BuildMacro Include="ASSIMP_SLN_DIR">
+      <Value>$(ASSIMP_SLN_DIR)</Value>
+    </BuildMacro>
     <BuildMacro Include="ASSIMP_INC">
       <Value>$(ASSIMP_INC)</Value>
     </BuildMacro>
@@ -33,6 +40,9 @@
     </BuildMacro>
     <BuildMacro Include="ASSIMP_BIN">
       <Value>$(ASSIMP_BIN)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ASSIMP_LIBFILE">
+      <Value>$(ASSIMP_LIBFILE)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>
