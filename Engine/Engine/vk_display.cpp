@@ -2,6 +2,7 @@
 #include "vk_display.h"
 #include "IDisplayer.h"
 #include "vk_enum_to_string.h"
+#include "vk_ext_struct.h"
 #include <vector>
 
 
@@ -141,6 +142,24 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
+	void displayQueuesProps(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
+	{
+		a_displayer.beginNode("Queues");
+		std::vector<VkQueueFamilyProperties> vFamilies;
+		getQueueFamiliesProperties(Device{ .physical = a_physicalDevice }, vFamilies);
+		for (const auto& familyProp : vFamilies)
+		{
+			a_displayer.beginNode("Queue");
+			a_displayer.attribute("count", familyProp.queueCount);
+			a_displayer.attribute("deviceID", Flag<VkQueueFlagBits>::to_string(familyProp.queueFlags));
+			a_displayer.attribute("image granularity width", familyProp.minImageTransferGranularity.width);
+			a_displayer.attribute("image granularity height", familyProp.minImageTransferGranularity.height);
+			a_displayer.attribute("image granularity depth", familyProp.minImageTransferGranularity.depth);
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
+	}
+
 	void displayDeviceCapabilities(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
 	{
 		VkPhysicalDeviceProperties devProp;
@@ -160,6 +179,7 @@ namespace Vulkan
 		a_displayer.attribute("pipelineCacheUUID", strData);
 		displayDeviceLimits(devProp.limits, a_displayer);
 		displayDeviceSparseProps(devProp.sparseProperties, a_displayer);
+		displayQueuesProps(a_physicalDevice, a_displayer);
 		a_displayer.endNode();
 	}
 
@@ -209,6 +229,20 @@ namespace Vulkan
 
 			for (auto dev : physicalDevices)
 				displayDeviceCapabilities(dev, a_displayer);
+		}
+	}
+
+	void displayDeviceCapabilities(VkInstance a_vulkan, const int a_deviceIndex, IDisplayer& a_displayer)
+	{
+		uint32_t uiDeviceCount = 0;
+		VK_CHECK(vkEnumeratePhysicalDevices(a_vulkan, &uiDeviceCount, nullptr));
+		if (uiDeviceCount > 0)
+		{
+			std::vector<VkPhysicalDevice> physicalDevices(static_cast<size_t>(uiDeviceCount));
+			VK_CHECK(vkEnumeratePhysicalDevices(a_vulkan, &uiDeviceCount, physicalDevices.data()));
+
+			if(a_deviceIndex >= 0 && a_deviceIndex < physicalDevices.size())
+				displayDeviceCapabilities(physicalDevices[a_deviceIndex], a_displayer);
 		}
 	}
 }
