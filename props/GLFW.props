@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <Choose>
-    <When Condition="exists('D:\Libraries\glfw') ">
-      <PropertyGroup Label="UserMacros">
-        <GLFW_DIR>D:\Libraries\glfw</GLFW_DIR>
+  <PropertyGroup Label="UserMacros">
+        <GLFW_DIR Condition="exists('D:\Libraries\glfw')">D:\Libraries\glfw</GLFW_DIR>
+        <GLFW_DIR Condition="exists('C:\libraries\glfw')">C:\libraries\glfw</GLFW_DIR>
         <GLFW_INC>$(GLFW_DIR)\include</GLFW_INC>
         <GLFW_LIB>$(GLFW_DIR)\VS2019\src\Release</GLFW_LIB>
-      </PropertyGroup>
-    </When>
-    <When Condition="NOT exists('D:\Libraries\glfw') ">
-      <PropertyGroup Label="UserMacros">
-        <GLFW_DIR>C:\Libraries\glfw</GLFW_DIR>
-        <GLFW_INC>$(GLFW_DIR)\include</GLFW_INC>
-        <GLFW_LIB>$(GLFW_DIR)\VS2019\src\Release</GLFW_LIB>
-      </PropertyGroup>
-    </When>
-  </Choose>  
+  </PropertyGroup> 
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
