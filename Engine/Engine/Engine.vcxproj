@@ -173,6 +173,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="IDisplayer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="vk_create.h" />
     <ClInclude Include="vk_display.h" />
     <ClInclude Include="vk_enumerate.h" />
     <ClInclude Include="vk_enum_to_string.h" />

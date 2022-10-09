@@ -95,8 +95,46 @@ namespace Vulkan
 		vkDestroyInstance(m_vulkanInst, nullptr);
 	}
 
+	void VK_Renderer::createDevice(const unsigned int a_deviceIndex)
+	{
+		uint32_t deviceCount = 0;
+		vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, nullptr);
+		
+		std::vector<VkPhysicalDevice> deviceList(deviceCount);
+		vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, deviceList.data());
+
+		m_device.physical = deviceList[a_deviceIndex];
+
+		// get memory properties
+		getDeviceCapabilities(m_device, m_deviceCapabilities);
+
+		// get queues configuration
+		RendererQueuesConfiguration queueConf;
+		setupQueueConfiguration(m_deviceCapabilities.queueFamilies, queueConf);
+
+		// create logical device
+	}
+
 	VkInstance VK_Renderer::vulkanInstance()const noexcept
 	{
 		return m_vulkanInst;
+	}
+
+	void VK_Renderer::setupQueueConfiguration(const std::vector<VkQueueFamilyProperties>& a_queuesProperties, RendererQueuesConfiguration& a_queueConf)const
+	{
+		int iFamilyIndex = 0;
+		for (const auto& queueFamily : a_queuesProperties)
+		{
+			if (queueFamily.queueCount > 0)// at least on queue
+			{
+				// check if family supports graphics
+				if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) == VK_QUEUE_GRAPHICS_BIT)
+				{
+					//
+				}
+			}
+			// todo
+			++iFamilyIndex;
+		}
 	}
 }

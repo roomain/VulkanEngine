@@ -15,4 +15,10 @@ namespace Vulkan
 	void getFormatsProperties(const Device& a_device, std::vector<FormatProperty>& a_formatsProperties);
 	void getSwapChainCapabilities(const Device& a_device, const VkSurfaceKHR& a_surface, SwapchainCapabilities& a_swapChainCap);
 	void getDeviceCapabilities(const Device& a_device, EngineDeviceCapabilities& a_capabilities);
+
+	//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	VkFormat getSupportedFormat(const Device& a_device, const std::vector<VkFormat>& a_formats, const VkImageTiling a_tiling, const VkFormatFeatureFlags a_featureFlag);
+	VkFormat getSupportedFormat(const Device& a_device, std::vector<VkFormat>&& a_formats, VkImageTiling&& a_tiling, VkFormatFeatureFlags&& a_featureFlag);
+	uint32_t getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& a_memProperties, uint32_t a_memTypeBits, VkMemoryPropertyFlags a_flags);
 }

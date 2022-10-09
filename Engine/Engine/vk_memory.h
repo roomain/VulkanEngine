@@ -6,7 +6,7 @@ namespace Vulkan
 {
 	class VK_Memory
 	{
-	private:
+	protected:
 		VkDeviceMemory m_deviceMemory;	/*!< device memory*/
 		//
 	};

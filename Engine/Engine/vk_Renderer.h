@@ -26,14 +26,26 @@ namespace Vulkan
 	public:
 		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps& a_props, VK_Logger* const a_pLogger);
 		virtual ~VK_Renderer();
+		void createDevice(const unsigned int a_deviceIndex);
 
 		/*@return the vulkan instance*/
 		VkInstance vulkanInstance()const noexcept;
 
+	protected:
+		// -- Choose Functions
+		virtual void setupQueueConfiguration(const std::vector<VkQueueFamilyProperties>& a_queuesProperties, RendererQueuesConfiguration& a_queueConf)const;
+
 	private:
 		VkInstance m_vulkanInst;							/*!< vulkan instance*/
 		Device m_device;									/*!< vulkan used device*/
+		EngineDeviceCapabilities m_deviceCapabilities;		/*!< device capabilities*/
+
+
+
 		VkDebugReportCallbackEXT m_debugCallbackHandle;	/*!< vulkan debug message handle*/
+
+
+
 
 		static constexpr uint32_t ENGINE_VERSION = 1;								/*!< engine version*/
 		static PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;	/*!< create messenger loaded function*/
