@@ -68,4 +68,79 @@ namespace Vulkan
 		getFormatsProperties(a_device, a_capabilities.formatsProperties);
 		getQueueFamiliesProperties(a_device, a_capabilities.queueFamilies);
 	}
+
+
+	//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	VkFormat getSupportedFormat(const Device& a_device, const std::vector<VkFormat>& a_formats, const VkImageTiling a_tiling, const VkFormatFeatureFlags a_featureFlag)
+	{
+		// Loop through options and find compatible one
+		for (VkFormat format : a_formats)
+		{
+			// Get properties for give format on this device
+			VkFormatProperties properties;
+			vkGetPhysicalDeviceFormatProperties(a_device.physical, format, &properties);
+
+			// Depending on tiling choice, need to check for different bit flag
+			switch (a_tiling)
+			{
+			case VK_IMAGE_TILING_LINEAR:
+				if ((properties.linearTilingFeatures & a_featureFlag) == a_featureFlag)
+					return format;
+				break;
+
+			case VK_IMAGE_TILING_OPTIMAL:
+				if ((properties.optimalTilingFeatures & a_featureFlag) == a_featureFlag)
+					return format;
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		throw VK_Exception("Failed to find a matching format!", std::source_location::current());
+	}
+
+	VkFormat getSupportedFormat(const Device& a_device, std::vector<VkFormat>&& a_formats, VkImageTiling&& a_tiling, VkFormatFeatureFlags&& a_featureFlag)
+	{
+		// Loop through options and find compatible one
+		for (VkFormat format : a_formats)
+		{
+			// Get properties for give format on this device
+			VkFormatProperties properties;
+			vkGetPhysicalDeviceFormatProperties(a_device.physical, format, &properties);
+
+			// Depending on tiling choice, need to check for different bit flag
+			switch (a_tiling)
+			{
+			case VK_IMAGE_TILING_LINEAR:
+				if ((properties.linearTilingFeatures & a_featureFlag) == a_featureFlag)
+					return format;
+				break;
+
+			case VK_IMAGE_TILING_OPTIMAL:
+				if ((properties.optimalTilingFeatures & a_featureFlag) == a_featureFlag)
+					return format;
+				break;
+
+			default:
+				break;
+			}
+		}
+		throw VK_Exception("Failed to find a matching format!", std::source_location::current());
+	}
+
+	uint32_t getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& a_memProperties, uint32_t a_memTypeBits, VkMemoryPropertyFlags a_flags)
+	{
+		for (uint32_t iIndex = 0; iIndex < a_memProperties.memoryTypeCount; iIndex++)
+		{
+			if ((a_memTypeBits & (1 << iIndex))														// Index of memory type must match corresponding bit in allowedTypes
+				&& (a_memProperties.memoryTypes[iIndex].propertyFlags & a_flags) == a_flags)		// Desired property bit flags are part of memory type's property flags
+			{
+				// This memory type is valid, so return its index
+				return iIndex;
+			}
+		}
+	}
 }
