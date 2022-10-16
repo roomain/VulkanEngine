@@ -9,6 +9,7 @@
 #include "ConsoleDisplayer.h"
 #include "vk_Renderer.h"
 
+
 //------------------------------------------------------------------------
 // GLFW
 GLFWwindow* createWindow(std::string wName = "Test Window", const int width = 800, const int height = 600)
