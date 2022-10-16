@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "vk_files.h"
 #include "vk_Exception.h"
+#include "vk_string_to_enum.h"
 #include <fstream>
 #include <format>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 namespace Vulkan
 {
@@ -28,5 +31,13 @@ namespace Vulkan
 
 		// Close stream
 		file.close();
+	}
+
+	void load(const std::string& a_filename)
+	{
+		boost::property_tree::ptree propTree;
+		boost::property_tree::ini_parser::read_ini(a_filename, propTree);
+		// todo
+		//propTree.get_child_optional("Window.Pos");
 	}
 }
