@@ -2,6 +2,8 @@
 #include "vk_Renderer.h"
 #include "vk_struct_initializers.h"
 #include "vk_logger.h"
+#include "vk_files.h"
+#include "vk_ext_struct.h"
 #include <exception>
 
 
@@ -28,15 +30,20 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 
-	VK_Renderer::VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps& a_props, VK_Logger* const a_pLogger) : m_debugCallbackHandle{ VK_NULL_HANDLE }
+
+	VK_Renderer::VK_Renderer(const std::string& a_confFile, VK_Logger* const a_pLogger)
 	{
+		// TEST
+		VulkanConfiguration vkConf;
+		loadConfiguration(a_confFile, vkConf);
+
 		VkApplicationInfo appInfo = Vulkan::Initializers::applicationInfo();
 		appInfo.apiVersion = VK_API_VERSION_1_3;
-		appInfo.applicationVersion = a_appInfo.appVersion;
+		appInfo.applicationVersion = vkConf.appVersion;
 		appInfo.engineVersion = ENGINE_VERSION;
-		appInfo.pApplicationName = a_appInfo.appName.c_str();
-		appInfo.pEngineName = "VK";
-
+		appInfo.pApplicationName = vkConf.appName.c_str();
+		appInfo.pEngineName = "VK_Engine";
+		
 		VkInstanceCreateInfo instCreateInfo = Vulkan::Initializers::instanceCreateInfo();
 		instCreateInfo.pApplicationInfo = &appInfo;
 
@@ -48,18 +55,35 @@ namespace Vulkan
 
 		// check instance properties
 		bool hasDebugExt = false;
-		if (!checkInstanceExtensionProps(a_props.instanceProps, hasDebugExt))
+		if (!checkInstanceExtensionProps(vkConf.instanceExtProps, hasDebugExt))
 			throw Vulkan::VK_Exception("unsupported extensions", std::source_location::current());
 
 		// check layers
-		if (!checkInstanceLayerProps(a_props.instanceLayers))
+		if (!checkInstanceLayerProps(vkConf.instanceLayers))
 			throw Vulkan::VK_Exception("unsupported layers", std::source_location::current());
 
-		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_props.instanceProps.size());
-		instCreateInfo.ppEnabledExtensionNames = a_props.instanceProps.data();
+		size_t size = vkConf.instanceExtProps.size() + vkConf.instanceLayers.size();
+		const char** tabProp = new const char*[size];
 
-		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(a_props.instanceLayers.size());
-		instCreateInfo.ppEnabledLayerNames = a_props.instanceLayers.data();
+		int iIndex = 0;
+		for (auto& ext : vkConf.instanceExtProps)
+		{
+			tabProp[iIndex] = ext.c_str();
+			iIndex++;
+		}
+
+		const char** layerTab = &tabProp[iIndex];
+		for (auto& layer : vkConf.instanceLayers)
+		{
+			tabProp[iIndex] = layer.c_str();
+			iIndex++;
+		}
+
+		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(vkConf.instanceExtProps.size());
+		instCreateInfo.ppEnabledExtensionNames = tabProp;
+
+		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(vkConf.instanceLayers.size());
+		instCreateInfo.ppEnabledLayerNames = layerTab;
 
 		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &m_vulkanInst));
 

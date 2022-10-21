@@ -5,7 +5,7 @@
 #include <fstream>
 #include <format>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 namespace Vulkan
 {
@@ -33,11 +33,28 @@ namespace Vulkan
 		file.close();
 	}
 
-	void load(const std::string& a_filename)
+	void loadConfiguration(const std::string& a_filename, VulkanConfiguration& a_vulkanConf)
 	{
 		boost::property_tree::ptree propTree;
-		boost::property_tree::ini_parser::read_ini(a_filename, propTree);
-		// todo
+		boost::property_tree::xml_parser::read_xml(a_filename, propTree);
+
+		auto treeApp = propTree.get_child("Engine_configuration.vk_application");
+		a_vulkanConf.appName = treeApp.get<std::string>("<xmlattr>.name");
+		a_vulkanConf.appVersion = treeApp.get<int>("<xmlattr>.version");
+
+
+		auto treeInstance = propTree.get_child("Engine_configuration.vk_instance");
+		for (auto item : treeInstance.get_child("vk_layers"))
+		{
+			if(item.first.compare("vk_layer") == 0)
+				a_vulkanConf.instanceLayers.emplace_back(item.second.data());
+		}
+
+		for (auto item : treeInstance.get_child("vk_extensions"))
+		{
+			if (item.first.compare("vk_extension") == 0)
+				a_vulkanConf.instanceExtProps.emplace_back(item.second.data());
+		}
 		//propTree.get_child_optional("Window.Pos");
 	}
 }

@@ -5,26 +5,14 @@
 
 namespace Vulkan
 {
-	class ENGINE_EXPORT VK_Logger;
+	class VK_Logger;
 
-	/*@brief info about host application*/
-	struct ApplicationInfo
-	{
-		std::string appName;	/*!< application names*/
-		int appVersion;			/*!< application version*/
-	};
-
-	struct RendererProps
-	{
-		std::vector<const char*> instanceProps;		/*!< vulkan instance desired properties*/
-		std::vector<const char*> instanceLayers;	/*!< vulkan instance desired layer*/
-	};
 
 	/*@brief vulkan renderer*/
 	class ENGINE_EXPORT VK_Renderer
 	{
 	public:
-		VK_Renderer(const ApplicationInfo& a_appInfo, const RendererProps& a_props, VK_Logger* const a_pLogger);
+		VK_Renderer(const std::string& a_confFile, VK_Logger* const a_pLogger);
 		virtual ~VK_Renderer();
 		void createDevice(const unsigned int a_deviceIndex);
 

@@ -4,33 +4,11 @@
 
 namespace Vulkan
 {
-	VK_Logger& VK_Logger::operator << (const VkResult a_data)
-	{
-		//
-		return *this;
-	}
+	VK_Logger::VK_Logger(MessageFilter a_filter) : m_filter{a_filter}{}
 
-	VK_Logger& VK_Logger::operator << (const VkStructureType a_data)
+	void VK_Logger::log(VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* message)
 	{
 		//
-		return *this;
 	}
-
-	VK_Logger& VK_Logger::operator << (const VkObjectType a_data)
-	{
-		//
-		return *this;
-	}
-
-	VK_Logger& VK_Logger::operator << (const VkDebugUtilsMessageSeverityFlagBitsEXT a_data)
-	{
-		//
-		return *this;
-	}
-
-	VK_Logger& VK_Logger::operator << (const VkDebugUtilsMessageTypeFlagsEXT a_data)
-	{
-		//
-		return *this;
-	}
+	//
 }

@@ -142,5 +142,6 @@ namespace Vulkan
 				return iIndex;
 			}
 		}
+		return 0;
 	}
 }

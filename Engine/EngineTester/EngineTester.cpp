@@ -8,6 +8,7 @@
 #include "vk_enumerate.h"
 #include "ConsoleDisplayer.h"
 #include "vk_Renderer.h"
+#include <filesystem>
 
 
 //------------------------------------------------------------------------
@@ -30,14 +31,17 @@ bool chooseDevice(const Vulkan::VK_Renderer& a_renderer)
 
 	std::vector<Vulkan::DeviceInfo> vdevices;
 	Vulkan::enumerateDevicesInfo(a_renderer.vulkanInstance(), vdevices);
-	
+
 	int iSize = static_cast<int>(vdevices.size());
 	do
 	{
 		std::cout << "Choose device:" << std::endl;
 		int iIndex = 0;
 		for (auto& dev : vdevices)
+		{
 			std::cout << "\t" << iIndex << " - " << dev.deviceName << std::endl;
+			++iIndex;
+		}
 
 		std::cout << "choose: ";
 		std::cin >> iDev;
@@ -62,25 +66,18 @@ int main(const int a_argc, const char** a_argv)
 	Vulkan::displayInstanceLayerProps(displayer);
 	Vulkan::displayInstanceExtensionProps(displayer);
 
-	// create renderer
-	Vulkan::ApplicationInfo appInfo{ "Vulkan Engine Tester", 1 };
-	Vulkan::RendererProps renderProps{ {} ,{"VK_LAYER_KHRONOS_validation"}};
 
-	// get GLFW vulkan extension required
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExt = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
-		renderProps.instanceProps.push_back(glfwExt[i]);
-	renderProps.instanceProps.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+	std::filesystem::path execPath(a_argv[0]);
+	auto parentPath = execPath.parent_path();
 
-	Vulkan::VK_Renderer renderer(appInfo, renderProps, nullptr);
+	Vulkan::VK_Renderer renderer(parentPath.string() + R"(\Conf\configuration.xml)", nullptr);
 
 	// display instance properties
 	displayer.reset();
 	Vulkan::displayVulkanCapabilities(renderer.vulkanInstance(), displayer);
 	if (!chooseDevice(renderer))
 		return 0;
-	
+
 
 	// GLFW loop
 	while (!glfwWindowShouldClose(pGLFW_window))
@@ -93,7 +90,7 @@ int main(const int a_argc, const char** a_argv)
 	glfwDestroyWindow(pGLFW_window);
 	glfwTerminate();
 
-    std::cout << "Application ended!" << std::endl;
+	std::cout << "Application ended!" << std::endl;
 	return 0;
 }
 

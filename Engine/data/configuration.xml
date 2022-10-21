@@ -1,0 +1,13 @@
+<Engine_configuration>
+	<vk_application name='Vulkan Engine Tester' version='1' />
+	<vk_instance>
+		<vk_layers>
+			<vk_layer>VK_LAYER_KHRONOS_validation</vk_layer>
+		</vk_layers>
+		<vk_extensions>
+			<vk_extension>VK_EXT_debug_report</vk_extension>
+		</vk_extensions>
+	</vk_instance>
+	<vk_device>
+	</vk_device>
+</Engine_configuration>
