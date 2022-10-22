@@ -8,7 +8,7 @@ namespace Vulkan
 
 	void VK_Logger::log(VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* message)
 	{
-		//
+		//log(const std::string & a_type, uint64_t a_obj, size_t a_location, int32_t a_code, const char* a_layerPrefix, const char* a_message)
 	}
 	//
 }
