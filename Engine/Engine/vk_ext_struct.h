@@ -2,6 +2,7 @@
 
 #include "vulkan/vulkan.h"
 #include <vector>
+#include <algorithm>
 
 /*@brief utility extension structures*/
 namespace Vulkan
@@ -83,12 +84,7 @@ namespace Vulkan
 
 		inline bool isValid()const noexcept
 		{
-			for (auto queue : vQueueConf)
-			{
-				if (queue.index < 0)
-					return false;
-			}
-			return true;
+			return std::all_of(vQueueConf.begin(), vQueueConf.end(), [](const QueueConfiguration& a_conf) {return a_conf.index > 0; });
 		}
 	};
 

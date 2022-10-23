@@ -33,7 +33,7 @@ namespace Vulkan
 	{
 		for (int iterFormat = VK_FORMAT_R4G4_UNORM_PACK8; iterFormat < VK_FORMAT_MAX_ENUM; ++iterFormat)
 		{
-			FormatProperty formatProp;
+			FormatProperty formatProp{.format = static_cast<VkFormat>(iterFormat) };
 			vkGetPhysicalDeviceFormatProperties(a_device.physical, static_cast<VkFormat>(iterFormat), &formatProp.properties);
 			a_formatsProperties.push_back(formatProp);
 		}

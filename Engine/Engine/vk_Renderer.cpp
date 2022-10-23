@@ -23,27 +23,19 @@ namespace Vulkan
 	{
 		VK_Logger* const pLogger = static_cast<VK_Logger*>(userData);
 		if (pLogger)
-		{
-			//Flag<VkDebugReportFlagBitsEXT>::to_string(flags);
-			//to_string(objType);
-		}
+			pLogger->log(flags, objType, obj, location, code, layerPrefix, message);
 		return VK_FALSE;
 	}
-
-
-	VK_Renderer::VK_Renderer(const std::string& a_confFile, VK_Logger* const a_pLogger)
+	
+	void VK_Renderer::createVulkanInstance(const VulkanConfiguration& a_conf, VkInstance& a_vkInstance)
 	{
-		// TEST
-		VulkanConfiguration vkConf;
-		loadConfiguration(a_confFile, vkConf);
-
 		VkApplicationInfo appInfo = Vulkan::Initializers::applicationInfo();
 		appInfo.apiVersion = VK_API_VERSION_1_3;
-		appInfo.applicationVersion = vkConf.appVersion;
+		appInfo.applicationVersion = a_conf.appVersion;
 		appInfo.engineVersion = ENGINE_VERSION;
-		appInfo.pApplicationName = vkConf.appName.c_str();
+		appInfo.pApplicationName = a_conf.appName.c_str();
 		appInfo.pEngineName = "VK_Engine";
-		
+
 		VkInstanceCreateInfo instCreateInfo = Vulkan::Initializers::instanceCreateInfo();
 		instCreateInfo.pApplicationInfo = &appInfo;
 
@@ -52,6 +44,38 @@ namespace Vulkan
 
 		instCreateInfo.enabledLayerCount = 0;
 		instCreateInfo.ppEnabledLayerNames = nullptr;
+
+		// generate table of char* from vectors of string
+		size_t size = a_conf.instanceExtProps.size() + a_conf.instanceLayers.size();
+		const char** tabProp = new const char* [size];
+		int iIndex = 0;
+		for (auto& ext : a_conf.instanceExtProps)
+		{
+			tabProp[iIndex] = ext.c_str();
+			iIndex++;
+		}
+
+		const char** layerTab = &tabProp[iIndex];
+		for (auto& layer : a_conf.instanceLayers)
+		{
+			tabProp[iIndex] = layer.c_str();
+			iIndex++;
+		}
+
+		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_conf.instanceExtProps.size());
+		instCreateInfo.ppEnabledExtensionNames = tabProp;
+
+		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(a_conf.instanceLayers.size());
+		instCreateInfo.ppEnabledLayerNames = layerTab;
+
+		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &a_vkInstance));
+	}
+
+	VK_Renderer::VK_Renderer(const std::string& a_confFile, VK_Logger* const a_pLogger)
+	{
+		VulkanConfiguration vkConf;
+		loadConfiguration(a_confFile, vkConf);
+
 
 		// check instance properties
 		bool hasDebugExt = false;
@@ -62,31 +86,10 @@ namespace Vulkan
 		if (!checkInstanceLayerProps(vkConf.instanceLayers))
 			throw Vulkan::VK_Exception("unsupported layers", std::source_location::current());
 
-		size_t size = vkConf.instanceExtProps.size() + vkConf.instanceLayers.size();
-		const char** tabProp = new const char*[size];
+		// create vulkan instance
+		VK_Renderer::createVulkanInstance(vkConf, m_vulkanInst);
 
-		int iIndex = 0;
-		for (auto& ext : vkConf.instanceExtProps)
-		{
-			tabProp[iIndex] = ext.c_str();
-			iIndex++;
-		}
-
-		const char** layerTab = &tabProp[iIndex];
-		for (auto& layer : vkConf.instanceLayers)
-		{
-			tabProp[iIndex] = layer.c_str();
-			iIndex++;
-		}
-
-		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(vkConf.instanceExtProps.size());
-		instCreateInfo.ppEnabledExtensionNames = tabProp;
-
-		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(vkConf.instanceLayers.size());
-		instCreateInfo.ppEnabledLayerNames = layerTab;
-
-		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &m_vulkanInst));
-
+		// create Debug
 		if (hasDebugExt)
 		{
 			VK_Renderer::vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkCreateDebugReportCallbackEXT");
@@ -105,6 +108,8 @@ namespace Vulkan
 				throw Vulkan::VK_Exception("Failed to load PFN_vkCreateDebugUtilsMessengerEXT and vkDestroyDebugUtilsMessengerEXT functions", std::source_location::current());
 			}
 		}
+
+		//look for physical device
 	}
 
 	VK_Renderer::~VK_Renderer()
@@ -151,13 +156,15 @@ namespace Vulkan
 		{
 			if (queueFamily.queueCount > 0)// at least on queue
 			{
-				// check if family supports graphics
-				if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) == VK_QUEUE_GRAPHICS_BIT)
+				for (auto& queueConf : a_queueConf.vQueueConf)
 				{
-					//
+					if (queueConf.type == (queueConf.type & queueFamily.queueFlags))
+					{
+						queueConf.index = iFamilyIndex;
+						break;
+					}
 				}
 			}
-			// todo
 			++iFamilyIndex;
 		}
 	}

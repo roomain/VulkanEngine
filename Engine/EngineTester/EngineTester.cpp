@@ -13,7 +13,7 @@
 
 //------------------------------------------------------------------------
 // GLFW
-GLFWwindow* createWindow(std::string wName = "Test Window", const int width = 800, const int height = 600)
+GLFWwindow* createWindow(const std::string& wName = "Test Window", const int width = 800, const int height = 600)
 {
 	// Initialise GLFW
 	glfwInit();
@@ -37,7 +37,7 @@ bool chooseDevice(const Vulkan::VK_Renderer& a_renderer)
 	{
 		std::cout << "Choose device:" << std::endl;
 		int iIndex = 0;
-		for (auto& dev : vdevices)
+		for (const auto& dev : vdevices)
 		{
 			std::cout << "\t" << iIndex << " - " << dev.deviceName << std::endl;
 			++iIndex;

@@ -11,7 +11,9 @@ void ConsoleDisplayer::beginNode(const std::string& a_name)
 void ConsoleDisplayer::endNode()
 {
 	std::cout << std::endl;
-	m_linePrefix = m_linePrefix.substr(0, m_linePrefix.size() - 1);
+
+	if(!m_linePrefix.empty())
+		m_linePrefix.pop_back();
 }
 
 void ConsoleDisplayer::attribute(const std::string& a_name, const std::string& a_value)

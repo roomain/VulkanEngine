@@ -9,5 +9,10 @@
 		</vk_extensions>
 	</vk_instance>
 	<vk_device>
+		<vk_queues>
+			<vk_queue>
+				<flag>VK_QUEUE_GRAPHICS_BIT</flag>
+			</vk_queue>
+		</vk_queues>
 	</vk_device>
 </Engine_configuration>

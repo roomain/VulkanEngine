@@ -6,6 +6,7 @@
 namespace Vulkan
 {
 	class VK_Logger;
+	struct VulkanConfiguration;
 
 
 	/*@brief vulkan renderer*/
@@ -39,6 +40,12 @@ namespace Vulkan
 		static PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;	/*!< create messenger loaded function*/
 		static PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;	/*!< destroy messenger loaded function*/
 
+		// CREATE FUNCTIONS ------------------------------------------------------------------------------
+		/*@brief create vulkan instance*/
+		static void createVulkanInstance(const VulkanConfiguration& a_conf, VkInstance& a_vkInstance);
+
+
+		// DEBUG FUNCTIONS ------------------------------------------------------------------------------
 		/*@brief vulkan message callback*/
 		static VKAPI_ATTR VkBool32 messageCallback(VkDebugReportFlagsEXT flags,				// Type of error
 			VkDebugReportObjectTypeEXT objType,			// Type of object causing error
