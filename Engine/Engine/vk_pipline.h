@@ -8,7 +8,7 @@ namespace Vulkan
 	private:
 		VkPipeline m_vkPipline;					/*!< vulkan pipline handle*/
 		VkPipelineLayout m_vkpipelineLayout;	/*!< vulkan pipline layout handle*/
-		//
+		
 
 	public:
 		//

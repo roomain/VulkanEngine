@@ -21,22 +21,30 @@ namespace Vulkan
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, a_properties.data());
 	}
 
-	void getQueueFamiliesProperties(const Device& a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties)
+	void getQueueFamiliesProperties(const VkPhysicalDevice& a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties)
 	{
 		uint32_t queueFamilyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(a_device.physical, &queueFamilyCount, nullptr);
+		vkGetPhysicalDeviceQueueFamilyProperties(a_device, &queueFamilyCount, nullptr);
 		a_familiesProperties.resize(queueFamilyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(a_device.physical, &queueFamilyCount, a_familiesProperties.data());
+		vkGetPhysicalDeviceQueueFamilyProperties(a_device, &queueFamilyCount, a_familiesProperties.data());
 	}
 
-	void getFormatsProperties(const Device& a_device, std::vector<FormatProperty>& a_formatsProperties)
+	void getFormatsProperties(const VkPhysicalDevice& a_device, std::vector<FormatProperty>& a_formatsProperties)
 	{
 		for (int iterFormat = VK_FORMAT_R4G4_UNORM_PACK8; iterFormat < VK_FORMAT_MAX_ENUM; ++iterFormat)
 		{
 			FormatProperty formatProp{.format = static_cast<VkFormat>(iterFormat) };
-			vkGetPhysicalDeviceFormatProperties(a_device.physical, static_cast<VkFormat>(iterFormat), &formatProp.properties);
+			vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(iterFormat), &formatProp.properties);
 			a_formatsProperties.push_back(formatProp);
 		}
+	}
+
+	void getDeviceExtensions(const VkPhysicalDevice& a_device, std::vector<VkExtensionProperties>& a_extensions)
+	{
+		uint32_t extensionCount = 0;
+		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, nullptr);
+		a_extensions.reserve(extensionCount);
+		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, a_extensions.data());
 	}
 
 	void getSwapChainCapabilities(const Device& a_device, const VkSurfaceKHR& a_surface, SwapchainCapabilities& a_swapChainCap)
@@ -65,8 +73,8 @@ namespace Vulkan
 		vkGetPhysicalDeviceProperties(a_device.physical, &a_capabilities.deviceProperties);
 		vkGetPhysicalDeviceFeatures(a_device.physical, &a_capabilities.deviceFeatures);
 		vkGetPhysicalDeviceMemoryProperties(a_device.physical, &a_capabilities.memoryProperties);
-		getFormatsProperties(a_device, a_capabilities.formatsProperties);
-		getQueueFamiliesProperties(a_device, a_capabilities.queueFamilies);
+		getFormatsProperties(a_device.physical, a_capabilities.formatsProperties);
+		getQueueFamiliesProperties(a_device.physical, a_capabilities.queueFamilies);
 	}
 
 

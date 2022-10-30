@@ -146,7 +146,7 @@ namespace Vulkan
 	{
 		a_displayer.beginNode("Queues");
 		std::vector<VkQueueFamilyProperties> vFamilies;
-		getQueueFamiliesProperties(Device{ .physical = a_physicalDevice }, vFamilies);
+		getQueueFamiliesProperties(a_physicalDevice, vFamilies);
 		for (const auto& familyProp : vFamilies)
 		{
 			a_displayer.beginNode("Queue");

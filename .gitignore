@@ -346,6 +346,7 @@ release/
 debug/
 x64/
 Win32/
+cppCheck**/
 
 #save directories
 **/save

@@ -72,8 +72,8 @@ namespace Vulkan
 	/*@brief Queue configuration*/
 	struct QueueConfiguration
 	{
-		VkQueueFlags type;	/*!< queue type*/
-		int index = -1;		/*!< queue location index*/
+		VkQueueFlags type;		/*!< queue type*/
+		int index = -1;			/*!< queue location index*/
 	};
 
 	//----------------------------------------------------------------------------
@@ -82,9 +82,15 @@ namespace Vulkan
 	{
 		std::vector<QueueConfiguration> vQueueConf;
 
+		inline void reset()
+		{
+			for (auto& conf : vQueueConf)
+				conf.index = -1;
+		}
+
 		inline bool isValid()const noexcept
 		{
-			return std::all_of(vQueueConf.begin(), vQueueConf.end(), [](const QueueConfiguration& a_conf) {return a_conf.index > 0; });
+			return std::all_of(vQueueConf.begin(), vQueueConf.end(), [](const QueueConfiguration& a_conf) {return a_conf.index >= 0; });
 		}
 	};
 

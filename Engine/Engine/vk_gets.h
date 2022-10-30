@@ -11,8 +11,9 @@ namespace Vulkan
 
 	void getInstanceLayerProps(std::vector<VkLayerProperties>& a_properties);
 	void getInstanceExtProps(std::vector<VkExtensionProperties>& a_properties);
-	void getQueueFamiliesProperties(const Device& a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties);
-	void getFormatsProperties(const Device& a_device, std::vector<FormatProperty>& a_formatsProperties);
+	void getQueueFamiliesProperties(const VkPhysicalDevice& a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties);
+	void getFormatsProperties(const VkPhysicalDevice& a_device, std::vector<FormatProperty>& a_formatsProperties);
+	void getDeviceExtensions(const VkPhysicalDevice& a_device, std::vector<VkExtensionProperties>& a_extensions);
 	void getSwapChainCapabilities(const Device& a_device, const VkSurfaceKHR& a_surface, SwapchainCapabilities& a_swapChainCap);
 	void getDeviceCapabilities(const Device& a_device, EngineDeviceCapabilities& a_capabilities);
 
