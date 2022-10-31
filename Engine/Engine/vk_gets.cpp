@@ -43,7 +43,7 @@ namespace Vulkan
 	{
 		uint32_t extensionCount = 0;
 		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, nullptr);
-		a_extensions.reserve(extensionCount);
+		a_extensions.resize(extensionCount);
 		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, a_extensions.data());
 	}
 

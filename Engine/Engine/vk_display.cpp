@@ -142,6 +142,16 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
+	void displayDeviceExtensions(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
+	{
+		std::vector<VkExtensionProperties> extensions;
+		getDeviceExtensions(a_physicalDevice, extensions);
+		a_displayer.beginNode("Device Extensions");
+		for(const auto& ext : extensions)
+			a_displayer.attribute(std::string(ext.extensionName), ext.specVersion);
+		a_displayer.endNode();
+	}
+
 	void displayQueuesProps(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Queues");
@@ -180,6 +190,7 @@ namespace Vulkan
 		displayDeviceLimits(devProp.limits, a_displayer);
 		displayDeviceSparseProps(devProp.sparseProperties, a_displayer);
 		displayQueuesProps(a_physicalDevice, a_displayer);
+		displayDeviceExtensions(a_physicalDevice, a_displayer);
 		a_displayer.endNode();
 	}
 

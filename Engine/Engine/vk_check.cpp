@@ -42,7 +42,6 @@ namespace Vulkan
 		return bRet;
 	}
 
-
 	bool checkInstanceLayerProps(const std::vector<std::string>& a_layers)
 	{
 		bool bRet = true;
