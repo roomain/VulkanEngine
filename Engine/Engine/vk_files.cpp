@@ -6,6 +6,7 @@
 #include <format>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <functional>
 
 namespace Vulkan
 {
@@ -33,6 +34,22 @@ namespace Vulkan
 		file.close();
 	}
 
+	void getDataList(boost::property_tree::ptree& a_parent, const std::string& a_tag, std::vector<std::string>& a_toFill)
+	{
+		for (auto item : a_parent.get_child(a_tag))
+		{
+			a_toFill.emplace_back(item.second.data());
+		}
+	}
+
+	void getDataList(boost::property_tree::ptree& a_parent, const std::string& a_tag, std::function<void (const std::string&)> a_fun)
+	{
+		for (auto item : a_parent.get_child(a_tag))
+		{
+			a_fun(item.second.data());
+		}
+	}
+
 	void loadConfiguration(const std::string& a_filename, VulkanConfiguration& a_vulkanConf)
 	{
 		boost::property_tree::ptree propTree;
@@ -42,19 +59,25 @@ namespace Vulkan
 		a_vulkanConf.appName = treeApp.get<std::string>("<xmlattr>.name");
 		a_vulkanConf.appVersion = treeApp.get<int>("<xmlattr>.version");
 
-
 		auto treeInstance = propTree.get_child("Engine_configuration.vk_instance");
-		for (auto item : treeInstance.get_child("vk_layers"))
-		{
-			if(item.first.compare("vk_layer") == 0)
-				a_vulkanConf.instanceLayers.emplace_back(item.second.data());
-		}
+		getDataList(treeInstance, "vk_layers", a_vulkanConf.instanceLayers);
+		getDataList(treeInstance, "vk_extensions", a_vulkanConf.instanceExtProps);
 
-		for (auto item : treeInstance.get_child("vk_extensions"))
-		{
-			if (item.first.compare("vk_extension") == 0)
-				a_vulkanConf.instanceExtProps.emplace_back(item.second.data());
-		}
-		//propTree.get_child_optional("Window.Pos");
+		//Device
+		auto treeDevice = propTree.get_child("Engine_configuration.vk_device");
+		getDataList(treeDevice, "vk_queues", [&](const std::string& value)
+			{
+				QueueConfiguration conf{ .index = -1 };
+				if (to_flag(value, static_cast<VkQueueFlagBits>(0), conf.type))
+				{
+					a_vulkanConf.queues.vQueueConf.emplace_back(std::move(conf));
+				}
+				else
+				{
+					throw VK_Exception("Wrong queue flag", std::source_location::current());
+				}
+			});
+		getDataList(treeDevice, "vk_extensions", a_vulkanConf.deviceExt);
+
 	}
 }

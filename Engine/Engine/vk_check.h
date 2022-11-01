@@ -24,6 +24,10 @@ namespace Vulkan
 	/*@brief check if vulkan instance supports properties and check if debug extension is required*/
 	bool checkInstanceExtensionProps(const std::vector<std::string>& a_properties, bool& a_hasDebugExt);
 
-	/*@brief check if phydical device support queues configuration and extensions, fill render queues configuration indices*/
-	bool checkPhysicalDeviceForCapabilities(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_extension);
+	/*@brief check if physical device support extensions*/
+	bool checkPhysicalDeviceExtension(VkPhysicalDevice a_physicalDevice, const std::vector<std::string>& a_extension);
+
+	/*@brief check if physical device support queues configuration*/
+	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf);
+
 }

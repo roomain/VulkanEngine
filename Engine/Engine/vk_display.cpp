@@ -194,7 +194,6 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-
 	//-------------------------------------------------------------------------------
 	void displayInstanceLayerProps(IDisplayer& a_displayer)
 	{
@@ -227,7 +226,6 @@ namespace Vulkan
 		}
 		a_displayer.endNode();
 	}
-
 
 	void displayVulkanCapabilities(VkInstance a_vulkan, IDisplayer& a_displayer)
 	{

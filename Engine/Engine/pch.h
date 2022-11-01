@@ -8,10 +8,14 @@
 #define PCH_H
 
 // ajouter les en-têtes à précompiler ici
-#include "framework.h"
+//#include "framework.h"
+#include "vulkan/vulkan.h"
+#include "vk_ext_struct.h"
 #include "vk_check.h"
 #include "vk_gets.h"
+#include "vk_create.h"
 #include "vk_macros.h"
-#include "vulkan/vulkan.h"
+#include "vk_struct_initializers.h"
+#include "vk_files.h"
 
 #endif //PCH_H

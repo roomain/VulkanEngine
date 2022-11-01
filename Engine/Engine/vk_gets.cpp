@@ -77,6 +77,31 @@ namespace Vulkan
 		getQueueFamiliesProperties(a_device.physical, a_capabilities.queueFamilies);
 	}
 
+	void getDeviceQueues(const VkPhysicalDevice& a_physicalDevice, RendererQueuesConfiguration& a_queueConf)
+	{
+		a_queueConf.reset();
+		// get memory properties
+		std::vector<VkQueueFamilyProperties> queuesProperties;
+		getQueueFamiliesProperties(a_physicalDevice, queuesProperties);
+
+		// check an feels queues
+		int iFamilyIndex = 0;
+		for (const auto& queueFamily : queuesProperties)
+		{
+			if (queueFamily.queueCount > 0)// at least on queue
+			{
+				for (auto& queueConf : a_queueConf.vQueueConf)
+				{
+					if (queueConf.type == (queueConf.type & queueFamily.queueFlags))
+					{
+						queueConf.index = iFamilyIndex;
+						break;
+					}
+				}
+			}
+			++iFamilyIndex;
+		}
+	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------
 

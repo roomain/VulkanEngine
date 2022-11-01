@@ -1,7 +1,4 @@
 #include "pch.h"
-#include "vk_check.h"
-#include "vk_gets.h"
-#include "vk_ext_struct.h"
 
 
 namespace Vulkan
@@ -81,45 +78,22 @@ namespace Vulkan
 		return bRet;
 	}
 
-	bool checkPhysicalDeviceForCapabilities(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_extension)
+	bool checkPhysicalDeviceExtension(VkPhysicalDevice a_physicalDevice, const std::vector<std::string>& a_extension)
 	{
-		// check extension
 		std::vector<VkExtensionProperties> extensions;
 		getDeviceExtensions(a_physicalDevice, extensions);
-
-		if(!std::all_of(a_extension.begin(), a_extension.end(), [&](const auto& name)
+		return std::all_of(a_extension.begin(), a_extension.end(), [&](const auto& name)
 			{
 				return extensions.end() != std::find_if(extensions.begin(), extensions.end(), [&](auto prop)
 					{
 						return name.compare(prop.extensionName) == 0;
 					});
-			}))
-			return false;
+			});
+	}
 
-		//------------------------------------------------------------------------------
-		a_queueConf.reset();
-		// get memory properties
-		std::vector<VkQueueFamilyProperties> queuesProperties;
-		getQueueFamiliesProperties(a_physicalDevice, queuesProperties);
-
-		// check an feels queues
-		int iFamilyIndex = 0;
-		for (const auto& queueFamily : queuesProperties)
-		{
-			if (queueFamily.queueCount > 0)// at least on queue
-			{
-				for (auto& queueConf : a_queueConf.vQueueConf)
-				{
-					if (queueConf.type == (queueConf.type & queueFamily.queueFlags))
-					{
-						queueConf.index = iFamilyIndex;
-						break;
-					}
-				}
-			}
-			++iFamilyIndex;
-		}
-		
+	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf)
+	{
+		getDeviceQueues(a_physicalDevice, a_queueConf);
 		return a_queueConf.isValid();
 	}
 }

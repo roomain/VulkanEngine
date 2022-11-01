@@ -1,5 +1,6 @@
 #pragma once
 #include "IDisplayer.h"
+#include "vk_logger.h"
 #include <string>
 
 class ConsoleDisplayer : public Vulkan::IDisplayer
@@ -21,4 +22,13 @@ public:
     void attribute(const std::string& a_name, const unsigned short a_value) override;        /*!< set attribude value*/
     void attribute(const std::string& a_name, const size_t a_value) override;                /*!< set attribude value*/
     void reset();
+};
+
+class ConsoleLogger : public Vulkan::VK_Logger
+{
+public:
+    ConsoleLogger(Vulkan::VK_Logger::MessageFilter a_filter = Vulkan::VK_Logger::MessageFilter::None);
+
+protected:
+    void log(const std::string& a_flag, const std::string& a_type, uint64_t a_obj, size_t a_location, int32_t a_code, const char* a_layerPrefix, const char* a_message) override;
 };

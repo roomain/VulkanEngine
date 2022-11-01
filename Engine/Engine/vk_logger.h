@@ -1,7 +1,6 @@
 #pragma once
 #include "vk_globals.h"
-
-enum VkDebugReportObjectTypeEXT;
+#include "vulkan/vulkan.h"
 
 namespace Vulkan
 {
@@ -10,6 +9,7 @@ namespace Vulkan
 	public:
 		enum class MessageFilter
 		{
+			None
 			//
 		};
 

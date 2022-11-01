@@ -5,6 +5,9 @@ namespace Vulkan
 {
 	struct Device;
 	struct RendererQueuesConfiguration;
-	
-	void createVulkanDevice(VkInstance& a_vkInstance, const RendererQueuesConfiguration& a_queueConf, Device& _device);
+	struct VulkanConfiguration;
+
+	void createVulkanInstance(const VulkanConfiguration& a_conf, VkInstance& a_vkInstance);
+
+	void createVulkanDevice(const RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device);
 }

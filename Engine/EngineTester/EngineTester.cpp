@@ -25,21 +25,18 @@ GLFWwindow* createWindow(const std::string& wName = "Test Window", const int wid
 	return glfwCreateWindow(width, height, wName.c_str(), nullptr, nullptr);
 }
 
-bool chooseDevice(const Vulkan::VK_Renderer& a_renderer)
+int chooseDevice(const std::vector<Vulkan::PhysicalDeviceInfo>& a_CompatibleDevices)
 {
 	int iDev = -1;
 
-	std::vector<Vulkan::DeviceInfo> vdevices;
-	Vulkan::enumerateDevicesInfo(a_renderer.vulkanInstance(), vdevices);
-
-	int iSize = static_cast<int>(vdevices.size());
+	int iSize = static_cast<int>(a_CompatibleDevices.size());
 	do
 	{
 		std::cout << "Choose device:" << std::endl;
 		int iIndex = 0;
-		for (const auto& dev : vdevices)
+		for (const auto& dev : a_CompatibleDevices)
 		{
-			std::cout << "\t" << iIndex << " - " << dev.deviceName << std::endl;
+			std::cout << "\t" << iIndex << " - " << dev.name << std::endl;
 			++iIndex;
 		}
 
@@ -48,9 +45,7 @@ bool chooseDevice(const Vulkan::VK_Renderer& a_renderer)
 		std::cout << std::endl;
 	} while (iDev >= iSize);
 
-	// TODO
-
-	return iDev > 0;
+	return iDev >= 0 ? a_CompatibleDevices[iDev].index : -1;
 }
 
 
@@ -70,13 +65,26 @@ int main(const int a_argc, const char** a_argv)
 	std::filesystem::path execPath(a_argv[0]);
 	auto parentPath = execPath.parent_path();
 
-	Vulkan::VK_Renderer renderer(parentPath.string() + R"(\Conf\configuration.xml)", nullptr);
+	ConsoleLogger logger;
+	Vulkan::VK_Renderer renderer;
 
-	// display instance properties
-	displayer.reset();
-	Vulkan::displayVulkanCapabilities(renderer.vulkanInstance(), displayer);
-	if (!chooseDevice(renderer))
-		return 0;
+	try
+	{
+		std::vector<Vulkan::PhysicalDeviceInfo> vCompatibleDevices;
+		renderer.init(parentPath.string() + R"(\Conf\configuration.xml)", &logger, vCompatibleDevices);
+
+		displayer.reset();
+		for (const auto& dev : vCompatibleDevices)
+			displayDeviceCapabilities(renderer.vulkanInstance(), dev.index, displayer);
+
+		int index = chooseDevice(vCompatibleDevices);
+		if(index >= 0)
+			renderer.createDevice(index);
+	}
+	catch (std::exception& except)
+	{
+		std::cerr << except.what();
+	}
 
 
 	// GLFW loop

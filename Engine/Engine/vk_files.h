@@ -17,6 +17,7 @@ namespace Vulkan
 		int appVersion;								/*!< application version*/
 		std::vector<std::string> instanceExtProps;	/*!< vulkan instance extensions properties*/
 		std::vector<std::string> instanceLayers;	/*!< vulkan instance desired layer*/
+		std::vector<std::string> deviceExt;			/*!< physical device extensions*/
 		RendererQueuesConfiguration queues;			/*!< queues configuration*/
 	};
 
