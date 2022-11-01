@@ -13,7 +13,7 @@
 			<vk_queue>VK_QUEUE_GRAPHICS_BIT</vk_queue>
 		</vk_queues>
 		<vk_extensions>
-			<vk_extension>VK_EXT_mesh_shader</vk_extension>
+			<vk_extension>VK_KHR_swapchain</vk_extension>
 		</vk_extensions>
 	</vk_device>
 </Engine_configuration>
