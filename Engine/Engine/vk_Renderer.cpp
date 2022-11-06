@@ -24,7 +24,7 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 	
-	VK_Renderer::VK_Renderer()
+	VK_Renderer::VK_Renderer() : m_uiWidth{ 0 }, m_uiHeight { 0 }
 	{
 		//
 	}
@@ -88,7 +88,7 @@ namespace Vulkan
 		}
 	}
 
-	void VK_Renderer::createDevice(const unsigned int a_deviceIndex)
+	void VK_Renderer::createDevice(const unsigned int a_deviceIndex, const uint32_t a_width, const uint32_t a_height)
 	{
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, nullptr);
@@ -96,6 +96,7 @@ namespace Vulkan
 		std::vector<VkPhysicalDevice> deviceList(deviceCount);
 		vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, deviceList.data());
 
+		// choose phycal device
 		m_device.physical = deviceList[a_deviceIndex];
 
 		// get queues configuration
@@ -103,6 +104,12 @@ namespace Vulkan
 
 		// create logical device
 		createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
+
+		m_uiWidth = a_width;
+		m_uiHeight = a_height;
+
+		// create swapchain
+		// TODO
 	}
 
 	void VK_Renderer::release()

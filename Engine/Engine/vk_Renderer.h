@@ -22,7 +22,7 @@ namespace Vulkan
 		VK_Renderer();
 		virtual ~VK_Renderer();
 		void init(const std::string& a_confFile, VK_Logger* const a_pLogger, std::vector<PhysicalDeviceInfo>& a_compatibleDevices);
-		void createDevice(const unsigned int a_deviceIndex);
+		void createDevice(const unsigned int a_deviceIndex, const uint32_t a_width, const uint32_t a_height);
 
 		/*@return the vulkan instance*/
 		VkInstance vulkanInstance()const noexcept;
@@ -35,9 +35,12 @@ namespace Vulkan
 		Device m_device;									/*!< vulkan used device*/
 		EngineDeviceCapabilities m_deviceCapabilities;		/*!< device capabilities*/
 
-		VkDebugReportCallbackEXT m_debugCallbackHandle;		/*!< vulkan debug message handle*/
+		// Rendering image size
+		uint32_t m_uiWidth;
+		uint32_t m_uiHeight;
 
-
+		// VULKAN DEBUGGING -----------------------------------------------------------------------------
+		VkDebugReportCallbackEXT m_debugCallbackHandle;								/*!< vulkan debug message handle*/
 		static PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;	/*!< create messenger loaded function*/
 		static PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;	/*!< destroy messenger loaded function*/
 

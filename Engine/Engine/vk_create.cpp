@@ -72,4 +72,41 @@ namespace Vulkan
 		deviceCreateInfo.ppEnabledExtensionNames = vExtNames.data();
 		VK_CHECK(vkCreateDevice(a_device.physical, &deviceCreateInfo, nullptr, &a_device.logicalDevice))
 	}
+
+	void createSwapChain(const Device& a_device, const VkSurfaceKHR& a_surface)
+	{
+		// Get swap chain capabilities
+		SwapchainCapabilities swapChainCaps;
+		getSwapChainCapabilities(a_device, a_surface, swapChainCaps);
+
+		// choose optimal surface values
+		VkSurfaceFormatKHR surfaceFormat = getBestSurfaceFormat(swapChainCaps.supportedFormats);
+		VkPresentModeKHR presentMode = getBestPresentationMode(swapChainCaps.supportedModes);
+		//VkExtent2D extent = chooseSwapExtent(swapChainDetails.surfaceCapabilities);
+
+		// How many images are in the swap chain? Get 1 more than the minimum to allow triple buffering
+		uint32_t imageCount = swapChainCaps.surfaceCapabilities.minImageCount + 1;
+
+		// If imageCount higher than max, then clamp down to max
+		// If 0, then limitless
+		if (swapChainCaps.surfaceCapabilities.maxImageCount > 0 && swapChainCaps.surfaceCapabilities.maxImageCount < imageCount)
+			imageCount = swapChainCaps.surfaceCapabilities.maxImageCount;
+		
+		// Creation information for swap chain
+		VkSwapchainCreateInfoKHR swapChainCreateInfo = Vulkan::Initializers::swapChainCreateInfoKHR();
+		swapChainCreateInfo.surface = a_surface;													// Swapchain surface
+		swapChainCreateInfo.imageFormat = surfaceFormat.format;										// Swapchain format
+		swapChainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;								// Swapchain colour space
+		swapChainCreateInfo.presentMode = presentMode;												// Swapchain presentation mode
+		swapChainCreateInfo.imageExtent = extent;													// Swapchain image extents
+		swapChainCreateInfo.minImageCount = imageCount;												// Minimum images in swapchain
+		swapChainCreateInfo.imageArrayLayers = 1;													// Number of layers for each image in chain
+		swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;						// What attachment images will be used as
+		swapChainCreateInfo.preTransform = swapChainCaps.surfaceCapabilities.currentTransform;	// Transform to perform on swap chain images
+		swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;						// How to handle blending images with external graphics (e.g. other windows)
+		swapChainCreateInfo.clipped = VK_TRUE;														// Whether to clip parts of image not in view (e.g. behind another window, off screen, etc)
+
+		// TODO
+
+	}
 }

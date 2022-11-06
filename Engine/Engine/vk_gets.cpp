@@ -33,7 +33,7 @@ namespace Vulkan
 	{
 		for (int iterFormat = VK_FORMAT_R4G4_UNORM_PACK8; iterFormat < VK_FORMAT_MAX_ENUM; ++iterFormat)
 		{
-			FormatProperty formatProp{.format = static_cast<VkFormat>(iterFormat) };
+			FormatProperty formatProp{ .format = static_cast<VkFormat>(iterFormat) };
 			vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(iterFormat), &formatProp.properties);
 			a_formatsProperties.push_back(formatProp);
 		}
@@ -176,5 +176,33 @@ namespace Vulkan
 			}
 		}
 		return 0;
+	}
+
+	VkSurfaceFormatKHR getBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& a_vformats)
+	{
+		// If only 1 format available and is undefined, then this means ALL formats are available (no restrictions)
+		if (a_vformats.size() == 1 && a_vformats[0].format == VK_FORMAT_UNDEFINED)
+			return{ VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+
+		// If restricted, search for optimal format
+		for (const auto& format : a_vformats)
+		{
+			if ((format.format == VK_FORMAT_R8G8B8A8_UNORM || format.format == VK_FORMAT_B8G8R8A8_UNORM)
+				&& format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+			{
+				return format;
+			}
+		}
+
+		// If can't find optimal format, then just return first format
+		return a_vformats[0];
+	}
+
+	VkPresentModeKHR getBestPresentationMode(const std::vector<VkPresentModeKHR>& a_vPresentationModes)
+	{
+		if (std::find(a_vPresentationModes.cbegin(), a_vPresentationModes.cend(), VK_PRESENT_MODE_MAILBOX_KHR) != a_vPresentationModes.cend())
+			return VK_PRESENT_MODE_MAILBOX_KHR;
+
+		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 }

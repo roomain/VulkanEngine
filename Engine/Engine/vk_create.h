@@ -12,4 +12,6 @@ namespace Vulkan
 	void createVulkanInstance(const VulkanConfiguration& a_conf, VkInstance& a_vkInstance);
 
 	void createVulkanDevice(const RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device);
+
+	void createSwapChain(const Device& a_device, const VkSurfaceKHR& a_surface);
 }
