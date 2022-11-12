@@ -17,6 +17,7 @@ namespace Vulkan
 	{
 	private:
 		std::source_location m_location; /*!< exception location*/
+		std::string m_message;
 
 	public:
 		VK_Exception() = delete;

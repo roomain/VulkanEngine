@@ -194,6 +194,7 @@
     <ClInclude Include="string_to_enum.h" />
     <ClInclude Include="vk_string_to_enum.h" />
     <ClInclude Include="vk_struct_initializers.h" />
+    <ClInclude Include="vk_WindowSystemProxy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

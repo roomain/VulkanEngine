@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "vk_WindowSystemProxy.h"
 
 namespace Vulkan
 {
@@ -73,14 +74,14 @@ namespace Vulkan
 		VK_CHECK(vkCreateDevice(a_device.physical, &deviceCreateInfo, nullptr, &a_device.logicalDevice))
 	}
 
-	void createSwapChain(const Device& a_device, const VkSurfaceKHR& a_surface)
+	void createSwapChain(const Device& a_device, VkSwapchainKHR& a_swapChain, VkSurfaceFormatKHR& a_surfaceFormat, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy)
 	{
 		// Get swap chain capabilities
 		SwapchainCapabilities swapChainCaps;
-		getSwapChainCapabilities(a_device, a_surface, swapChainCaps);
+		getSwapChainCapabilities(a_device, a_windowProxy->surface(), swapChainCaps);
 
 		// choose optimal surface values
-		VkSurfaceFormatKHR surfaceFormat = getBestSurfaceFormat(swapChainCaps.supportedFormats);
+		a_surfaceFormat = getBestSurfaceFormat(swapChainCaps.supportedFormats);
 		VkPresentModeKHR presentMode = getBestPresentationMode(swapChainCaps.supportedModes);
 		//VkExtent2D extent = chooseSwapExtent(swapChainDetails.surfaceCapabilities);
 
@@ -94,19 +95,47 @@ namespace Vulkan
 		
 		// Creation information for swap chain
 		VkSwapchainCreateInfoKHR swapChainCreateInfo = Vulkan::Initializers::swapChainCreateInfoKHR();
-		swapChainCreateInfo.surface = a_surface;													// Swapchain surface
-		swapChainCreateInfo.imageFormat = surfaceFormat.format;										// Swapchain format
-		swapChainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;								// Swapchain colour space
-		swapChainCreateInfo.presentMode = presentMode;												// Swapchain presentation mode
-		swapChainCreateInfo.imageExtent = extent;													// Swapchain image extents
+		swapChainCreateInfo.surface = a_windowProxy->surface();							// Swapchain surface
+		swapChainCreateInfo.imageFormat = a_surfaceFormat.format;						// Swapchain format
+		swapChainCreateInfo.imageColorSpace = a_surfaceFormat.colorSpace;				// Swapchain colour space
+		swapChainCreateInfo.presentMode = presentMode;									// Swapchain presentation mode
+
+		VkExtent2D newExtent = {};
+		newExtent.width = a_windowProxy->width();
+		newExtent.height = a_windowProxy->height();
+		newExtent.width = std::clamp(newExtent.width, swapChainCaps.surfaceCapabilities.minImageExtent.width, swapChainCaps.surfaceCapabilities.maxImageExtent.width);
+		newExtent.height = std::clamp(newExtent.height, swapChainCaps.surfaceCapabilities.minImageExtent.height, swapChainCaps.surfaceCapabilities.maxImageExtent.height);
+		swapChainCreateInfo.imageExtent = newExtent;
+
 		swapChainCreateInfo.minImageCount = imageCount;												// Minimum images in swapchain
 		swapChainCreateInfo.imageArrayLayers = 1;													// Number of layers for each image in chain
 		swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;						// What attachment images will be used as
-		swapChainCreateInfo.preTransform = swapChainCaps.surfaceCapabilities.currentTransform;	// Transform to perform on swap chain images
+		swapChainCreateInfo.preTransform = swapChainCaps.surfaceCapabilities.currentTransform;		// Transform to perform on swap chain images
 		swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;						// How to handle blending images with external graphics (e.g. other windows)
 		swapChainCreateInfo.clipped = VK_TRUE;														// Whether to clip parts of image not in view (e.g. behind another window, off screen, etc)
 
-		// TODO
+		VK_CHECK(vkCreateSwapchainKHR(a_device.logicalDevice, &swapChainCreateInfo, nullptr, &a_swapChain))
 
+	}
+
+	void createSimpleImageView(const VkDevice a_logicalDevice, const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView)
+	{
+		VkImageViewCreateInfo viewCreateInfo = Vulkan::Initializers::imageViewCreateInfo();
+		viewCreateInfo.image = a_image;											// Image to create view for
+		viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;						// Type of image (1D, 2D, 3D, Cube, etc)
+		viewCreateInfo.format = a_format;										// Format of image data
+		viewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;			// Allows remapping of rgba components to other rgba values
+		viewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		viewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		viewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+		// Subresources allow the view to view only a part of an image
+		viewCreateInfo.subresourceRange.aspectMask = a_aspectFlags;				// Which aspect of image to view (e.g. COLOR_BIT for viewing colour)
+		viewCreateInfo.subresourceRange.baseMipLevel = 0;						// Start mipmap level to view from
+		viewCreateInfo.subresourceRange.levelCount = 1;							// Number of mipmap levels to view
+		viewCreateInfo.subresourceRange.baseArrayLayer = 0;						// Start array level to view from
+		viewCreateInfo.subresourceRange.layerCount = 1;							// Number of array levels to view
+		
+		VK_CHECK(vkCreateImageView(a_logicalDevice, &viewCreateInfo, nullptr, &a_imgView))
 	}
 }

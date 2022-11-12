@@ -151,9 +151,11 @@ copy /Y $(SolutionDir)data\*.* $(OutDir)Conf</Command>
   <ItemGroup>
     <ClCompile Include="ConsoleDisplayer.cpp" />
     <ClCompile Include="EngineTester.cpp" />
+    <ClCompile Include="windowProxy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleDisplayer.h" />
+    <ClInclude Include="windowProxy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "vk_Renderer.h"
 #include "vk_logger.h"
+#include "vk_WindowSystemProxy.h"
 #include <exception>
 
 
@@ -24,7 +25,7 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 	
-	VK_Renderer::VK_Renderer() : m_uiWidth{ 0 }, m_uiHeight { 0 }
+	VK_Renderer::VK_Renderer()
 	{
 		//
 	}
@@ -34,10 +35,11 @@ namespace Vulkan
 		release();
 	}
 
-	void VK_Renderer::init(const std::string& a_confFile, VK_Logger* const a_pLogger, std::vector<PhysicalDeviceInfo>& a_compatibleDevices)
+	void VK_Renderer::init(const std::string& a_confFile, VK_Logger* const a_pLogger, const std::vector<std::string>& a_windowSysExtensions, std::vector<PhysicalDeviceInfo>& a_compatibleDevices)
 	{
 		loadConfiguration(a_confFile, m_vkConf);
 
+		m_vkConf.instanceExtProps.insert(m_vkConf.instanceExtProps.end(), a_windowSysExtensions.begin(), a_windowSysExtensions.end());
 
 		// check instance properties
 		bool hasDebugExt = false;
@@ -88,28 +90,52 @@ namespace Vulkan
 		}
 	}
 
-	void VK_Renderer::createDevice(const unsigned int a_deviceIndex, const uint32_t a_width, const uint32_t a_height)
+	void VK_Renderer::startRendering(const unsigned int a_deviceIndex, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy)
 	{
-		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, nullptr);
+		m_windowProxy = std::move(a_windowProxy);
 
-		std::vector<VkPhysicalDevice> deviceList(deviceCount);
-		vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, deviceList.data());
+		if (m_windowProxy)
+		{
+			uint32_t deviceCount = 0;
+			vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, nullptr);
 
-		// choose phycal device
-		m_device.physical = deviceList[a_deviceIndex];
+			std::vector<VkPhysicalDevice> deviceList(deviceCount);
+			vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, deviceList.data());
 
-		// get queues configuration
-		checkPhysicalDeviceQueues(m_device.physical, m_vkConf.queues);
+			// choose physical device
+			m_device.physical = deviceList[a_deviceIndex];
 
-		// create logical device
-		createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
+			// get queues configuration
+			checkPhysicalDeviceQueues(m_device.physical, m_vkConf.queues);
 
-		m_uiWidth = a_width;
-		m_uiHeight = a_height;
+			// create logical device
+			createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
 
-		// create swapchain
-		// TODO
+			// create swapchain
+			VkSurfaceFormatKHR surfaceFormat;
+			createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy));
+
+			// get swap chain images
+			uint32_t swapChainImageCount;
+			vkGetSwapchainImagesKHR(m_device.logicalDevice, m_swapChain, &swapChainImageCount, nullptr);
+			std::vector<VkImage> vImages(swapChainImageCount);
+			vkGetSwapchainImagesKHR(m_device.logicalDevice, m_swapChain, &swapChainImageCount, vImages.data());
+
+			// create images view from swapchain images
+			for (const VkImage& img : vImages)
+			{
+				BaseImage swapChainImg{ .image = img };
+				createSimpleImageView(m_device.logicalDevice, swapChainImg.image, surfaceFormat.format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImg.imageView);
+				m_vSwapchainImages.emplace_back(swapChainImg);
+			}
+
+			// setup depth buffer
+			
+		}
+		else
+		{
+			throw Vulkan::VK_Exception("Window proxy pointer is null.", std::source_location::current());
+		}
 	}
 
 	void VK_Renderer::release()

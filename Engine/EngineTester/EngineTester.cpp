@@ -9,7 +9,8 @@
 #include "ConsoleDisplayer.h"
 #include "vk_Renderer.h"
 #include <filesystem>
-
+#include "windowProxy.h"
+#include "vk_Exception.h"
 
 //------------------------------------------------------------------------
 // GLFW
@@ -65,13 +66,24 @@ int main(const int a_argc, const char** a_argv)
 	std::filesystem::path execPath(a_argv[0]);
 	auto parentPath = execPath.parent_path();
 
+	// GET GLFW EXTENSIONS FOR VULKAN
+	// Set up extensions Instance will use
+	uint32_t glfwExtensionCount = 0;				// GLFW may require multiple extensions
+	const char** glfwExtensions;					// Extensions passed as array of cstrings, so need pointer (the array) to pointer (the cstring)
+
+	// Get GLFW extensions
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	std::vector<std::string> glfwVulkanExt;
+	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
+		glfwVulkanExt.emplace_back(glfwExtensions[i]);
+	//------------------------------------------------------------------------------------------------------------------------------------------------
+
 	ConsoleLogger logger;
 	Vulkan::VK_Renderer renderer;
-
 	try
 	{
 		std::vector<Vulkan::PhysicalDeviceInfo> vCompatibleDevices;
-		renderer.init(parentPath.string() + R"(\Conf\configuration.xml)", &logger, vCompatibleDevices);
+		renderer.init(parentPath.string() + R"(\Conf\configuration.xml)", &logger, glfwVulkanExt, vCompatibleDevices);
 
 		displayer.reset();
 		for (const auto& dev : vCompatibleDevices)
@@ -79,7 +91,12 @@ int main(const int a_argc, const char** a_argv)
 
 		int index = chooseDevice(vCompatibleDevices);
 		if(index >= 0)
-			renderer.createDevice(index);
+			renderer.startRendering(index, std::make_unique<WindowProxy>(renderer.vulkanInstance(), pGLFW_window));
+	}
+	catch (Vulkan::VK_Exception& except)
+	{
+		std::string message = except.what();
+		std::cerr << except.what();
 	}
 	catch (std::exception& except)
 	{

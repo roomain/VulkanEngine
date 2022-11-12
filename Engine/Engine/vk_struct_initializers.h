@@ -58,4 +58,9 @@ namespace Vulkan::Initializers
 	{
 		return std::move(VkSubmitInfo{ .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO, .pNext = nullptr });
 	}
+
+	inline VkImageViewCreateInfo&& imageViewCreateInfo()
+	{
+		return std::move(VkImageViewCreateInfo{ .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, .pNext = nullptr });
+	}
 }

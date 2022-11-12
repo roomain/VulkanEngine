@@ -3,9 +3,14 @@
 #include "vk_files.h"
 #include "vk_ext_struct.h"
 #include "vk_globals.h"
+#include <memory>
+
+#pragma warning(push)
+#pragma warning( disable : 4251)
 
 namespace Vulkan
 {
+	class VK_WindowSystemProxy;
 	class VK_Logger;
 	struct VulkanConfiguration;
 
@@ -21,8 +26,8 @@ namespace Vulkan
 	public:
 		VK_Renderer();
 		virtual ~VK_Renderer();
-		void init(const std::string& a_confFile, VK_Logger* const a_pLogger, std::vector<PhysicalDeviceInfo>& a_compatibleDevices);
-		void createDevice(const unsigned int a_deviceIndex, const uint32_t a_width, const uint32_t a_height);
+		void init(const std::string& a_confFile, VK_Logger* const a_pLogger, const std::vector<std::string> &a_windowSysExtensions, std::vector<PhysicalDeviceInfo>& a_compatibleDevices);
+		void startRendering(const unsigned int a_deviceIndex, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy);
 
 		/*@return the vulkan instance*/
 		VkInstance vulkanInstance()const noexcept;
@@ -35,9 +40,10 @@ namespace Vulkan
 		Device m_device;									/*!< vulkan used device*/
 		EngineDeviceCapabilities m_deviceCapabilities;		/*!< device capabilities*/
 
-		// Rendering image size
-		uint32_t m_uiWidth;
-		uint32_t m_uiHeight;
+		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
+		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
+
+		std::unique_ptr<VK_WindowSystemProxy> m_windowProxy;/*!< proxy to window system*/
 
 		// VULKAN DEBUGGING -----------------------------------------------------------------------------
 		VkDebugReportCallbackEXT m_debugCallbackHandle;								/*!< vulkan debug message handle*/
@@ -59,3 +65,4 @@ namespace Vulkan
 	};
 }
 
+#pragma warning(pop)
