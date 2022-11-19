@@ -145,8 +145,13 @@ namespace Vulkan
 
 		// release resources
 
+		// destroy swapchain
+		vkDestroySwapchainKHR(m_device.logicalDevice, m_swapChain, nullptr);
+
+		// destroy logical device
 		vkDestroyDevice(m_device.logicalDevice, nullptr);
 
+		// destroy instance
 		vkDestroyInstance(m_vulkanInst, nullptr);
 	}
 
