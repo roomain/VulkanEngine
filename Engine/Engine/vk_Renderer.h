@@ -29,6 +29,9 @@ namespace Vulkan
 		void init(const std::string& a_confFile, VK_Logger* const a_pLogger, const std::vector<std::string> &a_windowSysExtensions, std::vector<PhysicalDeviceInfo>& a_compatibleDevices);
 		void startRendering(const unsigned int a_deviceIndex, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy);
 
+		/*@brief called when window is resized*/
+		void onWindowResized();
+
 		/*@return the vulkan instance*/
 		VkInstance vulkanInstance()const noexcept;
 

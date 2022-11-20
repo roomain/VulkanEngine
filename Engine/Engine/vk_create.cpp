@@ -43,6 +43,11 @@ namespace Vulkan
 		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &a_vkInstance));
 	}
 
+	void destroyVulkanInstance(VkInstance& a_vkInstance)
+	{
+		vkDestroyInstance(a_vkInstance, nullptr);
+	}
+
 	void createVulkanDevice(const RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device)
 	{
 		// create queues create info for the device
@@ -74,7 +79,12 @@ namespace Vulkan
 		VK_CHECK(vkCreateDevice(a_device.physical, &deviceCreateInfo, nullptr, &a_device.logicalDevice))
 	}
 
-	void createSwapChain(const Device& a_device, VkSwapchainKHR& a_swapChain, VkSurfaceFormatKHR& a_surfaceFormat, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy)
+	void destroyVulkanDevice(Device& a_device)
+	{
+		vkDestroyDevice(a_device.logicalDevice, nullptr);
+	}
+
+	void createSwapChain(const Device& a_device, VkSwapchainKHR& a_swapChain, VkSurfaceFormatKHR& a_surfaceFormat, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy, std::vector<BaseImage>& a_images)
 	{
 		// Get swap chain capabilities
 		SwapchainCapabilities swapChainCaps;
@@ -113,9 +123,34 @@ namespace Vulkan
 		swapChainCreateInfo.preTransform = swapChainCaps.surfaceCapabilities.currentTransform;		// Transform to perform on swap chain images
 		swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;						// How to handle blending images with external graphics (e.g. other windows)
 		swapChainCreateInfo.clipped = VK_TRUE;														// Whether to clip parts of image not in view (e.g. behind another window, off screen, etc)
-
+		VkSwapchainKHR oldSwapChain = a_swapChain;
+		swapChainCreateInfo.oldSwapchain = oldSwapChain;
 		VK_CHECK(vkCreateSwapchainKHR(a_device.logicalDevice, &swapChainCreateInfo, nullptr, &a_swapChain))
 
+		if (oldSwapChain != VK_NULL_HANDLE)
+			destroySwapChain(a_device, oldSwapChain, a_images);
+
+		// get swap chain images
+		uint32_t swapChainImageCount;
+		vkGetSwapchainImagesKHR(a_device.logicalDevice, a_swapChain, &swapChainImageCount, nullptr);
+		std::vector<VkImage> vImages(swapChainImageCount);
+		vkGetSwapchainImagesKHR(a_device.logicalDevice, a_swapChain, &swapChainImageCount, vImages.data());
+
+		// create images view from swapchain images
+		for (const VkImage& img : vImages)
+		{
+			BaseImage swapChainImg{ .image = img };
+			createSimpleImageView(a_device.logicalDevice, swapChainImg.image, a_surfaceFormat.format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImg.imageView);
+			a_images.emplace_back(swapChainImg);
+		}
+	}
+
+	void destroySwapChain(const Device& a_device, VkSwapchainKHR& a_swapChain, std::vector<BaseImage>& a_images)
+	{
+		for (const auto& image : a_images)
+			vkDestroyImageView(a_device.logicalDevice, image.imageView, nullptr);
+		vkDestroySwapchainKHR(a_device.logicalDevice, a_swapChain, nullptr);
+		a_images.clear();
 	}
 
 	void createSimpleImageView(const VkDevice a_logicalDevice, const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView)

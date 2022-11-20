@@ -113,21 +113,8 @@ namespace Vulkan
 
 			// create swapchain
 			VkSurfaceFormatKHR surfaceFormat;
-			createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy));
+			createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
 
-			// get swap chain images
-			uint32_t swapChainImageCount;
-			vkGetSwapchainImagesKHR(m_device.logicalDevice, m_swapChain, &swapChainImageCount, nullptr);
-			std::vector<VkImage> vImages(swapChainImageCount);
-			vkGetSwapchainImagesKHR(m_device.logicalDevice, m_swapChain, &swapChainImageCount, vImages.data());
-
-			// create images view from swapchain images
-			for (const VkImage& img : vImages)
-			{
-				BaseImage swapChainImg{ .image = img };
-				createSimpleImageView(m_device.logicalDevice, swapChainImg.image, surfaceFormat.format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImg.imageView);
-				m_vSwapchainImages.emplace_back(swapChainImg);
-			}
 
 			// setup depth buffer
 			
@@ -138,6 +125,15 @@ namespace Vulkan
 		}
 	}
 
+	void VK_Renderer::onWindowResized()
+	{
+		// Ensure all operations on the device have been finished before destroying resources
+		vkDeviceWaitIdle(m_device.logicalDevice);
+
+		// release swapchain
+		// recreate swapchain
+	}
+
 	void VK_Renderer::release()
 	{
 		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
@@ -146,13 +142,13 @@ namespace Vulkan
 		// release resources
 
 		// destroy swapchain
-		vkDestroySwapchainKHR(m_device.logicalDevice, m_swapChain, nullptr);
+		destroySwapChain(m_device, m_swapChain, m_vSwapchainImages);
 
 		// destroy logical device
-		vkDestroyDevice(m_device.logicalDevice, nullptr);
+		destroyVulkanDevice(m_device);
 
 		// destroy instance
-		vkDestroyInstance(m_vulkanInst, nullptr);
+		destroyVulkanInstance(m_vulkanInst);
 	}
 
 
