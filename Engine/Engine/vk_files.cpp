@@ -52,6 +52,7 @@ namespace Vulkan
 
 	void loadConfiguration(const std::string& a_filename, VulkanConfiguration& a_vulkanConf)
 	{
+		a_vulkanConf.useDepthBuffer = false;
 		boost::property_tree::ptree propTree;
 		boost::property_tree::xml_parser::read_xml(a_filename, propTree);
 
@@ -65,6 +66,7 @@ namespace Vulkan
 
 		//Device
 		auto treeDevice = propTree.get_child("Engine_configuration.vk_device");
+		a_vulkanConf.useDepthBuffer = treeDevice.get<bool>("<xmlattr>.useDepthBuffer", false);
 		getDataList(treeDevice, "vk_queues", [&](const std::string& value)
 			{
 				QueueConfiguration conf{ .index = -1 };

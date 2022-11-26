@@ -45,6 +45,7 @@ namespace Vulkan
 
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
+		ImagePool m_vDepthImages;							/*!< depth images*/
 
 		std::unique_ptr<VK_WindowSystemProxy> m_windowProxy;/*!< proxy to window system*/
 

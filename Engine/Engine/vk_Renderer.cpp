@@ -131,6 +131,7 @@ namespace Vulkan
 		vkDeviceWaitIdle(m_device.logicalDevice);
 
 		// release swapchain
+		// 
 		// recreate swapchain
 	}
 
