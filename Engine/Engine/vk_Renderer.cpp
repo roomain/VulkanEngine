@@ -130,9 +130,11 @@ namespace Vulkan
 		// Ensure all operations on the device have been finished before destroying resources
 		vkDeviceWaitIdle(m_device.logicalDevice);
 
-		// release swapchain
-		// 
 		// recreate swapchain
+		VkSurfaceFormatKHR surfaceFormat;
+		createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
+
+		// TODO
 	}
 
 	void VK_Renderer::release()
