@@ -13,6 +13,7 @@ namespace Vulkan
 	struct BaseImage;
 	struct ImagePool;
 	struct Buffer;
+	struct BufferPool;
 
 	/*@brief create vulkan instance from a configuration*/
 	void createVulkanInstance(const VulkanConfiguration& a_conf, VkInstance& a_vkInstance);
