@@ -68,4 +68,9 @@ namespace Vulkan::Initializers
 	{
 		return std::move(VkImageCreateInfo{ .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, .pNext = nullptr, .imageType = VK_IMAGE_TYPE_2D });
 	}
+
+	constexpr VkBufferCreateInfo&& bufferCreateInfo()
+	{
+		return std::move(VkBufferCreateInfo{ .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, .pNext = nullptr, .queueFamilyIndexCount = 0, .pQueueFamilyIndices = nullptr });
+	}
 }

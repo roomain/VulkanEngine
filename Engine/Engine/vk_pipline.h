@@ -1,9 +1,10 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include "vk_globals.h"
 
 namespace Vulkan
 {
-	class VK_Pipline
+	class ENGINE_EXPORT VK_Pipline
 	{
 	private:
 		VkPipeline m_vkPipline;					/*!< vulkan pipline handle*/

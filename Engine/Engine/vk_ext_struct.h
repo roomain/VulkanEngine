@@ -41,6 +41,13 @@ namespace Vulkan
 		VkDeviceMemory memory = VK_NULL_HANDLE;
 	};
 
+	/*@brief represents a buffer pool*/
+	struct BufferPool
+	{
+		std::vector<VkBuffer> vBuffers;
+		VkDeviceMemory memory = VK_NULL_HANDLE;
+	};
+
 	//----------------------------------------------------------------------------
 	/*@brief Swapchain capabilities*/
 	struct SwapchainCapabilities
