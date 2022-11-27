@@ -45,7 +45,7 @@ namespace Vulkan
 
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
-		ImagePool m_vDepthImages;							/*!< depth images*/
+		ImagePool m_depthImagesPool;						/*!< depth images*/
 
 		std::unique_ptr<VK_WindowSystemProxy> m_windowProxy;/*!< proxy to window system*/
 
@@ -66,6 +66,9 @@ namespace Vulkan
 			void* userData);
 
 		void release();
+		void destroyDepthBufferImages();
+		void createDepthBufferImages();
+		VkFormat findBestImageFormat(const std::vector<VkFormat>& a_preferedFormats, const VkImageTiling a_preferedTiling, const VkFormatFeatureFlags a_preferedFlags);
 	};
 }
 

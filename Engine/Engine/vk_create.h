@@ -28,4 +28,10 @@ namespace Vulkan
 
 	/*@brief create image*/
 	void createSimpleImageView(const VkDevice a_logicalDevice, const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView);
+
+	/*@brief create image pool (images with same size and properties) DONT CREATE IMAGEVIEW*/
+	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const VkImageCreateInfo& a_imageProperty, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool);
+
+	/*@brief create image pool (images with different porperties) DONT CREATE IMAGEVIEW*/
+	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool);
 }

@@ -176,6 +176,7 @@
     <ClInclude Include="IDisplayer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="vk_create.h" />
+    <ClInclude Include="vk_destroy.h" />
     <ClInclude Include="vk_display.h" />
     <ClInclude Include="vk_enumerate.h" />
     <ClInclude Include="vk_enum_to_string.h" />
@@ -204,6 +205,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vk_create.cpp" />
+    <ClCompile Include="vk_destroy.cpp" />
     <ClCompile Include="vk_display.cpp" />
     <ClCompile Include="vk_enumerate.cpp" />
     <ClCompile Include="vk_Exception.cpp" />

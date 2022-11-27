@@ -2,7 +2,10 @@
 #include "vk_Renderer.h"
 #include "vk_logger.h"
 #include "vk_WindowSystemProxy.h"
+#include "vk_destroy.h"
 #include <exception>
+#include <algorithm>
+#include <format>
 
 
 namespace Vulkan
@@ -24,8 +27,8 @@ namespace Vulkan
 			pLogger->log(flags, objType, obj, location, code, layerPrefix, message);
 		return VK_FALSE;
 	}
-	
-	VK_Renderer::VK_Renderer()
+
+	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }
 	{
 		//
 	}
@@ -117,7 +120,8 @@ namespace Vulkan
 
 
 			// setup depth buffer
-			
+			if (m_vkConf.useDepthBuffer)
+				createDepthBufferImages();
 		}
 		else
 		{
@@ -130,10 +134,16 @@ namespace Vulkan
 		// Ensure all operations on the device have been finished before destroying resources
 		vkDeviceWaitIdle(m_device.logicalDevice);
 
-		// release swapchain
 		// recreate swapchain
 		VkSurfaceFormatKHR surfaceFormat;
 		createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
+
+		// release and setup depth buffer
+		if (m_vkConf.useDepthBuffer)
+		{
+			destroyDepthBufferImages();
+			createDepthBufferImages();
+		}
 
 		// TODO
 	}
@@ -143,7 +153,13 @@ namespace Vulkan
 		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
 			vkDestroyDebugReportCallbackEXT(m_vulkanInst, m_debugCallbackHandle, nullptr);
 
-		// release resources
+		// release resources----------------------------------------------------
+		
+		//----------------------------------------------------------------------
+		
+		// release depth buffer
+		if (m_vkConf.useDepthBuffer)
+			destroyDepthBufferImages();
 
 		// destroy swapchain
 		destroySwapChain(m_device, m_swapChain, m_vSwapchainImages);
@@ -153,6 +169,59 @@ namespace Vulkan
 
 		// destroy instance
 		destroyVulkanInstance(m_vulkanInst);
+	}
+
+	void VK_Renderer::destroyDepthBufferImages()
+	{		
+		destroyImagePool(m_device.logicalDevice, m_depthImagesPool);
+	}
+
+	void VK_Renderer::createDepthBufferImages()
+	{
+		VkFormat bestFormat = findBestImageFormat({ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT },
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
+
+		VkImageCreateInfo imageCreateInfo = {};
+		imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;							// Type of image (1D, 2D, or 3D)
+		imageCreateInfo.extent.width = m_windowProxy->width();					// Width of image extent
+		imageCreateInfo.extent.height = m_windowProxy->height();				// Height of image extent
+		imageCreateInfo.extent.depth = 1;										// Depth of image (just 1, no 3D aspect)
+		imageCreateInfo.mipLevels = 1;											// Number of mipmap levels
+		imageCreateInfo.arrayLayers = 1;										// Number of levels in image array
+		imageCreateInfo.format = bestFormat;									// Format type of image
+		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;						// How image data should be "tiled" (arranged for optimal reading)
+		imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;				// Layout of image data on creation
+		imageCreateInfo.usage = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;	// Bit flags defining what image will be used for
+		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;						// Number of samples for multi-sampling
+		imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;				// Whether image can be shared between queues
+
+		VkPhysicalDeviceMemoryProperties memoryProperties;
+		vkGetPhysicalDeviceMemoryProperties(m_device.physical, &memoryProperties);
+		createImagePool(m_device.logicalDevice, memoryProperties, static_cast<unsigned int >(m_vSwapchainImages.size()), imageCreateInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImagesPool);
+	}
+
+	VkFormat VK_Renderer::findBestImageFormat(const std::vector<VkFormat>& a_preferedFormats, const VkImageTiling a_preferedTiling, const VkFormatFeatureFlags a_preferedFlags)
+	{
+		for (VkFormat format : a_preferedFormats)
+		{
+			// Get properties for give format on this device
+			VkFormatProperties properties;
+			vkGetPhysicalDeviceFormatProperties(m_device.physical, format, &properties);
+
+			// Depending on tiling choice, need to check for different bit flag
+			if (a_preferedTiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & a_preferedFlags) == a_preferedFlags)
+			{
+				return format;
+			}
+			else if (a_preferedTiling == VK_IMAGE_TILING_OPTIMAL && (properties.optimalTilingFeatures & a_preferedFlags) == a_preferedFlags)
+			{
+				return format;
+			}
+		}
+		throw Vulkan::VK_Exception(std::format("Can't find any prefered format with tiling {} and flags {}", to_string(a_preferedTiling), Flag<VkFormatFeatureFlagBits>::to_string(a_preferedFlags)), std::source_location::current());
 	}
 
 

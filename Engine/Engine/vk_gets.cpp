@@ -175,7 +175,7 @@ namespace Vulkan
 				return iIndex;
 			}
 		}
-		return 0;
+		throw Vulkan::VK_Exception("Can't find Memory index.", std::source_location::current());
 	}
 
 	VkSurfaceFormatKHR getBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& a_vformats)

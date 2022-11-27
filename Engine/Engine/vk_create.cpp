@@ -173,4 +173,88 @@ namespace Vulkan
 		
 		VK_CHECK(vkCreateImageView(a_logicalDevice, &viewCreateInfo, nullptr, &a_imgView))
 	}
+
+
+	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const VkImageCreateInfo& a_imageProperty, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool)
+	{
+		VkMemoryAllocateInfo memAllocInfo = Vulkan::Initializers::memoryAllocateInfo();
+		a_imagePool.images.resize(a_imageNumber);
+		std::vector<VkDeviceSize> imageOffset;
+		uint32_t memTypeBit = 0;
+		for (BaseImage& img : a_imagePool.images)
+		{
+			// create image handle
+			VK_CHECK(vkCreateImage(a_logicalDevice, &a_imageProperty, nullptr, &img.image));
+
+			// Get image memory requirement
+			VkMemoryRequirements memoryRequirements;
+			vkGetImageMemoryRequirements(a_logicalDevice, img.image, &memoryRequirements);
+
+			// Get base memory bits
+			if (imageOffset.empty())
+				memTypeBit = memoryRequirements.memoryTypeBits;
+
+			if (memTypeBit != memoryRequirements.memoryTypeBits)
+				throw Vulkan::VK_Exception("Memory type bit is different.", std::source_location::current());
+
+			// Get memort offset for image
+			imageOffset.emplace_back(memAllocInfo.allocationSize);
+
+			// increment required memory size
+			memAllocInfo.allocationSize += memoryRequirements.size;
+		}
+		memAllocInfo.memoryTypeIndex = getMemoryTypeIndex(a_memProperties, memTypeBit, a_memFlags);
+		VK_CHECK(vkAllocateMemory(a_logicalDevice, &memAllocInfo, nullptr, &a_imagePool.memory));
+
+		int index = 0;
+		for (BaseImage& img : a_imagePool.images)
+		{
+			VK_CHECK(vkBindImageMemory(a_logicalDevice, img.image, a_imagePool.memory, imageOffset[index]));
+			++index;
+		}
+	}
+
+	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool)
+	{
+		VkMemoryAllocateInfo memAllocInfo = Vulkan::Initializers::memoryAllocateInfo();
+		a_imagePool.images.resize(a_imageProperties.size());
+		std::vector<VkDeviceSize> imageOffset;
+		uint32_t memTypeBit = 0;
+		auto iter = a_imagePool.images.begin();
+		for (const auto& imageInfo : a_imageProperties)
+		{
+			// create image handle
+			VK_CHECK(vkCreateImage(a_logicalDevice, &imageInfo, nullptr, &iter->image));
+
+			// Get image memory requirement
+			VkMemoryRequirements memoryRequirements;
+			vkGetImageMemoryRequirements(a_logicalDevice, iter->image, &memoryRequirements);
+
+			// Get base memory bits
+			if (imageOffset.empty())
+				memTypeBit = memoryRequirements.memoryTypeBits;
+
+			if (memTypeBit != memoryRequirements.memoryTypeBits)
+				throw Vulkan::VK_Exception("Memory type bit is different.", std::source_location::current());
+
+			// Get memort offset for image
+			imageOffset.emplace_back(memAllocInfo.allocationSize);
+
+			// increment required memory size
+			memAllocInfo.allocationSize += memoryRequirements.size;
+
+			// next image in pool
+			iter++;
+		}
+
+		memAllocInfo.memoryTypeIndex = getMemoryTypeIndex(a_memProperties, memTypeBit, a_memFlags);
+		VK_CHECK(vkAllocateMemory(a_logicalDevice, &memAllocInfo, nullptr, &a_imagePool.memory));
+
+		int index = 0;
+		for (BaseImage& img : a_imagePool.images)
+		{
+			VK_CHECK(vkBindImageMemory(a_logicalDevice, img.image, a_imagePool.memory, imageOffset[index]));
+			++index;
+		}
+	}
 }
