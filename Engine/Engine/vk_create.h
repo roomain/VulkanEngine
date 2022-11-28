@@ -39,9 +39,6 @@ namespace Vulkan
 	/*@brief create image pool (images with different porperties) DONT CREATE IMAGEVIEW*/
 	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool);
 
-	/*@brief create buffer*/
-	void createBuffer(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const VkDeviceSize& a_bufferSize, const VkBufferUsageFlags a_bufferUsage, const VkSharingMode a_shareMode, const VkMemoryPropertyFlags a_bufferProperties, Buffer& a_buffer);
-
 	/*@brief create buffer pool*/
 	struct BufferConf
 	{
@@ -49,5 +46,7 @@ namespace Vulkan
 		VkBufferUsageFlags usage;
 		VkSharingMode shareMode;
 	};
-	void createBufferPool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const std::vector<BufferConf>& a_bufferConfs, const VkMemoryPropertyFlags a_bufferProperties, BufferPool& a_bufferPool);
+
+	/*@brief create buffer*/
+	void createBuffer(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const BufferConf& a_bufferConf, const VkMemoryPropertyFlags a_bufferProperties, Buffer& a_buffer);
 }

@@ -185,10 +185,8 @@
     <ClInclude Include="vk_files.h" />
     <ClInclude Include="vk_gets.h" />
     <ClInclude Include="vk_globals.h" />
-    <ClInclude Include="vk_imageMng.h" />
     <ClInclude Include="vk_logger.h" />
     <ClInclude Include="vk_macros.h" />
-    <ClInclude Include="vk_memory.h" />
     <ClInclude Include="vk_pipline.h" />
     <ClInclude Include="vk_check.h" />
     <ClInclude Include="vk_Renderer.h" />

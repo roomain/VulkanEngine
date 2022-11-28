@@ -258,12 +258,12 @@ namespace Vulkan
 		}
 	}
 
-	void createBuffer(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const VkDeviceSize& a_bufferSize, const VkBufferUsageFlags a_bufferUsage, const VkSharingMode a_shareMode, const VkMemoryPropertyFlags a_bufferProperties, Buffer& a_buffer)
+	void createBuffer(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const BufferConf& a_bufferConf, const VkMemoryPropertyFlags a_bufferProperties, Buffer& a_buffer)
 	{
 		VkBufferCreateInfo bufferInfo = Initializers::bufferCreateInfo();
-		bufferInfo.size = a_bufferSize;								// Size of buffer (size of 1 vertex * number of vertices)
-		bufferInfo.usage = a_bufferUsage;							// Multiple types of buffer possible
-		bufferInfo.sharingMode = a_shareMode;						// Similar to Swap Chain images, can share vertex buffer
+		bufferInfo.size = a_bufferConf.size;							// Size of buffer (size of 1 vertex * number of vertices)
+		bufferInfo.usage = a_bufferConf.usage;							// Multiple types of buffer possible
+		bufferInfo.sharingMode = a_bufferConf.shareMode;				// Similar to Swap Chain images, can share vertex buffer
 		
 		VK_CHECK(vkCreateBuffer(a_logicalDevice, &bufferInfo, nullptr, &a_buffer.buffer));
 
@@ -280,8 +280,4 @@ namespace Vulkan
 		vkBindBufferMemory(a_logicalDevice, a_buffer.buffer, a_buffer.memory, 0);
 	}
 
-	void createBufferPool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const std::vector<BufferConf>& a_bufferConfs, const VkMemoryPropertyFlags a_bufferProperties, BufferPool& a_bufferPool)
-	{
-		// TODO
-	}
 }

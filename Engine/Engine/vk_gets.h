@@ -8,6 +8,7 @@ namespace Vulkan
 	struct SwapchainCapabilities;
 	struct FormatProperty;
 	struct EngineDeviceCapabilities;
+	struct RendererQueuesConfiguration;
 
 	void getInstanceLayerProps(std::vector<VkLayerProperties>& a_properties);
 	void getInstanceExtProps(std::vector<VkExtensionProperties>& a_properties);

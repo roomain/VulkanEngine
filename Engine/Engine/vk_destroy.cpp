@@ -26,4 +26,10 @@ namespace Vulkan
 
 		vkFreeMemory(a_logicalDevice, a_toDestroy.memory, nullptr);
 	}
+
+	void destroyBuffer(VkDevice a_logicalDevice, Buffer& a_toDestroy)
+	{
+		vkDestroyBuffer(a_logicalDevice, a_toDestroy.buffer, nullptr);
+		vkFreeMemory(a_logicalDevice, a_toDestroy.memory, nullptr);
+	}
 }
