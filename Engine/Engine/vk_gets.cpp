@@ -185,14 +185,13 @@ namespace Vulkan
 			return{ VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
 		// If restricted, search for optimal format
-		for (const auto& format : a_vformats)
-		{
-			if ((format.format == VK_FORMAT_R8G8B8A8_UNORM || format.format == VK_FORMAT_B8G8R8A8_UNORM)
-				&& format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		auto iter = std::find_if(a_vformats.begin(), a_vformats.end(), [&](const auto& format)
 			{
-				return format;
-			}
-		}
+				return (format.format == VK_FORMAT_R8G8B8A8_UNORM || format.format == VK_FORMAT_B8G8R8A8_UNORM)
+				&& format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+		});
+		if(iter != a_vformats.end())
+			return *iter;
 
 		// If can't find optimal format, then just return first format
 		return a_vformats[0];

@@ -24,10 +24,7 @@ namespace Vulkan
 		instCreateInfo.ppEnabledLayerNames = nullptr;
 
 		// generate table of char* from vectors of string
-		size_t size = a_conf.instanceExtProps.size() + a_conf.instanceLayers.size();
 		std::vector<const char*> vNameData;
-		//const char** tabProp = new const char* [size];
-		int iIndex = 0;
 		for (auto& ext : a_conf.instanceExtProps)
 			vNameData.emplace_back(ext.c_str());
 
@@ -43,10 +40,6 @@ namespace Vulkan
 		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &a_vkInstance));
 	}
 
-	void destroyVulkanInstance(VkInstance& a_vkInstance)
-	{
-		vkDestroyInstance(a_vkInstance, nullptr);
-	}
 
 	void createVulkanDevice(const RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device)
 	{
@@ -77,11 +70,6 @@ namespace Vulkan
 		
 		deviceCreateInfo.ppEnabledExtensionNames = vExtNames.data();
 		VK_CHECK(vkCreateDevice(a_device.physical, &deviceCreateInfo, nullptr, &a_device.logicalDevice))
-	}
-
-	void destroyVulkanDevice(Device& a_device)
-	{
-		vkDestroyDevice(a_device.logicalDevice, nullptr);
 	}
 
 	void createSwapChain(const Device& a_device, VkSwapchainKHR& a_swapChain, VkSurfaceFormatKHR& a_surfaceFormat, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy, std::vector<BaseImage>& a_images)

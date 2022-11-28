@@ -95,7 +95,6 @@ int main(const int a_argc, const char** a_argv)
 	}
 	catch (Vulkan::VK_Exception& except)
 	{
-		std::string message = except.what();
 		std::cerr << except.what();
 	}
 	catch (std::exception& except)

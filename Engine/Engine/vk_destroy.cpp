@@ -26,4 +26,16 @@ namespace Vulkan
 
 		vkFreeMemory(a_logicalDevice, a_toDestroy.memory, nullptr);
 	}
+
+
+	void destroyVulkanInstance(VkInstance& a_vkInstance)
+	{
+		vkDestroyInstance(a_vkInstance, nullptr);
+	}
+
+	void destroyVulkanDevice(Device& a_device)
+	{
+		vkDestroyDevice(a_device.logicalDevice, nullptr);
+	}
+
 }
