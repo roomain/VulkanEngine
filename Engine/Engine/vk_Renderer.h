@@ -41,7 +41,6 @@ namespace Vulkan
 		VulkanConfiguration m_vkConf;						/*!< engine configuration*/
 		VkInstance m_vulkanInst;							/*!< vulkan instance*/
 		Device m_device;									/*!< vulkan used device*/
-		EngineDeviceCapabilities m_deviceCapabilities;		/*!< device capabilities*/
 
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
@@ -64,7 +63,7 @@ namespace Vulkan
 			const char* layerPrefix,
 			const char* message,						// Validation Information
 			void* userData);
-
+		//-------------------------------------------------------------------------------------------------
 		void release();
 		void destroyDepthBufferImages();
 		void createDepthBufferImages();
