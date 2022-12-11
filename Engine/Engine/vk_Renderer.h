@@ -44,6 +44,8 @@ namespace Vulkan
 		VkQueue m_graphicsQueue;							/*!< graphics operations queue*/
 		VkQueue m_presentationQueue;						/*!< presentation queue*/
 
+		// TODO more queues (store and use in a rendering module)
+
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
 		ImagePool m_depthImagesPool;						/*!< depth images*/
