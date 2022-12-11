@@ -166,6 +166,7 @@ namespace Vulkan
 	{
 		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
 			vkDestroyDebugReportCallbackEXT(m_vulkanInst, m_debugCallbackHandle, nullptr);
+		m_debugCallbackHandle = VK_NULL_HANDLE;
 
 		// release resources----------------------------------------------------
 		

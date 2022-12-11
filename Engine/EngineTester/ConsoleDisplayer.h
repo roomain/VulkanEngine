@@ -27,7 +27,8 @@ public:
 class ConsoleLogger : public Vulkan::VK_Logger
 {
 public:
-    ConsoleLogger(explicit Vulkan::VK_Logger::MessageFilter a_filter = Vulkan::VK_Logger::MessageFilter::None);
+    [[nodiscard]] ConsoleLogger(Vulkan::VK_Logger::MessageFilter a_filter = Vulkan::VK_Logger::MessageFilter::None);
+    ConsoleLogger(auto&) = delete;
 
 protected:
     void log(const std::string& a_flag, const std::string& a_type, uint64_t a_obj, size_t a_location, int32_t a_code, const char* a_layerPrefix, const char* a_message) override;
