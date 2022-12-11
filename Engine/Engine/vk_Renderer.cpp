@@ -28,7 +28,7 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 
-	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }
+	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_debugCallbackHandle{ VK_NULL_HANDLE }
 	{
 		//
 	}
@@ -109,7 +109,8 @@ namespace Vulkan
 			m_device.physical = deviceList[a_deviceIndex];
 
 			// get queues configuration
-			checkPhysicalDeviceQueues(m_device.physical, m_vkConf.queues);
+			if(!checkPhysicalDeviceQueues(m_device.physical, m_vkConf.queues))
+				throw Vulkan::VK_Exception("Can't find queue.", std::source_location::current());
 
 			// create logical device
 			createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
@@ -152,6 +153,7 @@ namespace Vulkan
 	{
 		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
 			vkDestroyDebugReportCallbackEXT(m_vulkanInst, m_debugCallbackHandle, nullptr);
+		m_debugCallbackHandle = VK_NULL_HANDLE;
 
 		// release resources----------------------------------------------------
 		

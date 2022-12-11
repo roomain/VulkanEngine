@@ -88,7 +88,7 @@ namespace Vulkan
 				conf.index = -1;
 		}
 
-		inline bool isValid()const noexcept
+		inline [[nodiscard]] bool isValid()const noexcept
 		{
 			return std::all_of(vQueueConf.begin(), vQueueConf.end(), [](const QueueConfiguration& a_conf) {return a_conf.index >= 0; });
 		}

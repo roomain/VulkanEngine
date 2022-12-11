@@ -11,23 +11,23 @@ namespace Vulkan
 	struct RendererQueuesConfiguration;
 
 	/*@brief check if vulkan instance supports layers*/
-	bool ENGINE_EXPORT checkInstanceLayerProps(const std::vector<const char*>& a_properties);
+	[[nodiscard]] bool ENGINE_EXPORT checkInstanceLayerProps(const std::vector<const char*>& a_properties);
 
 	/*@brief check if vulkan instance supports properties and check if debug extension is required*/
-	bool ENGINE_EXPORT checkInstanceExtensionProps(const std::vector<const char*>& a_properties, bool& a_hasDebugExt);
+	[[nodiscard]] bool ENGINE_EXPORT checkInstanceExtensionProps(const std::vector<const char*>& a_properties, bool& a_hasDebugExt);
 
 	//------------------------------------------------------------------------------------------------------------------
 
 	/*@brief check if vulkan instance supports layers*/
-	bool checkInstanceLayerProps(const std::vector<std::string>& a_layers);
+	[[nodiscard]] bool checkInstanceLayerProps(const std::vector<std::string>& a_layers);
 
 	/*@brief check if vulkan instance supports properties and check if debug extension is required*/
-	bool checkInstanceExtensionProps(const std::vector<std::string>& a_properties, bool& a_hasDebugExt);
+	[[nodiscard]] bool checkInstanceExtensionProps(const std::vector<std::string>& a_properties, bool& a_hasDebugExt);
 
 	/*@brief check if physical device support extensions*/
-	bool checkPhysicalDeviceExtension(VkPhysicalDevice a_physicalDevice, const std::vector<std::string>& a_extension);
+	[[nodiscard]] bool checkPhysicalDeviceExtension(VkPhysicalDevice a_physicalDevice, const std::vector<std::string>& a_extension);
 
 	/*@brief check if physical device support queues configuration*/
-	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf);
+	[[nodiscard]] bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf);
 
 }

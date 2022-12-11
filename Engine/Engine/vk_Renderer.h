@@ -24,16 +24,20 @@ namespace Vulkan
 	class ENGINE_EXPORT VK_Renderer
 	{
 	public:
-		VK_Renderer();
+		[[nodiscard]]VK_Renderer();
+		VK_Renderer(const VK_Renderer&) = delete;
 		virtual ~VK_Renderer();
+		VK_Renderer& operator = (const VK_Renderer&) = delete;
+		/*@brief initialise the renderer*/
 		void init(const std::string& a_confFile, VK_Logger* const a_pLogger, const std::vector<std::string> &a_windowSysExtensions, std::vector<PhysicalDeviceInfo>& a_compatibleDevices);
+		/*@brief start rendering call it once*/
 		void startRendering(const unsigned int a_deviceIndex, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy);
 
 		/*@brief called when window is resized*/
 		void onWindowResized();
 
 		/*@return the vulkan instance*/
-		VkInstance vulkanInstance()const noexcept;
+		[[nodiscard]] VkInstance vulkanInstance()const noexcept;
 
 	protected:
 
@@ -64,10 +68,15 @@ namespace Vulkan
 			const char* message,						// Validation Information
 			void* userData);
 		//-------------------------------------------------------------------------------------------------
+
+		/*@brief release the entire vulkan resources, devices and instace*/
 		void release();
+		/*@brief destroy all depthbuffer images and associated memory*/
 		void destroyDepthBufferImages();
+		/*@brief creates depthbuffer images and associated memory*/
 		void createDepthBufferImages();
-		VkFormat findBestImageFormat(const std::vector<VkFormat>& a_preferedFormats, const VkImageTiling a_preferedTiling, const VkFormatFeatureFlags a_preferedFlags);
+		/*@brief find best format for an image*/
+		[[nodiscard]] VkFormat findBestImageFormat(const std::vector<VkFormat>& a_preferedFormats, const VkImageTiling a_preferedTiling, const VkFormatFeatureFlags a_preferedFlags);
 	};
 }
 
