@@ -13,7 +13,7 @@ namespace Vulkan
 			//
 		};
 
-		VK_Logger(MessageFilter a_filter);
+		[[nodiscard]] VK_Logger(MessageFilter a_filter);
 
 		void log(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* message);
 		

@@ -3,7 +3,7 @@
 #include <string>
 
 #define BEGIN_ENUM_TO_STRING(Type) \
-static inline std::string to_string(const Type a_value) \
+static [[nodiscard]] constexpr std::string to_string(const Type a_value) \
 { \
     std::string strValue;/* = #Type;*/ \
     switch(a_value) \
@@ -28,7 +28,7 @@ template<> \
 class Flag<Base>\
 {\
 public: \
-    static std::string to_string(const Type a_value) \
+    static [[nodiscard]] constexpr std::string to_string(const Type a_value) \
     { \
         unsigned int iValue = static_cast<unsigned int>(a_value);\
         std::string strValue;

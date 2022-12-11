@@ -28,7 +28,7 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 
-	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }
+	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }, m_debugCallbackHandle { VK_NULL_HANDLE }
 	{
 		//
 	}

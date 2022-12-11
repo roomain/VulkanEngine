@@ -21,7 +21,7 @@ namespace Vulkan
 
 	public:
 		VK_Exception() = delete;
-		VK_Exception(const std::string& a_message, const std::source_location& a_location);
+		[[nodiscard]] explicit VK_Exception(const std::string& a_message, const std::source_location& a_location);
 		virtual char const* what() const override;
 	};
 
