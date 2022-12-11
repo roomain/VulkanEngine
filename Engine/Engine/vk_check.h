@@ -28,6 +28,6 @@ namespace Vulkan
 	bool checkPhysicalDeviceExtension(VkPhysicalDevice a_physicalDevice, const std::vector<std::string>& a_extension);
 
 	/*@brief check if physical device support queues configuration*/
-	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf);
+	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, const VkSurfaceKHR a_surface, RendererQueuesConfiguration& a_queueConf);
 
 }

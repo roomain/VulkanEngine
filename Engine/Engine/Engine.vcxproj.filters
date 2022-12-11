@@ -19,6 +19,12 @@
     <Filter Include="Fichiers sources\functions">
       <UniqueIdentifier>{a1f304c3-b1f7-41d1-9c75-ba6cc7041bc9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers sources\Pipline">
+      <UniqueIdentifier>{4f365ffe-9d70-43c4-917a-a2ffa5a4123e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Pipline">
+      <UniqueIdentifier>{f59bc190-00bb-4d3f-be4b-4a8049311b01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -43,9 +49,6 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="vk_logger.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_pipline.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="vk_WindowSystemProxy.h">
@@ -90,6 +93,15 @@
     <ClInclude Include="vk_enumerate.h">
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
+    <ClInclude Include="vk_pipline.h">
+      <Filter>Fichiers d%27en-tête\Pipline</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_mesh.h">
+      <Filter>Fichiers d%27en-tête\Pipline</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_shader.h">
+      <Filter>Fichiers d%27en-tête\Pipline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -102,9 +114,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="vk_logger.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_pipline.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="vk_check.cpp">
@@ -127,6 +136,15 @@
     </ClCompile>
     <ClCompile Include="vk_files.cpp">
       <Filter>Fichiers sources\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_pipline.cpp">
+      <Filter>Fichiers sources\Pipline</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_mesh.cpp">
+      <Filter>Fichiers sources\Pipline</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_shader.cpp">
+      <Filter>Fichiers sources\Pipline</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

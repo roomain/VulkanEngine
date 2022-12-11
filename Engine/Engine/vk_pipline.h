@@ -4,6 +4,7 @@
 
 namespace Vulkan
 {
+	/*@brief base class for pipline*/
 	class ENGINE_EXPORT VK_Pipline
 	{
 	private:

@@ -72,8 +72,9 @@ namespace Vulkan
 	/*@brief Queue configuration*/
 	struct QueueConfiguration
 	{
-		VkQueueFlags type;		/*!< queue type*/
-		int index = -1;			/*!< queue location index*/
+		VkQueueFlags type;					/*!< queue type*/
+		int index = -1;						/*!< queue location index*/
+		bool presentationSupport = false;	/*!< indicate if queue supports presentation*/
 	};
 
 	//----------------------------------------------------------------------------
@@ -88,9 +89,35 @@ namespace Vulkan
 				conf.index = -1;
 		}
 
-		inline bool isValid()const noexcept
+		inline [[nodiscard]] bool isValid()const noexcept
 		{
 			return std::all_of(vQueueConf.begin(), vQueueConf.end(), [](const QueueConfiguration& a_conf) {return a_conf.index >= 0; });
+		}
+
+		inline [[nodiscard]] int queueVKIndex(const VkQueueFlags a_flag, bool &a_presentationSupport)const noexcept
+		{
+			auto iter = std::find_if(vQueueConf.begin(), vQueueConf.end(), [&](auto&& conf)
+				{
+					return (conf.type & a_flag) == a_flag;
+				});
+			if (iter != vQueueConf.end())
+			{
+				a_presentationSupport = iter->presentationSupport;
+				return iter->index;
+			}
+			return -1;
+		}
+
+		inline [[nodiscard]] int presentationQueueVKIndex()const noexcept
+		{
+			auto iter = std::find_if(vQueueConf.begin(), vQueueConf.end(), [](auto&& conf)
+				{
+					return conf.presentationSupport;
+				});
+
+			if (iter != vQueueConf.end())
+				return iter->index;
+			return -1;
 		}
 	};
 

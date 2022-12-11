@@ -91,9 +91,9 @@ namespace Vulkan
 			});
 	}
 
-	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, RendererQueuesConfiguration& a_queueConf)
+	bool checkPhysicalDeviceQueues(VkPhysicalDevice a_physicalDevice, const VkSurfaceKHR a_surface, RendererQueuesConfiguration& a_queueConf)
 	{
-		getDeviceQueues(a_physicalDevice, a_queueConf);
+		getDeviceQueues(a_physicalDevice, a_surface, a_queueConf);
 		return a_queueConf.isValid();
 	}
 }

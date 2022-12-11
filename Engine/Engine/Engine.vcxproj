@@ -187,10 +187,12 @@
     <ClInclude Include="vk_globals.h" />
     <ClInclude Include="vk_logger.h" />
     <ClInclude Include="vk_macros.h" />
+    <ClInclude Include="vk_mesh.h" />
     <ClInclude Include="vk_pipline.h" />
     <ClInclude Include="vk_check.h" />
     <ClInclude Include="vk_Renderer.h" />
     <ClInclude Include="string_to_enum.h" />
+    <ClInclude Include="vk_shader.h" />
     <ClInclude Include="vk_string_to_enum.h" />
     <ClInclude Include="vk_struct_initializers.h" />
     <ClInclude Include="vk_WindowSystemProxy.h" />
@@ -210,9 +212,11 @@
     <ClCompile Include="vk_files.cpp" />
     <ClCompile Include="vk_gets.cpp" />
     <ClCompile Include="vk_logger.cpp" />
+    <ClCompile Include="vk_mesh.cpp" />
     <ClCompile Include="vk_pipline.cpp" />
     <ClCompile Include="vk_check.cpp" />
     <ClCompile Include="vk_Renderer.cpp" />
+    <ClCompile Include="vk_shader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

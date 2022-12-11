@@ -28,7 +28,7 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 
-	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }
+	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }
 	{
 		//
 	}
@@ -83,7 +83,7 @@ namespace Vulkan
 		vkEnumeratePhysicalDevices(m_vulkanInst, &count, vDevices.data());
 		for (const auto& device : vDevices)
 		{
-			if (checkPhysicalDeviceExtension(device, m_vkConf.deviceExt) && checkPhysicalDeviceQueues(device, m_vkConf.queues))
+			if (checkPhysicalDeviceExtension(device, m_vkConf.deviceExt))
 			{
 				VkPhysicalDeviceProperties devProp;
 				vkGetPhysicalDeviceProperties(device, &devProp);
@@ -109,10 +109,24 @@ namespace Vulkan
 			m_device.physical = deviceList[a_deviceIndex];
 
 			// get queues configuration
-			checkPhysicalDeviceQueues(m_device.physical, m_vkConf.queues);
+			checkPhysicalDeviceQueues(m_device.physical, a_windowProxy->surface(), m_vkConf.queues);
 
 			// create logical device
 			createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
+
+			// create queues
+			bool supportPresentation = false;
+			int indexGraphics = m_vkConf.queues.queueVKIndex(VK_QUEUE_GRAPHICS_BIT, supportPresentation);
+			vkGetDeviceQueue(m_device.logicalDevice, indexGraphics, 0, &m_graphicsQueue);
+			if (supportPresentation)
+			{
+				m_presentationQueue = m_graphicsQueue;
+			}
+			else
+			{
+				int indexPresentation = m_vkConf.queues.presentationQueueVKIndex();
+				vkGetDeviceQueue(m_device.logicalDevice, indexPresentation, 0, &m_presentationQueue);
+			}
 
 			// create swapchain
 			VkSurfaceFormatKHR surfaceFormat;

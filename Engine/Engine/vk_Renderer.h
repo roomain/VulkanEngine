@@ -41,6 +41,8 @@ namespace Vulkan
 		VulkanConfiguration m_vkConf;						/*!< engine configuration*/
 		VkInstance m_vulkanInst;							/*!< vulkan instance*/
 		Device m_device;									/*!< vulkan used device*/
+		VkQueue m_graphicsQueue;							/*!< graphics operations queue*/
+		VkQueue m_presentationQueue;						/*!< presentation queue*/
 
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
