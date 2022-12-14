@@ -2,7 +2,7 @@
 #include <string>
 
 #define BEGIN_STRING_TO_ENUM(Type) \
-static inline bool to_enum(const std::string &a_strValue, Type& a_typeValue) \
+static [[nodiscard]] constexpr bool to_enum(const std::string &a_strValue, Type& a_typeValue) \
 { \
 
 #define STRING_TO_ENUM(value) \
@@ -20,7 +20,7 @@ static inline bool to_enum(const std::string &a_strValue, Type& a_typeValue) \
 
 
 #define BEGIN_STRING_TO_FLAG(FlagBaseType, FlagType) \
-static inline bool to_flag(const std::string &a_strValue, FlagBaseType a_default, FlagType& a_typeValue) \
+static [[nodiscard]] constexpr bool to_flag(const std::string &a_strValue, FlagBaseType a_default, FlagType& a_typeValue) \
 { \
     a_typeValue = a_default;                                                \
     size_t pos = a_strValue.find('|');                                      \

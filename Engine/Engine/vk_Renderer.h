@@ -24,7 +24,7 @@ namespace Vulkan
 	class ENGINE_EXPORT VK_Renderer
 	{
 	public:
-		[[nodiscard]]VK_Renderer();
+		[[nodiscard]] VK_Renderer();
 		VK_Renderer(const VK_Renderer&) = delete;
 		virtual ~VK_Renderer();
 		VK_Renderer& operator = (const VK_Renderer&) = delete;
