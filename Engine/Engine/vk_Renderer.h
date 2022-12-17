@@ -1,9 +1,10 @@
 #pragma once
 #include <string>
+#include <memory>
 #include "vk_files.h"
 #include "vk_ext_struct.h"
 #include "vk_globals.h"
-#include <memory>
+#include "vk_pipeline.h"
 
 #pragma warning(push)
 #pragma warning( disable : 4251)
@@ -39,6 +40,17 @@ namespace Vulkan
 		/*@return the vulkan instance*/
 		[[nodiscard]] VkInstance vulkanInstance()const noexcept;
 
+		/*@brief register a pipline*/
+		bool registerPipeline(VK_PipelinePtr& a_pipeline);
+
+		/*@brief pipline count*/
+		[[nodiscard]] size_t pipelineCount()const noexcept;
+
+		/*@brief release pipline*/
+		void releasePipeline(const size_t& a_index);
+		void releasePipeline(VK_PipelinePtr& a_pipeline);
+		void clearPipelines();
+
 	protected:
 
 	private:
@@ -49,6 +61,7 @@ namespace Vulkan
 		VkQueue m_presentationQueue;						/*!< presentation queue*/
 
 		// TODO more queues (store and use in a rendering module)
+		std::vector<VK_PipelinePtr> m_PipelineList;			/*!< vulkan pipeline list*/
 
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/

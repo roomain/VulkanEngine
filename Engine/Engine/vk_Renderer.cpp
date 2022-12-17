@@ -169,6 +169,9 @@ namespace Vulkan
 		m_debugCallbackHandle = VK_NULL_HANDLE;
 
 		// release resources----------------------------------------------------
+		for (auto pPipeline : m_PipelineList)
+			pPipeline->destroy(m_device.logicalDevice);
+		clearPipelines();
 		
 		//----------------------------------------------------------------------
 		
@@ -243,6 +246,62 @@ namespace Vulkan
 	VkInstance VK_Renderer::vulkanInstance()const noexcept
 	{
 		return m_vulkanInst;
+	}
+
+	bool VK_Renderer::registerPipeline(VK_PipelinePtr& a_pipeline)
+	{
+		bool bRet = false;
+		int index = 0;// index of pipelin with higher lower
+		bool bFoundNext = false; // pipeline with lower priority is found;
+		auto iter = std::find_if(m_PipelineList.begin(), m_PipelineList.end(), [&](const VK_PipelinePtr& a_iterPipeline)
+			{
+				if (a_iterPipeline->priority() < a_pipeline->priority() && !bFoundNext)
+				{
+					bFoundNext = true;
+				}
+				else
+				{
+					index++;
+				}
+				return a_iterPipeline == a_pipeline;
+			});
+
+		if (iter == m_PipelineList.end())
+		{
+			if (bFoundNext)
+			{
+				m_PipelineList.insert(m_PipelineList.begin() + index, a_pipeline);
+			}
+			else
+			{
+				m_PipelineList.push_back(a_pipeline);
+			}
+			bRet = true;
+		}
+		return bRet;
+	}
+
+	size_t VK_Renderer::pipelineCount()const noexcept
+	{
+		return m_PipelineList.size();
+	}
+
+	void VK_Renderer::releasePipeline(const size_t& a_index)
+	{
+		if (m_PipelineList.size() < a_index)
+			m_PipelineList.erase(m_PipelineList.begin() + a_index);
+	}
+
+	void VK_Renderer::releasePipeline(VK_PipelinePtr& a_pipeline)
+	{
+		auto iter = std::find(m_PipelineList.begin(), m_PipelineList.end(), a_pipeline);
+		if(iter != m_PipelineList.end())
+			m_PipelineList.erase(iter);
+	}
+
+	void VK_Renderer::clearPipelines()
+	{
+		m_PipelineList.clear();
 	}
 
 }

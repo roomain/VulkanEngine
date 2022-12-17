@@ -67,11 +67,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props\Assimp.props" />
     <Import Project="..\..\props\boost.props" />
+    <Import Project="..\..\props\glm.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props\Assimp.props" />
     <Import Project="..\..\props\boost.props" />
+    <Import Project="..\..\props\glm.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -132,7 +134,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_DEPTH_ZERO_TO_ONE;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -153,7 +155,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_DEPTH_ZERO_TO_ONE;NDEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -175,6 +177,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="IDisplayer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="vk_camera.h" />
     <ClInclude Include="vk_create.h" />
     <ClInclude Include="vk_destroy.h" />
     <ClInclude Include="vk_display.h" />
@@ -188,7 +191,9 @@
     <ClInclude Include="vk_logger.h" />
     <ClInclude Include="vk_macros.h" />
     <ClInclude Include="vk_mesh.h" />
-    <ClInclude Include="vk_pipline.h" />
+    <ClInclude Include="vk_module.h" />
+    <ClInclude Include="vk_movable.h" />
+    <ClInclude Include="vk_pipeline.h" />
     <ClInclude Include="vk_check.h" />
     <ClInclude Include="vk_Renderer.h" />
     <ClInclude Include="string_to_enum.h" />
@@ -204,6 +209,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="vk_camera.cpp" />
     <ClCompile Include="vk_create.cpp" />
     <ClCompile Include="vk_destroy.cpp" />
     <ClCompile Include="vk_display.cpp" />
@@ -213,7 +219,9 @@
     <ClCompile Include="vk_gets.cpp" />
     <ClCompile Include="vk_logger.cpp" />
     <ClCompile Include="vk_mesh.cpp" />
-    <ClCompile Include="vk_pipline.cpp" />
+    <ClCompile Include="vk_module.cpp" />
+    <ClCompile Include="vk_movable.cpp" />
+    <ClCompile Include="vk_pipeline.cpp" />
     <ClCompile Include="vk_check.cpp" />
     <ClCompile Include="vk_Renderer.cpp" />
     <ClCompile Include="vk_shader.cpp" />

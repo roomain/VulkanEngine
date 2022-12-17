@@ -93,7 +93,7 @@
     <ClInclude Include="vk_enumerate.h">
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
-    <ClInclude Include="vk_pipline.h">
+    <ClInclude Include="vk_pipeline.h">
       <Filter>Fichiers d%27en-tête\Pipline</Filter>
     </ClInclude>
     <ClInclude Include="vk_mesh.h">
@@ -101,6 +101,15 @@
     </ClInclude>
     <ClInclude Include="vk_shader.h">
       <Filter>Fichiers d%27en-tête\Pipline</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_module.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_camera.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_movable.h">
+      <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,7 +146,7 @@
     <ClCompile Include="vk_files.cpp">
       <Filter>Fichiers sources\functions</Filter>
     </ClCompile>
-    <ClCompile Include="vk_pipline.cpp">
+    <ClCompile Include="vk_pipeline.cpp">
       <Filter>Fichiers sources\Pipline</Filter>
     </ClCompile>
     <ClCompile Include="vk_mesh.cpp">
@@ -145,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="vk_shader.cpp">
       <Filter>Fichiers sources\Pipline</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_module.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_camera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_movable.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
