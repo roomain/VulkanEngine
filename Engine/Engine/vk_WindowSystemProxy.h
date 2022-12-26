@@ -9,6 +9,7 @@ namespace Vulkan
 	class VK_WindowSystemProxy
 	{
 	public:
+		virtual ~VK_WindowSystemProxy() {}
 		virtual VkSurfaceKHR surface() = 0;
 		virtual uint32_t width() = 0;
 		virtual uint32_t height() = 0;

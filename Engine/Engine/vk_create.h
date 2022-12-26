@@ -33,7 +33,7 @@ namespace Vulkan
 	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const VkImageCreateInfo& a_imageProperty, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool);
 
 	/*@brief create image pool (images with different porperties) DONT CREATE IMAGEVIEW*/
-	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool);
+	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool);
 
 	/*@brief create buffer pool*/
 	struct BufferConf

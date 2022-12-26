@@ -202,7 +202,7 @@ namespace Vulkan
 		}
 	}
 
-	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const unsigned int a_imageNumber, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool)
+	void createImagePool(const VkDevice a_logicalDevice, const VkPhysicalDeviceMemoryProperties& a_memProperties, const std::vector<VkImageCreateInfo>& a_imageProperties, VkMemoryPropertyFlags a_memFlags, ImagePool& a_imagePool)
 	{
 		VkMemoryAllocateInfo memAllocInfo = Vulkan::Initializers::memoryAllocateInfo();
 		a_imagePool.images.resize(a_imageProperties.size());
