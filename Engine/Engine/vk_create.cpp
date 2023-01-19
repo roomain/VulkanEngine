@@ -3,45 +3,8 @@
 
 namespace Vulkan
 {
-	constexpr uint32_t ENGINE_VERSION = 1;								/*!< engine version*/
 
-	void createVulkanInstance(const VulkanConfiguration& a_conf, VkInstance& a_vkInstance)
-	{
-		VkApplicationInfo appInfo = Vulkan::Initializers::applicationInfo();
-		appInfo.apiVersion = VK_API_VERSION_1_3;
-		appInfo.applicationVersion = a_conf.appVersion;
-		appInfo.engineVersion = ENGINE_VERSION;
-		appInfo.pApplicationName = a_conf.appName.c_str();
-		appInfo.pEngineName = "VK_Engine";
-
-		VkInstanceCreateInfo instCreateInfo = Vulkan::Initializers::instanceCreateInfo();
-		instCreateInfo.pApplicationInfo = &appInfo;
-
-		instCreateInfo.enabledExtensionCount = 0;
-		instCreateInfo.ppEnabledExtensionNames = nullptr;
-
-		instCreateInfo.enabledLayerCount = 0;
-		instCreateInfo.ppEnabledLayerNames = nullptr;
-
-		// generate table of char* from vectors of string
-		std::vector<const char*> vNameData;
-		for (auto& ext : a_conf.instanceExtProps)
-			vNameData.emplace_back(ext.c_str());
-
-		for (auto& layer : a_conf.instanceLayers)
-			vNameData.emplace_back(layer.c_str());
-
-		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_conf.instanceExtProps.size());
-		instCreateInfo.ppEnabledExtensionNames = vNameData.data();
-
-		instCreateInfo.enabledLayerCount = static_cast<uint32_t>(a_conf.instanceLayers.size());
-		instCreateInfo.ppEnabledLayerNames = &vNameData[a_conf.instanceExtProps.size()];
-
-		VK_CHECK(vkCreateInstance(&instCreateInfo, nullptr, &a_vkInstance));
-	}
-
-
-	void createVulkanDevice(const RendererQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device)
+	void createVulkanDevice(const DeviceQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device)
 	{
 		// create queues create info for the device
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -185,7 +148,7 @@ namespace Vulkan
 			if (memTypeBit != memoryRequirements.memoryTypeBits)
 				throw Vulkan::VK_Exception("Memory type bit is different.", std::source_location::current());
 
-			// Get memort offset for image
+			// Get memory offset for image
 			imageOffset.emplace_back(memAllocInfo.allocationSize);
 
 			// increment required memory size

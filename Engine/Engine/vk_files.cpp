@@ -1,12 +1,13 @@
 #include "pch.h"
-#include "vk_files.h"
-#include "vk_Exception.h"
-#include "vk_string_to_enum.h"
 #include <fstream>
 #include <format>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <functional>
+#include "vk_files.h"
+#include "vk_Exception.h"
+#include "vk_string_to_enum.h"
+#include "vk_configuration.h"
 
 namespace Vulkan
 {
@@ -67,6 +68,7 @@ namespace Vulkan
 		//Device
 		auto treeDevice = propTree.get_child("Engine_configuration.vk_device");
 		a_vulkanConf.useDepthBuffer = treeDevice.get<bool>("<xmlattr>.useDepthBuffer", false);
+		a_vulkanConf.frameTimeout = treeDevice.get<uint64_t>("<xmlattr>.timeout", 2000000000);
 		getDataList(treeDevice, "vk_queues", [&](const std::string& value)
 			{
 				QueueConfiguration conf{ .index = -1 };

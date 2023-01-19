@@ -25,8 +25,8 @@ namespace Vulkan
 		a_displayer.attribute("maxPushConstantsSize", a_limits.maxPushConstantsSize);
 		a_displayer.attribute("maxMemoryAllocationCount", a_limits.maxMemoryAllocationCount);
 		a_displayer.attribute("maxSamplerAllocationCount", a_limits.maxSamplerAllocationCount);
-		a_displayer.attribute("bufferImageGranularity", static_cast<size_t>(a_limits.bufferImageGranularity));
-		a_displayer.attribute("sparseAddressSpaceSize", static_cast<size_t>(a_limits.sparseAddressSpaceSize));
+		a_displayer.attribute("bufferImageGranularity", static_cast<size_t>(a_features.a_limits.bufferImageGranularity));
+		a_displayer.attribute("sparseAddressSpaceSize", static_cast<size_t>(a_features.a_limits.sparseAddressSpaceSize));
 		a_displayer.attribute("maxBoundDescriptorSets", a_limits.maxBoundDescriptorSets);
 		a_displayer.attribute("maxPerStageDescriptorSamplers", a_limits.maxPerStageDescriptorSamplers);
 		a_displayer.attribute("maxPerStageDescriptorUniformBuffers", a_limits.maxPerStageDescriptorUniformBuffers);
@@ -87,9 +87,9 @@ namespace Vulkan
 		a_displayer.attribute("viewportBoundsRange[1]", a_limits.viewportBoundsRange[1]);
 		a_displayer.attribute("viewportSubPixelBits", a_limits.viewportSubPixelBits);
 		a_displayer.attribute("minMemoryMapAlignment", a_limits.minMemoryMapAlignment);
-		a_displayer.attribute("minTexelBufferOffsetAlignment", static_cast<size_t>(a_limits.minTexelBufferOffsetAlignment));
-		a_displayer.attribute("minUniformBufferOffsetAlignment", static_cast<size_t>(a_limits.minUniformBufferOffsetAlignment));
-		a_displayer.attribute("minStorageBufferOffsetAlignment", static_cast<size_t>(a_limits.minStorageBufferOffsetAlignment));
+		a_displayer.attribute("minTexelBufferOffsetAlignment", static_cast<size_t>(a_features.a_limits.minTexelBufferOffsetAlignment));
+		a_displayer.attribute("minUniformBufferOffsetAlignment", static_cast<size_t>(a_features.a_limits.minUniformBufferOffsetAlignment));
+		a_displayer.attribute("minStorageBufferOffsetAlignment", static_cast<size_t>(a_features.a_limits.minStorageBufferOffsetAlignment));
 		a_displayer.attribute("minTexelOffset", a_limits.minTexelOffset);
 		a_displayer.attribute("maxTexelOffset", a_limits.maxTexelOffset);
 		a_displayer.attribute("minTexelGatherOffset", a_limits.minTexelGatherOffset);
@@ -125,9 +125,9 @@ namespace Vulkan
 		a_displayer.attribute("lineWidthGranularity", a_limits.lineWidthGranularity);
 		a_displayer.attribute("strictLines", a_limits.strictLines);
 		a_displayer.attribute("standardSampleLocations", a_limits.standardSampleLocations);
-		a_displayer.attribute("optimalBufferCopyOffsetAlignment", static_cast<size_t>(a_limits.optimalBufferCopyOffsetAlignment));
-		a_displayer.attribute("optimalBufferCopyRowPitchAlignment", static_cast<size_t>(a_limits.optimalBufferCopyRowPitchAlignment));
-		a_displayer.attribute("nonCoherentAtomSize", static_cast<size_t>(a_limits.nonCoherentAtomSize));
+		a_displayer.attribute("optimalBufferCopyOffsetAlignment", static_cast<size_t>(a_features.a_limits.optimalBufferCopyOffsetAlignment));
+		a_displayer.attribute("optimalBufferCopyRowPitchAlignment", static_cast<size_t>(a_features.a_limits.optimalBufferCopyRowPitchAlignment));
+		a_displayer.attribute("nonCoherentAtomSize", static_cast<size_t>(a_features.a_limits.nonCoherentAtomSize));
 		a_displayer.endNode();
 	}
 
@@ -141,27 +141,28 @@ namespace Vulkan
 		a_displayer.attribute("residencyNonResidentStrict", a_props.residencyNonResidentStrict);
 		a_displayer.endNode();
 	}
-
-	void displayDeviceExtensions(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
+	//-----------------------------------------------------------------------------------------------------------------
+	void displayDeviceproperties(const VkPhysicalDeviceProperties& a_deviceProperties, IDisplayer& a_displayer)
 	{
-		std::vector<VkExtensionProperties> extensions;
-		getDeviceExtensions(a_physicalDevice, extensions);
-		a_displayer.beginNode("Device Extensions");
-		for(const auto& ext : extensions)
-			a_displayer.attribute(std::string(ext.extensionName), ext.specVersion);
-		a_displayer.endNode();
+		a_displayer.attribute("deviceName", a_deviceProperties.deviceName);
+		a_displayer.attribute("deviceType", to_string(a_deviceProperties.deviceType));
+		a_displayer.attribute("apiVersion", static_cast<unsigned int>(a_deviceProperties.apiVersion));
+		a_displayer.attribute("driverVersion", static_cast<unsigned int>(a_deviceProperties.driverVersion));
+		a_displayer.attribute("vendorID", static_cast<unsigned int>(a_deviceProperties.vendorID));
+		a_displayer.attribute("deviceID", static_cast<unsigned int>(a_deviceProperties.deviceID));
+
+		displayDeviceLimits(a_deviceProperties.limits, a_displayer);
+		displayDeviceSparseProps(a_deviceProperties.sparseProperties, a_displayer);
 	}
 
-	void displayQueuesProps(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
+	void displayDeviceQueuesproperties(const std::vector<VkQueueFamilyProperties>& a_queueFamilies, IDisplayer& a_displayer)
 	{
-		a_displayer.beginNode("Queues");
-		std::vector<VkQueueFamilyProperties> vFamilies;
-		getQueueFamiliesProperties(a_physicalDevice, vFamilies);
-		for (const auto& familyProp : vFamilies)
+		a_displayer.beginNode("Device Queues");
+		for (const auto& familyProp : a_queueFamilies)
 		{
 			a_displayer.beginNode("Queue");
 			a_displayer.attribute("count", familyProp.queueCount);
-			a_displayer.attribute("deviceID", Flag<VkQueueFlagBits>::to_string(familyProp.queueFlags));
+			a_displayer.attribute("flag", Flag<VkQueueFlagBits>::to_string(familyProp.queueFlags));
 			a_displayer.attribute("image granularity width", familyProp.minImageTransferGranularity.width);
 			a_displayer.attribute("image granularity height", familyProp.minImageTransferGranularity.height);
 			a_displayer.attribute("image granularity depth", familyProp.minImageTransferGranularity.depth);
@@ -170,88 +171,152 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	void displayDeviceCapabilities(VkPhysicalDevice a_physicalDevice, IDisplayer& a_displayer)
+	void displayDeviceMemoryProperties(const VkPhysicalDeviceMemoryProperties& a_memPops, IDisplayer& a_displayer)
 	{
-		VkPhysicalDeviceProperties devProp;
-		vkGetPhysicalDeviceProperties(a_physicalDevice, &devProp);
-		a_displayer.beginNode("Physical Device");
-		a_displayer.attribute("apiVersion", static_cast<unsigned int>(devProp.apiVersion));
-		a_displayer.attribute("driverVersion", static_cast<unsigned int>(devProp.driverVersion));
-		a_displayer.attribute("vendorID", static_cast<unsigned int>(devProp.vendorID));
-		a_displayer.attribute("deviceID", static_cast<unsigned int>(devProp.deviceID));
-		a_displayer.attribute("deviceType", to_string(devProp.deviceType));
-		a_displayer.attribute("deviceName", devProp.deviceName);
+		a_displayer.beginNode("Device Memory");
 
-		std::string strData;
-		for (auto digit : devProp.pipelineCacheUUID)
-			strData += std::to_string(digit);
+		a_displayer.beginNode("Memory Types");
+		for (int i = 0; i < a_memPops.memoryTypeCount; ++i)
+		{
+			a_displayer.beginNode("Type");
+			a_displayer.attribute("property flags", Flag<VkMemoryPropertyFlagBits>::to_string(a_memPops.memoryTypes[i].propertyFlags));
+			a_displayer.attribute("index", a_memPops.memoryTypes[i].heapIndex);
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
 
-		a_displayer.attribute("pipelineCacheUUID", strData);
-		displayDeviceLimits(devProp.limits, a_displayer);
-		displayDeviceSparseProps(devProp.sparseProperties, a_displayer);
-		displayQueuesProps(a_physicalDevice, a_displayer);
-		displayDeviceExtensions(a_physicalDevice, a_displayer);
+		a_displayer.beginNode("Memory heaps");
+		for (int i = 0; i < a_memPops.memoryHeapCount; ++i)
+		{
+			a_displayer.beginNode("Heap");
+			a_displayer.attribute("flags", Flag<VkMemoryHeapFlagBits>::to_string(a_memPops.memoryHeaps[i].flags));
+			a_displayer.attribute("size", a_memPops.memoryHeaps[i].size);
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
+
 		a_displayer.endNode();
 	}
 
+	void displayDeviceFeatures(const VkPhysicalDeviceFeatures& a_features, IDisplayer& a_displayer)
+	{
+		a_displayer.beginNode("Device Features");
+
+		a_displayer.attribute("robustBufferAccess",static_cast<bool>(a_features.robustBufferAccess));
+		a_displayer.attribute("fullDrawIndexUint32",static_cast<bool>(a_features.fullDrawIndexUint32));
+		a_displayer.attribute("imageCubeArray",static_cast<bool>(a_features.imageCubeArray));
+		a_displayer.attribute("independentBlend",static_cast<bool>(a_features.independentBlend));
+		a_displayer.attribute("geometryShader",static_cast<bool>(a_features.geometryShader));
+		a_displayer.attribute("tessellationShader",static_cast<bool>(a_features.tessellationShader));
+		a_displayer.attribute("sampleRateShading",static_cast<bool>(a_features.sampleRateShading));
+		a_displayer.attribute("dualSrcBlend",static_cast<bool>(a_features.dualSrcBlend));
+		a_displayer.attribute("logicOp",static_cast<bool>(a_features.logicOp));
+		a_displayer.attribute("multiDrawIndirect",static_cast<bool>(a_features.multiDrawIndirect));
+		a_displayer.attribute("drawIndirectFirstInstance",static_cast<bool>(a_features.drawIndirectFirstInstance));
+		a_displayer.attribute("depthClamp",static_cast<bool>(a_features.depthClamp));
+		a_displayer.attribute("depthBiasClamp",static_cast<bool>(a_features.depthBiasClamp));
+		a_displayer.attribute("fillModeNonSolid",static_cast<bool>(a_features.fillModeNonSolid));
+		a_displayer.attribute("depthBounds",static_cast<bool>(a_features.depthBounds));
+		a_displayer.attribute("wideLines",static_cast<bool>(a_features.wideLines));
+		a_displayer.attribute("largePoints",static_cast<bool>(a_features.largePoints));
+		a_displayer.attribute("alphaToOne",static_cast<bool>(a_features.alphaToOne));
+		a_displayer.attribute("multiViewport",static_cast<bool>(a_features.multiViewport));
+		a_displayer.attribute("samplerAnisotropy",static_cast<bool>(a_features.samplerAnisotropy));
+		a_displayer.attribute("textureCompressionETC2",static_cast<bool>(a_features.textureCompressionETC2));
+		a_displayer.attribute("textureCompressionASTC_LDR",static_cast<bool>(a_features.textureCompressionASTC_LDR));
+		a_displayer.attribute("textureCompressionBC",static_cast<bool>(a_features.textureCompressionBC));
+		a_displayer.attribute("occlusionQueryPrecise",static_cast<bool>(a_features.occlusionQueryPrecise));
+		a_displayer.attribute("pipelineStatisticsQuery",static_cast<bool>(a_features.pipelineStatisticsQuery));
+		a_displayer.attribute("vertexPipelineStoresAndAtomics",static_cast<bool>(a_features.vertexPipelineStoresAndAtomics));
+		a_displayer.attribute("fragmentStoresAndAtomics",static_cast<bool>(a_features.fragmentStoresAndAtomics));
+		a_displayer.attribute("shaderTessellationAndGeometryPointSize",static_cast<bool>(a_features.shaderTessellationAndGeometryPointSize));
+		a_displayer.attribute("shaderImageGatherExtended",static_cast<bool>(a_features.shaderImageGatherExtended));
+		a_displayer.attribute("shaderStorageImageExtendedFormats",static_cast<bool>(a_features.shaderStorageImageExtendedFormats));
+		a_displayer.attribute("shaderStorageImageMultisample",static_cast<bool>(a_features.shaderStorageImageMultisample));
+		a_displayer.attribute("shaderStorageImageReadWithoutFormat",static_cast<bool>(a_features.shaderStorageImageReadWithoutFormat));
+		a_displayer.attribute("shaderStorageImageWriteWithoutFormat",static_cast<bool>(a_features.shaderStorageImageWriteWithoutFormat));
+		a_displayer.attribute("shaderUniformBufferArrayDynamicIndexing",static_cast<bool>(a_features.shaderUniformBufferArrayDynamicIndexing));
+		a_displayer.attribute("shaderSampledImageArrayDynamicIndexing",static_cast<bool>(a_features.shaderSampledImageArrayDynamicIndexing));
+		a_displayer.attribute("shaderStorageBufferArrayDynamicIndexing",static_cast<bool>(a_features.shaderStorageBufferArrayDynamicIndexing));
+		a_displayer.attribute("shaderStorageImageArrayDynamicIndexing",static_cast<bool>(a_features.shaderStorageImageArrayDynamicIndexing));
+		a_displayer.attribute("shaderClipDistance",static_cast<bool>(a_features.shaderClipDistance));
+		a_displayer.attribute("shaderCullDistance",static_cast<bool>(a_features.shaderCullDistance));
+		a_displayer.attribute("shaderFloat64",static_cast<bool>(a_features.shaderFloat64));
+		a_displayer.attribute("shaderInt64",static_cast<bool>(a_features.shaderInt64));
+		a_displayer.attribute("shaderInt16",static_cast<bool>(a_features.shaderInt16));
+		a_displayer.attribute("shaderResourceResidency",static_cast<bool>(a_features.shaderResourceResidency));
+		a_displayer.attribute("shaderResourceMinLod",static_cast<bool>(a_features.shaderResourceMinLod));
+		a_displayer.attribute("sparseBinding",static_cast<bool>(a_features.sparseBinding));
+		a_displayer.attribute("sparseResidencyBuffer",static_cast<bool>(a_features.sparseResidencyBuffer));
+		a_displayer.attribute("sparseResidencyImage2D",static_cast<bool>(a_features.sparseResidencyImage2D));
+		a_displayer.attribute("sparseResidencyImage3D",static_cast<bool>(a_features.sparseResidencyImage3D));
+		a_displayer.attribute("sparseResidency2Samples",static_cast<bool>(a_features.sparseResidency2Samples));
+		a_displayer.attribute("sparseResidency4Samples",static_cast<bool>(a_features.sparseResidency4Samples));
+		a_displayer.attribute("sparseResidency8Samples",static_cast<bool>(a_features.sparseResidency8Samples));
+		a_displayer.attribute("sparseResidency16Samples",static_cast<bool>(a_features.sparseResidency16Samples));
+		a_displayer.attribute("sparseResidencyAliased",static_cast<bool>(a_features.sparseResidencyAliased));
+		a_displayer.attribute("variableMultisampleRate",static_cast<bool>(a_features.variableMultisampleRate));
+		a_displayer.attribute("inheritedQueries",static_cast<bool>(a_features.inheritedQueries));
+
+		a_displayer.endNode();
+	}
+	
+	void displayDeviceFormats(const std::vector<FormatProperty>& a_format, IDisplayer& a_displayer)
+	{
+		a_displayer.beginNode("Device Formats properties");
+		for (auto& format : a_format)
+		{
+			a_displayer.beginNode("Formats");
+			a_displayer.attribute("format", to_string(format.format));
+			a_displayer.beginNode("Properties");
+			a_displayer.attribute("Buffer features", Flag<VkFormatFeatureFlagBits>::to_string(format.properties.bufferFeatures));
+			a_displayer.attribute("Linear tiling features", Flag<VkFormatFeatureFlagBits>::to_string(format.properties.linearTilingFeatures));
+			a_displayer.attribute("Optimal tiling features", Flag<VkFormatFeatureFlagBits>::to_string(format.properties.optimalTilingFeatures));
+			a_displayer.endNode();
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
+	}
+
+	void displayDeviceFormats(const SwapchainCapabilities& a_swapChain, IDisplayer& a_displayer)
+	{
+		a_displayer.beginNode("Swapchain capabilities");
+
+		a_displayer.beginNode("Surface capabilities");
+		a_displayer.attribute("minImageCount", a_swapChain.surfaceCapabilities.minImageCount);
+		a_displayer.attribute("maxImageCount", a_swapChain.surfaceCapabilities.maxImageCount);
+		a_displayer.attribute("currentExtent.width", a_swapChain.surfaceCapabilities.currentExtent.width);
+		a_displayer.attribute("currentExtent.height", a_swapChain.surfaceCapabilities.currentExtent.height);
+		a_displayer.attribute("minImageExtent.width", a_swapChain.surfaceCapabilities.minImageExtent.width);
+		a_displayer.attribute("minImageExtent.height", a_swapChain.surfaceCapabilities.minImageExtent.height);
+		a_displayer.attribute("maxImageExtent.width", a_swapChain.surfaceCapabilities.maxImageExtent.width);
+		a_displayer.attribute("maxImageExtent.height", a_swapChain.surfaceCapabilities.maxImageExtent.height);
+		a_displayer.attribute("maxImageArrayLayers", a_swapChain.surfaceCapabilities.maxImageArrayLayers);
+		a_displayer.attribute("supportedTransforms", Flag<VkSurfaceTransformFlagBitsKHR>::to_string(a_swapChain.surfaceCapabilities.supportedTransforms));
+		a_displayer.attribute("currentTransform",to_string(a_swapChain.surfaceCapabilities.currentTransform));
+		a_displayer.attribute("supportedCompositeAlpha", Flag< VkCompositeAlphaFlagBitsKHR>::to_string(a_swapChain.surfaceCapabilities.supportedCompositeAlpha));
+		a_displayer.attribute("supportedUsageFlags", Flag<VkImageUsageFlagBits>::to_string(a_swapChain.surfaceCapabilities.supportedUsageFlags));
+		a_displayer.endNode();
+
+		a_displayer.beginNode("Supported formats");
+		for (auto& format : a_swapChain.supportedFormats)
+		{
+			a_displayer.beginNode("Format");
+			a_displayer.attribute("format", to_string(format.format));
+			a_displayer.attribute("color space", to_string(format.colorSpace));
+			a_displayer.endNode();
+		}
+		a_displayer.endNode();
+
+		a_displayer.beginNode("Supported modes");
+		for (auto& mode : a_swapChain.supportedModes)
+		{
+			a_displayer.attribute("mode", to_string(mode));
+		}
+		a_displayer.endNode();
+
+		a_displayer.endNode();
+	}
 	//-------------------------------------------------------------------------------
-	void displayInstanceLayerProps(IDisplayer& a_displayer)
-	{
-		std::vector<VkLayerProperties> vLayerProp;
-		getInstanceLayerProps(vLayerProp);
 
-		a_displayer.beginNode("Instance Layer Properties");
-		for (const auto& prop : vLayerProp)
-		{
-			a_displayer.beginNode(prop.layerName);
-			a_displayer.attribute("Description", prop.description);
-			a_displayer.attribute("Implementation version", prop.implementationVersion);
-			a_displayer.attribute("Specific version", prop.specVersion);
-			a_displayer.endNode();
-		}
-		a_displayer.endNode();
-	}
-
-	void displayInstanceExtensionProps(IDisplayer& a_displayer)
-	{
-		std::vector<VkExtensionProperties> vProperties;
-		getInstanceExtProps(vProperties);
-
-		a_displayer.beginNode("Instance Extensions");
-		for (const auto& extend : vProperties)
-		{
-			a_displayer.beginNode(extend.extensionName);
-			a_displayer.attribute("Specific version", extend.specVersion);
-			a_displayer.endNode();
-		}
-		a_displayer.endNode();
-	}
-
-	void displayVulkanCapabilities(VkInstance a_vulkan, IDisplayer& a_displayer)
-	{
-		uint32_t uiDeviceCount = 0;
-		VK_CHECK(vkEnumeratePhysicalDevices(a_vulkan, &uiDeviceCount, nullptr));
-		if (uiDeviceCount > 0)
-		{
-			std::vector<VkPhysicalDevice> physicalDevices(static_cast<size_t>(uiDeviceCount));
-			VK_CHECK(vkEnumeratePhysicalDevices(a_vulkan, &uiDeviceCount, physicalDevices.data()));
-
-			for (auto dev : physicalDevices)
-				displayDeviceCapabilities(dev, a_displayer);
-		}
-	}
-
-	void displayDeviceCapabilities(VkInstance a_vulkan, const int a_deviceIndex, IDisplayer& a_displayer)
-	{
-		uint32_t uiDeviceCount = 0;
-		VK_CHECK(vkEnumeratePhysicalDevices(a_vulkan, &uiDeviceCount, nullptr));
-		if (uiDeviceCount > 0)
-		{
-			std::vector<VkPhysicalDevice> physicalDevices(static_cast<size_t>(uiDeviceCount));
-			VK_CHECK(vkEnumeratePhysicalDevices(a_vulkan, &uiDeviceCount, physicalDevices.data()));
-
-			if(a_deviceIndex >= 0 && a_deviceIndex < physicalDevices.size())
-				displayDeviceCapabilities(physicalDevices[a_deviceIndex], a_displayer);
-		}
-	}
 }

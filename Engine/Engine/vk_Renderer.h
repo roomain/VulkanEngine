@@ -49,7 +49,13 @@ namespace Vulkan
 		/*@brief release pipline*/
 		void releasePipeline(const size_t& a_index);
 		void releasePipeline(VK_PipelinePtr& a_pipeline);
-		void clearPipelines();
+		void destoyPipelines();
+
+		/*@brief render on screen frame*/
+		bool renderOnScreen();
+
+		/*@brief render offscreen*/
+		bool renderOffScreen();
 
 	protected:
 
@@ -66,6 +72,9 @@ namespace Vulkan
 		VkSwapchainKHR m_swapChain;							/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;			/*!< swapchain images*/
 		ImagePool m_depthImagesPool;						/*!< depth images*/
+		std::vector<VkSemaphore> m_vPresentSemaphore;		/*!< presentation synchronisation*/
+		std::vector<VkSemaphore> m_vAcquireSemaphore;		/*!< acquire synchronisation*/
+		uint32_t m_renderingIndex = 0;						/*!< index of current synchronisation*/
 
 		std::unique_ptr<VK_WindowSystemProxy> m_windowProxy;/*!< proxy to window system*/
 
@@ -85,7 +94,12 @@ namespace Vulkan
 			const char* message,						// Validation Information
 			void* userData);
 		//-------------------------------------------------------------------------------------------------
-
+		/*@brief destroy presentation and acquire semaphore*/
+		void destroySemaphores();
+		/*@brief create presentation and acquire  semaphore*/
+		void createSemaphores();
+		/*@brief reset presentation and acquire  semaphore*/
+		void resetSemaphores();
 		/*@brief release the entire vulkan resources, devices and instace*/
 		void release();
 		/*@brief destroy all depthbuffer images and associated memory*/

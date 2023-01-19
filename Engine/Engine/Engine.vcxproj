@@ -178,8 +178,11 @@
     <ClInclude Include="IDisplayer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="vk_camera.h" />
+    <ClInclude Include="vk_capabilities.h" />
+    <ClInclude Include="vk_configuration.h" />
     <ClInclude Include="vk_create.h" />
     <ClInclude Include="vk_destroy.h" />
+    <ClInclude Include="vk_device.h" />
     <ClInclude Include="vk_display.h" />
     <ClInclude Include="vk_enumerate.h" />
     <ClInclude Include="vk_enum_to_string.h" />
@@ -188,6 +191,7 @@
     <ClInclude Include="vk_files.h" />
     <ClInclude Include="vk_gets.h" />
     <ClInclude Include="vk_globals.h" />
+    <ClInclude Include="vk_application.h" />
     <ClInclude Include="vk_logger.h" />
     <ClInclude Include="vk_macros.h" />
     <ClInclude Include="vk_mesh.h" />
@@ -212,11 +216,13 @@
     <ClCompile Include="vk_camera.cpp" />
     <ClCompile Include="vk_create.cpp" />
     <ClCompile Include="vk_destroy.cpp" />
+    <ClCompile Include="vk_device.cpp" />
     <ClCompile Include="vk_display.cpp" />
     <ClCompile Include="vk_enumerate.cpp" />
     <ClCompile Include="vk_Exception.cpp" />
     <ClCompile Include="vk_files.cpp" />
     <ClCompile Include="vk_gets.cpp" />
+    <ClCompile Include="vk_application.cpp" />
     <ClCompile Include="vk_logger.cpp" />
     <ClCompile Include="vk_mesh.cpp" />
     <ClCompile Include="vk_module.cpp" />

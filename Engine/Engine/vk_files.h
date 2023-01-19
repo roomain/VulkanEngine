@@ -11,16 +11,7 @@ namespace Vulkan
 
 
 	/*@brief engine configuration*/
-	struct VulkanConfiguration
-	{
-		bool useDepthBuffer = false;				/*!< use depth buffer*/
-		std::string appName;						/*!< application names*/
-		int appVersion = 0;							/*!< application version*/
-		std::vector<std::string> instanceExtProps;	/*!< vulkan instance extensions properties*/
-		std::vector<std::string> instanceLayers;	/*!< vulkan instance desired layer*/
-		std::vector<std::string> deviceExt;			/*!< physical device extensions*/
-		RendererQueuesConfiguration queues;			/*!< queues configuration*/
-	};
+	struct VulkanConfiguration;
 
 	/*@brief load vulkan configuration*/
 	void loadConfiguration(const std::string& a_filename, VulkanConfiguration& a_vulkanConf);

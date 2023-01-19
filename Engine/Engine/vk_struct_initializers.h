@@ -75,17 +75,22 @@ namespace Vulkan::Initializers
 		return std::move(VkMemoryAllocateInfo{ .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, .pNext = nullptr, .allocationSize = 0 });
 	}
 	
-	[[nodiscard]] constexpr VkCommandBufferAllocateInfo&& commandBufferCreateInfo()
+	[[nodiscard]] constexpr VkCommandBufferAllocateInfo&& commandBufferCreateInfo(VkCommandPool a_cmdPool, VkCommandBufferLevel a_level, uint32_t a_bufferCount)
 	{
-		return std::move(VkCommandBufferAllocateInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, .pNext = nullptr });
+		return std::move(VkCommandBufferAllocateInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, .pNext = nullptr, .commandPool = a_cmdPool, .level = a_level, .commandBufferCount = a_bufferCount });
 	}
 
-	[[nodiscard]] constexpr VkCommandBufferBeginInfo&& commandBufferBeginInfo()
+	[[nodiscard]] constexpr VkCommandBufferBeginInfo&& commandBufferBeginInfo(VkCommandBufferUsageFlags a_flags, VkCommandBufferInheritanceInfo* a_pBuffInheritInfo)
 	{
-		return std::move(VkCommandBufferBeginInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, .pNext = nullptr });
+		return std::move(VkCommandBufferBeginInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, .pNext = nullptr, .flags = a_flags, .pInheritanceInfo = a_pBuffInheritInfo });
 	}
 
-	[[nodiscard]] constexpr VkSubmitInfo&& dubmitInfo()
+	[[nodiscard]] constexpr VkCommandPoolCreateInfo&& commandPoolCreateInfo(const VkCommandPoolCreateFlags a_flags, const uint32_t a_familyIndex)
+	{
+		return std::move(VkCommandPoolCreateInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, .pNext = nullptr, .flags = a_flags, .queueFamilyIndex = a_familyIndex });
+	}
+
+	[[nodiscard]] constexpr VkSubmitInfo&& submitInfo()
 	{
 		return std::move(VkSubmitInfo{ .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO, .pNext = nullptr });
 	}
@@ -233,7 +238,7 @@ namespace Vulkan::Initializers
 		.format = format,
 		.offset = offset };
 	}
-
+	
 	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo&& pipelineVertexInputStateCreateInfo()
 	{
 		return VkPipelineVertexInputStateCreateInfo{ .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO, .pNext = nullptr };
@@ -495,5 +500,23 @@ namespace Vulkan::Initializers
 		return VkWriteDescriptorSetAccelerationStructureKHR{
 		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
 		.pNext = nullptr };
+	}
+
+	[[nodiscard]] constexpr VkPresentInfoKHR&& presentationKHR(const uint32_t& a_semaphoreCount, VkSemaphore* a_pSemaphore, const uint32_t& a_swapChainCount, VkSwapchainKHR* a_pSwapChain, uint32_t* a_pImgIndices)
+	{
+		return std::move(VkPresentInfoKHR{
+		.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+		.pNext = nullptr,
+		.waitSemaphoreCount = a_semaphoreCount,
+		.pWaitSemaphores = a_pSemaphore,
+		.swapchainCount = a_swapChainCount,
+		.pSwapchains = a_pSwapChain,
+		.pImageIndices = a_pImgIndices,
+		.pResults = nullptr });
+	}
+
+	[[nodiscard]] constexpr VkSemaphoreCreateInfo&& semaphoreCreateInfo(VkSemaphoreCreateFlags a_flags = 0)
+	{
+		return VkSemaphoreCreateInfo{.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, .pNext = nullptr, .flags = a_flags};
 	}
 }

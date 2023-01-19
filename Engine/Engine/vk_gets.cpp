@@ -4,24 +4,8 @@
 namespace Vulkan
 {
 
-	void getInstanceLayerProps(std::vector<VkLayerProperties>& a_properties)
-	{
-		uint32_t propCount = 0;
-		vkEnumerateInstanceLayerProperties(&propCount, nullptr);
-		a_properties.resize(propCount);
-		vkEnumerateInstanceLayerProperties(&propCount, a_properties.data());
 
-	}
-
-	void getInstanceExtProps(std::vector<VkExtensionProperties>& a_properties)
-	{
-		uint32_t extensionCount = 0;
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-		a_properties.resize(extensionCount);
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, a_properties.data());
-	}
-
-	void getQueueFamiliesProperties(const VkPhysicalDevice& a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties)
+	void getQueueFamiliesProperties(const VkPhysicalDevice a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties)
 	{
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(a_device, &queueFamilyCount, nullptr);
@@ -29,7 +13,7 @@ namespace Vulkan
 		vkGetPhysicalDeviceQueueFamilyProperties(a_device, &queueFamilyCount, a_familiesProperties.data());
 	}
 
-	void getFormatsProperties(const VkPhysicalDevice& a_device, std::vector<FormatProperty>& a_formatsProperties)
+	void getFormatsProperties(const VkPhysicalDevice a_device, std::vector<FormatProperty>& a_formatsProperties)
 	{
 		for (int iterFormat = VK_FORMAT_R4G4_UNORM_PACK8; iterFormat < VK_FORMAT_MAX_ENUM; ++iterFormat)
 		{
@@ -39,7 +23,7 @@ namespace Vulkan
 		}
 	}
 
-	void getDeviceExtensions(const VkPhysicalDevice& a_device, std::vector<VkExtensionProperties>& a_extensions)
+	void getDeviceExtensions(const VkPhysicalDevice a_device, std::vector<VkExtensionProperties>& a_extensions)
 	{
 		uint32_t extensionCount = 0;
 		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, nullptr);
@@ -47,37 +31,38 @@ namespace Vulkan
 		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, a_extensions.data());
 	}
 
-	void getSwapChainCapabilities(const Device& a_device, const VkSurfaceKHR& a_surface, SwapchainCapabilities& a_swapChainCap)
+	void getSwapChainCapabilities(const VkPhysicalDevice a_device, const VkSurfaceKHR a_surface, SwapchainCapabilities& a_swapChainCap)
 	{
-		VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_device.physical, a_surface, &a_swapChainCap.surfaceCapabilities));
+		VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_device, a_surface, &a_swapChainCap.surfaceCapabilities));
 
 		uint32_t formatCount = 0;
-		VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device.physical, a_surface, &formatCount, nullptr));
+		VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, nullptr));
 		if (formatCount > 0)
 		{
 			a_swapChainCap.supportedFormats.resize(static_cast<int>(formatCount));
-			VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device.physical, a_surface, &formatCount, a_swapChainCap.supportedFormats.data()));
+			VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, a_swapChainCap.supportedFormats.data()));
 		}
 
 		uint32_t presentCount = 0;
-		VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device.physical, a_surface, &presentCount, nullptr));
+		VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, nullptr));
 		if (presentCount > 0)
 		{
 			a_swapChainCap.supportedModes.resize(static_cast<int>(presentCount));
-			VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device.physical, a_surface, &presentCount, a_swapChainCap.supportedModes.data()));
+			VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, a_swapChainCap.supportedModes.data()));
 		}
 	}
 
-	void getDeviceCapabilities(const Device& a_device, EngineDeviceCapabilities& a_capabilities)
+	void getDeviceCapabilities(const VkPhysicalDevice a_device, DeviceCapabilities& a_capabilities)
 	{
-		vkGetPhysicalDeviceProperties(a_device.physical, &a_capabilities.deviceProperties);
-		vkGetPhysicalDeviceFeatures(a_device.physical, &a_capabilities.deviceFeatures);
-		vkGetPhysicalDeviceMemoryProperties(a_device.physical, &a_capabilities.memoryProperties);
-		getFormatsProperties(a_device.physical, a_capabilities.formatsProperties);
-		getQueueFamiliesProperties(a_device.physical, a_capabilities.queueFamilies);
+		vkGetPhysicalDeviceProperties(a_device, &a_capabilities.deviceProperties);
+		vkGetPhysicalDeviceFeatures(a_device, &a_capabilities.deviceFeatures);
+		vkGetPhysicalDeviceMemoryProperties(a_device, &a_capabilities.memoryProperties);
+		getFormatsProperties(a_device, a_capabilities.formatsProperties);
+		getQueueFamiliesProperties(a_device, a_capabilities.queueFamilies);
+		getDeviceExtensions(a_device, a_capabilities.extensions);
 	}
 
-	void getDeviceQueues(const VkPhysicalDevice& a_physicalDevice, const VkSurfaceKHR a_surface, RendererQueuesConfiguration& a_queueConf)
+	void getDeviceQueues(const VkPhysicalDevice a_physicalDevice, const VkSurfaceKHR a_surface, DeviceQueuesConfiguration& a_queueConf)
 	{
 		a_queueConf.reset();
 		// get memory properties
@@ -109,14 +94,14 @@ namespace Vulkan
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	VkFormat getSupportedFormat(const Device& a_device, const std::vector<VkFormat>& a_formats, const VkImageTiling a_tiling, const VkFormatFeatureFlags a_featureFlag)
+	VkFormat getSupportedFormat(const VkPhysicalDevice a_device, const std::vector<VkFormat>& a_formats, const VkImageTiling a_tiling, const VkFormatFeatureFlags a_featureFlag)
 	{
 		// Loop through options and find compatible one
 		for (VkFormat format : a_formats)
 		{
 			// Get properties for give format on this device
 			VkFormatProperties properties;
-			vkGetPhysicalDeviceFormatProperties(a_device.physical, format, &properties);
+			vkGetPhysicalDeviceFormatProperties(a_device, format, &properties);
 
 			// Depending on tiling choice, need to check for different bit flag
 			switch (a_tiling)
@@ -139,14 +124,14 @@ namespace Vulkan
 		throw VK_Exception("Failed to find a matching format!", std::source_location::current());
 	}
 
-	VkFormat getSupportedFormat(const Device& a_device, std::vector<VkFormat>&& a_formats, VkImageTiling&& a_tiling, VkFormatFeatureFlags&& a_featureFlag)
+	VkFormat getSupportedFormat(const VkPhysicalDevice a_device, std::vector<VkFormat>&& a_formats, VkImageTiling&& a_tiling, VkFormatFeatureFlags&& a_featureFlag)
 	{
 		// Loop through options and find compatible one
 		for (VkFormat format : a_formats)
 		{
 			// Get properties for give format on this device
 			VkFormatProperties properties;
-			vkGetPhysicalDeviceFormatProperties(a_device.physical, format, &properties);
+			vkGetPhysicalDeviceFormatProperties(a_device, format, &properties);
 
 			// Depending on tiling choice, need to check for different bit flag
 			switch (a_tiling)

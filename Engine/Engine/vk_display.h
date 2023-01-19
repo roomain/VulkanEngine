@@ -2,24 +2,15 @@
 
 #include "vulkan/vulkan.h"
 #include "vk_globals.h"
-#include "vk_globals.h"
 
 namespace Vulkan
 {
-	struct Device;
-	struct SwapchainCapabilities;
-	struct FormatProperty;
-	struct EngineDeviceCapabilities;
 	class IDisplayer;
 
-	//--------------------------------------------------------------------------------------------------------------------------
-	/*@brief display vulkan instance layer properties*/
-	void ENGINE_EXPORT displayInstanceLayerProps(IDisplayer& a_displayer);
-
-	/*@brief display vulkan instance extension properties*/
-	void ENGINE_EXPORT displayInstanceExtensionProps(IDisplayer& a_displayer);
-
-
-	void ENGINE_EXPORT displayVulkanCapabilities(VkInstance a_vulkan, IDisplayer& a_displayer);
-	void ENGINE_EXPORT displayDeviceCapabilities(VkInstance a_vulkan, const int a_deviceIndex, IDisplayer& a_displayer);
+	void displayDeviceproperties(const VkPhysicalDeviceProperties& a_deviceProperties, IDisplayer& a_displayer);
+	void displayDeviceQueuesproperties(const std::vector<VkQueueFamilyProperties>& a_queueFamilies, IDisplayer& a_displayer);
+	void displayDeviceMemoryProperties(const VkPhysicalDeviceMemoryProperties& a_memPops, IDisplayer& a_displayer);
+	void displayDeviceFeatures(const VkPhysicalDeviceFeatures& a_features, IDisplayer& a_displayer);
+	void displayDeviceFormats(const std::vector<FormatProperty>& a_format, IDisplayer& a_displayer);
+	void displayDeviceFormats(const SwapchainCapabilities& a_swapChain, IDisplayer& a_displayer);
 }

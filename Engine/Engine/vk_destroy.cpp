@@ -7,10 +7,12 @@ namespace Vulkan
 	{
 		if(a_toDestroy.imageView != VK_NULL_HANDLE)
 			vkDestroyImageView(a_logicalDevice, a_toDestroy.imageView,nullptr);
+		a_toDestroy.imageView = VK_NULL_HANDLE;
 
 
 		if (a_toDestroy.image != VK_NULL_HANDLE)
 			vkDestroyImage(a_logicalDevice, a_toDestroy.image, nullptr);
+		a_toDestroy.image = VK_NULL_HANDLE;
 	}
 
 	void destroyImage(VkDevice a_logicalDevice, Image& a_toDestroy)

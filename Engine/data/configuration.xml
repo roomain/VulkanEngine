@@ -8,7 +8,7 @@
 			<vk_extension>VK_EXT_debug_report</vk_extension>
 		</vk_extensions>
 	</vk_instance>
-	<vk_device useDepthBuffer='true'>
+	<vk_device useDepthBuffer='true' timeout='2000000000'>
 		<vk_queues>
 			<vk_queue>VK_QUEUE_GRAPHICS_BIT</vk_queue>
 		</vk_queues>

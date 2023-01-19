@@ -28,7 +28,7 @@ namespace Vulkan
 		return VK_FALSE;
 	}
 
-	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }, m_debugCallbackHandle { VK_NULL_HANDLE }
+	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }, m_debugCallbackHandle{ VK_NULL_HANDLE }, m_renderingIndex{ 0 }
 	{
 		//
 	}
@@ -96,7 +96,7 @@ namespace Vulkan
 	void VK_Renderer::startRendering(const unsigned int a_deviceIndex, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy)
 	{
 		m_windowProxy = std::move(a_windowProxy);
-
+		m_renderingIndex = 0;
 		if (m_windowProxy)
 		{
 			uint32_t deviceCount = 0;
@@ -109,7 +109,7 @@ namespace Vulkan
 			m_device.physical = deviceList[a_deviceIndex];
 
 			// get queues configuration
-			checkPhysicalDeviceQueues(m_device.physical, a_windowProxy->surface(), m_vkConf.queues);
+			checkPhysicalDeviceQueues(m_device.physical, m_windowProxy->surface(), m_vkConf.queues);
 
 			// create logical device
 			createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
@@ -131,7 +131,7 @@ namespace Vulkan
 			// create swapchain
 			VkSurfaceFormatKHR surfaceFormat;
 			createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
-
+			resetSemaphores();
 
 			// setup depth buffer
 			if (m_vkConf.useDepthBuffer)
@@ -148,9 +148,11 @@ namespace Vulkan
 		// Ensure all operations on the device have been finished before destroying resources
 		vkDeviceWaitIdle(m_device.logicalDevice);
 
+
 		// recreate swapchain
 		VkSurfaceFormatKHR surfaceFormat;
 		createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
+		resetSemaphores();
 
 		// release and setup depth buffer
 		if (m_vkConf.useDepthBuffer)
@@ -162,31 +164,72 @@ namespace Vulkan
 		// TODO
 	}
 
+	void VK_Renderer::destroySemaphores()
+	{
+		for (int i = 0; i < m_vAcquireSemaphore.size(); ++i)
+		{
+			vkDestroySemaphore(m_device.logicalDevice, m_vAcquireSemaphore[i], nullptr);
+			vkDestroySemaphore(m_device.logicalDevice, m_vPresentSemaphore[i], nullptr);
+		}
+
+		m_vAcquireSemaphore.clear();
+		m_vPresentSemaphore.clear();
+	}
+
+	void VK_Renderer::createSemaphores()
+	{
+
+		auto infoPresent = Initializers::semaphoreCreateInfo();
+		auto infoAcquire = Initializers::semaphoreCreateInfo();
+
+		for (int i = 0; i < m_vSwapchainImages.size(); ++i)
+		{
+			VkSemaphore presentSemaphore, acquireSemaphore;
+			vkCreateSemaphore(m_device.logicalDevice, &infoPresent, nullptr, &presentSemaphore);
+			vkCreateSemaphore(m_device.logicalDevice, &infoAcquire, nullptr, &acquireSemaphore);
+			m_vPresentSemaphore.emplace_back(presentSemaphore);
+			m_vAcquireSemaphore.emplace_back(acquireSemaphore);
+		}
+	}
+
+	void VK_Renderer::resetSemaphores()
+	{
+		destroySemaphores();
+		createSemaphores();
+	}
+
 	void VK_Renderer::release()
 	{
 		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
 			vkDestroyDebugReportCallbackEXT(m_vulkanInst, m_debugCallbackHandle, nullptr);
 		m_debugCallbackHandle = VK_NULL_HANDLE;
 
-		// release resources----------------------------------------------------
-		for (auto pPipeline : m_PipelineList)
-			pPipeline->destroy(m_device.logicalDevice);
-		clearPipelines();
+		// release resources----------------------------------------------------		
+		destoyPipelines();
 		
 		//----------------------------------------------------------------------
+
+		// destroy command pool
 		
-		// release depth buffer
+		// destroy depth buffer
 		if (m_vkConf.useDepthBuffer)
 			destroyDepthBufferImages();
 
 		// destroy swapchain
 		destroySwapChain(m_device, m_swapChain, m_vSwapchainImages);
+		
+		destroySemaphores();
+
+		// destoy surface
+		vkDestroySurfaceKHR(m_vulkanInst, m_windowProxy->surface(), nullptr);
+		m_windowProxy->resetSurface();
 
 		// destroy logical device
 		destroyVulkanDevice(m_device);
 
 		// destroy instance
 		destroyVulkanInstance(m_vulkanInst);
+		m_renderingIndex = 0;
 	}
 
 	void VK_Renderer::destroyDepthBufferImages()
@@ -241,7 +284,6 @@ namespace Vulkan
 		}
 		throw Vulkan::VK_Exception(std::format("Can't find any prefered format with tiling {} and flags {}", to_string(a_preferedTiling), Flag<VkFormatFeatureFlagBits>::to_string(a_preferedFlags)), std::source_location::current());
 	}
-
 
 	VkInstance VK_Renderer::vulkanInstance()const noexcept
 	{
@@ -299,9 +341,45 @@ namespace Vulkan
 			m_PipelineList.erase(iter);
 	}
 
-	void VK_Renderer::clearPipelines()
+	void VK_Renderer::destoyPipelines()
 	{
+		for (auto pPipeline : m_PipelineList)
+			pPipeline->destroy(m_device.logicalDevice);
 		m_PipelineList.clear();
 	}
 
+	bool VK_Renderer::renderOnScreen()
+	{
+		bool bRet = false;
+
+		// Get frame to render
+		VkFence acquireFence;
+		uint32_t frameIndex = 0;
+		VkResult resAquire = vkAcquireNextImageKHR(m_device.logicalDevice, m_swapChain, m_vkConf.frameTimeout, m_vAcquireSemaphore[m_renderingIndex], acquireFence, &frameIndex);
+		switch (resAquire)
+		{
+		case VK_SUCCESS:
+		case VK_SUBOPTIMAL_KHR:
+		{
+			bRet = true;
+			// TODO
+			VkPresentInfoKHR presentation = Initializers::presentationKHR(1, &m_vPresentSemaphore[m_renderingIndex], 1, &m_swapChain, &frameIndex);
+			vkQueuePresentKHR(m_graphicsQueue, &presentation);
+		}
+			break;
+		default:
+			break;
+		}
+		
+		m_renderingIndex = (m_renderingIndex + 1) % static_cast<uint32_t>(m_vSwapchainImages.size());
+
+		return bRet;
+	}
+
+	bool VK_Renderer::renderOffScreen()
+	{
+		bool bRet = false;
+		//
+		return bRet;
+	}
 }

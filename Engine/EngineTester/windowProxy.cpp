@@ -31,3 +31,8 @@ uint32_t WindowProxy::height()
 	glfwGetWindowSize(m_pWindow, nullptr, &height);
 	return static_cast<uint32_t>(height);
 }
+
+void WindowProxy::resetSurface()
+{
+	m_vkSurface = VK_NULL_HANDLE;
+}

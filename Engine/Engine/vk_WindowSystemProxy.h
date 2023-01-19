@@ -13,6 +13,7 @@ namespace Vulkan
 		virtual VkSurfaceKHR surface() = 0;
 		virtual uint32_t width() = 0;
 		virtual uint32_t height() = 0;
+		virtual void resetSurface() = 0;
 		// TODO
 	};
 

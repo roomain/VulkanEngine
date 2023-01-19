@@ -12,7 +12,9 @@ private:
 public:
 	WindowProxy(const VkInstance a_vkInstance, GLFWwindow* const a_window);
 	~WindowProxy();
+
 	VkSurfaceKHR surface()override;
 	uint32_t width()override;
 	uint32_t height()override;
+	void resetSurface() override;
 };
