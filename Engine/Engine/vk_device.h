@@ -48,7 +48,15 @@ namespace Vulkan
     /*@brief image pool memory configuration*/
     struct MemoryImagePoolConf
     {
-        std::vector<VkImageCreateInfo> vImageCreateInfo;    /*!< vulkan image create conf*/
+        std::vector<VkImageCreateInfo> vImageCreateInfo;    /*!< list of vulkan image create conf*/
+        VkMemoryPropertyFlags memProps;	                    /*!< image memory properties*/
+    };
+
+    /*@brief image pool memory configuration with same image parameter*/
+    struct MemorySameImagePoolConf
+    {
+        unsigned int imageCount;                            /*!< number of images to create*/
+        VkImageCreateInfo imageCreateInfo;                  /*!< vulkan image create conf*/
         VkMemoryPropertyFlags memProps;	                    /*!< image memory properties*/
     };
 
@@ -63,7 +71,12 @@ namespace Vulkan
         /*@brief get index of compatible memory for device local memory*/
         [[nodiscard]] uint32_t memoryTypeIndex(const uint32_t a_memTypeBits, const VkMemoryPropertyFlags a_flags)const;
 
-        [[nodiscard]] VK_Device(const Device& a_device);
+        [[nodiscard]] explicit VK_Device(const VkPhysicalDevice a_physicalDevice);
+
+        static void createLogicalDevice(const DeviceQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device);
+
+    private:
+        void destroyBaseImage(BaseImage& a_toDestroy)const;
 
     public:
         virtual ~VK_Device();
@@ -77,8 +90,18 @@ namespace Vulkan
         void createImage(const MemoryImageConf& a_memConf, Image& a_image)const;
         /*@brief create an image pool*/
         void createImagePool(const MemoryImagePoolConf& a_memConf, ImagePool& a_imagePool)const;
+        void createImagePool(const MemorySameImagePoolConf& a_memConf, ImagePool& a_imagePool)const;
 
-        // destroy
+        /*@brief destroy Image and release memory*/
+        void destroyImage(Image& a_toDestroy)const;
+        /*@brief destroy ImagePool and release memory*/
+        void destroyImagePool(ImagePool& a_toDestroy)const;
+        /*@brief destroy Buffer and release memory*/
+        void destroyBuffer(Buffer& a_toDestroy)const;
+        /*@brief destroy BufferPool and release memory*/
+        void destroyBufferPool(BufferPool& a_toDestroy)const;
+        //-----------------------------------------------------------------------------------------------------
+        void createImageView(const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView);
 
     };
 }

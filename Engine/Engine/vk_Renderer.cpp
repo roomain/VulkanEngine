@@ -2,7 +2,6 @@
 #include "vk_Renderer.h"
 #include "vk_logger.h"
 #include "vk_WindowSystemProxy.h"
-#include "vk_destroy.h"
 #include <exception>
 #include <algorithm>
 #include <format>
@@ -10,131 +9,147 @@
 
 namespace Vulkan
 {
-	PFN_vkCreateDebugReportCallbackEXT VK_Renderer::vkCreateDebugReportCallbackEXT = nullptr;
-	PFN_vkDestroyDebugReportCallbackEXT VK_Renderer::vkDestroyDebugReportCallbackEXT = nullptr;
-
-	VkBool32 VKAPI_ATTR VK_Renderer::messageCallback(VkDebugReportFlagsEXT flags,				// Type of error
-		VkDebugReportObjectTypeEXT objType,			// Type of object causing error
-		uint64_t obj,								// ID of object
-		size_t location,
-		int32_t code,
-		const char* layerPrefix,
-		const char* message,						// Validation Information
-		void* userData)
+	VkPresentModeKHR VK_Renderer::getBestPresentationMode(const std::vector<VkPresentModeKHR>& a_vPresentationModes)
 	{
-		VK_Logger* const pLogger = static_cast<VK_Logger*>(userData);
-		if (pLogger)
-			pLogger->log(flags, objType, obj, location, code, layerPrefix, message);
-		return VK_FALSE;
+		if (std::find(a_vPresentationModes.cbegin(), a_vPresentationModes.cend(), VK_PRESENT_MODE_MAILBOX_KHR) != a_vPresentationModes.cend())
+			return VK_PRESENT_MODE_MAILBOX_KHR;
+
+		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 
-	VK_Renderer::VK_Renderer() : m_swapChain{ VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }, m_debugCallbackHandle{ VK_NULL_HANDLE }, m_renderingIndex{ 0 }
+	VkSurfaceFormatKHR VK_Renderer::getBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& a_vformats)
 	{
-		//
+		// If only 1 format available and is undefined, then this means ALL formats are available (no restrictions)
+		if (a_vformats.size() == 1 && a_vformats[0].format == VK_FORMAT_UNDEFINED)
+			return{ VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+
+		// If restricted, search for optimal format
+		auto iter = std::find_if(a_vformats.begin(), a_vformats.end(), [&](const auto& format)
+			{
+				return (format.format == VK_FORMAT_R8G8B8A8_UNORM || format.format == VK_FORMAT_B8G8R8A8_UNORM)
+				&& format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+			});
+		if (iter != a_vformats.end())
+			return *iter;
+
+		// If can't find optimal format, then just return first format
+		return a_vformats[0];
 	}
 
-	VK_Renderer::~VK_Renderer()
+	void VK_Renderer::getSwapChainCapabilities(const VkPhysicalDevice a_device, const VkSurfaceKHR a_surface, SwapchainCapabilities& a_swapChainCap)
 	{
-		release();
-	}
+		VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_device, a_surface, &a_swapChainCap.surfaceCapabilities));
 
-	void VK_Renderer::init(const std::string& a_confFile, VK_Logger* const a_pLogger, const std::vector<std::string>& a_windowSysExtensions, std::vector<PhysicalDeviceInfo>& a_compatibleDevices)
-	{
-		loadConfiguration(a_confFile, m_vkConf);
-
-		m_vkConf.instanceExtProps.insert(m_vkConf.instanceExtProps.end(), a_windowSysExtensions.begin(), a_windowSysExtensions.end());
-
-		// check instance properties
-		bool hasDebugExt = false;
-		if (!checkInstanceExtensionProps(m_vkConf.instanceExtProps, hasDebugExt))
-			throw Vulkan::VK_Exception("unsupported extensions", std::source_location::current());
-
-		// check layers
-		if (!checkInstanceLayerProps(m_vkConf.instanceLayers))
-			throw Vulkan::VK_Exception("unsupported layers", std::source_location::current());
-
-		// create vulkan instance
-		createVulkanInstance(m_vkConf, m_vulkanInst);
-
-		// create Debug
-		if (hasDebugExt)
+		uint32_t formatCount = 0;
+		VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, nullptr));
+		if (formatCount > 0)
 		{
-			VK_Renderer::vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkCreateDebugReportCallbackEXT");
-			VK_Renderer::vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(m_vulkanInst, "vkDestroyDebugReportCallbackEXT");
-			if (vkCreateDebugReportCallbackEXT != nullptr && vkDestroyDebugReportCallbackEXT != nullptr)
-			{
-				// add debug callback
-				VkDebugReportCallbackCreateInfoEXT debugExt = Vulkan::Initializers::debugCallbackCreateInfo();
-				debugExt.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
-				debugExt.pfnCallback = VK_Renderer::messageCallback;
-				debugExt.pUserData = a_pLogger;
-				VK_CHECK(vkCreateDebugReportCallbackEXT(m_vulkanInst, &debugExt, nullptr, &m_debugCallbackHandle));
-			}
-			else
-			{
-				throw Vulkan::VK_Exception("Failed to load PFN_vkCreateDebugUtilsMessengerEXT and vkDestroyDebugUtilsMessengerEXT functions", std::source_location::current());
-			}
+			a_swapChainCap.supportedFormats.resize(static_cast<int>(formatCount));
+			VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, a_swapChainCap.supportedFormats.data()));
 		}
 
-		int index = 0;
-		uint32_t count = 0;
-		vkEnumeratePhysicalDevices(m_vulkanInst, &count, nullptr);
-		std::vector<VkPhysicalDevice> vDevices(count);
-		vkEnumeratePhysicalDevices(m_vulkanInst, &count, vDevices.data());
-		for (const auto& device : vDevices)
+		uint32_t presentCount = 0;
+		VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, nullptr));
+		if (presentCount > 0)
 		{
-			if (checkPhysicalDeviceExtension(device, m_vkConf.deviceExt))
-			{
-				VkPhysicalDeviceProperties devProp;
-				vkGetPhysicalDeviceProperties(device, &devProp);
-				a_compatibleDevices.emplace_back(PhysicalDeviceInfo{ index, devProp.deviceName });
-			}
-			++index;
+			a_swapChainCap.supportedModes.resize(static_cast<int>(presentCount));
+			VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, a_swapChainCap.supportedModes.data()));
 		}
 	}
 
-	void VK_Renderer::startRendering(const unsigned int a_deviceIndex, std::unique_ptr<VK_WindowSystemProxy>&& a_windowProxy)
+	void VK_Renderer::createSwapChain()
 	{
-		m_windowProxy = std::move(a_windowProxy);
-		m_renderingIndex = 0;
-		if (m_windowProxy)
+		// Get swap chain capabilities
+		SwapchainCapabilities swapChainCaps;
+		getSwapChainCapabilities(m_vkDevice.physical, m_pWindowProxy->surface(), swapChainCaps);
+
+		// choose optimal surface values
+		VkSurfaceFormatKHR surfaceFormat = getBestSurfaceFormat(swapChainCaps.supportedFormats);
+		VkPresentModeKHR presentMode = getBestPresentationMode(swapChainCaps.supportedModes);
+		//VkExtent2D extent = chooseSwapExtent(swapChainDetails.surfaceCapabilities);
+
+		// How many images are in the swap chain? Get 1 more than the minimum to allow triple buffering
+		uint32_t imageCount = swapChainCaps.surfaceCapabilities.minImageCount + 1;
+
+		// If imageCount higher than max, then clamp down to max
+		// If 0, then limitless
+		if (swapChainCaps.surfaceCapabilities.maxImageCount > 0 && swapChainCaps.surfaceCapabilities.maxImageCount < imageCount)
+			imageCount = swapChainCaps.surfaceCapabilities.maxImageCount;
+
+		// Creation information for swap chain
+		VkSwapchainCreateInfoKHR swapChainCreateInfo = Vulkan::Initializers::swapChainCreateInfoKHR();
+		swapChainCreateInfo.surface = m_pWindowProxy->surface();							// Swapchain surface
+		swapChainCreateInfo.imageFormat = surfaceFormat.format;						// Swapchain format
+		swapChainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;				// Swapchain colour space
+		swapChainCreateInfo.presentMode = presentMode;									// Swapchain presentation mode
+
+		VkExtent2D newExtent = {};
+		newExtent.width = m_pWindowProxy->width();
+		newExtent.height = m_pWindowProxy->height();
+		newExtent.width = std::clamp(newExtent.width, swapChainCaps.surfaceCapabilities.minImageExtent.width, swapChainCaps.surfaceCapabilities.maxImageExtent.width);
+		newExtent.height = std::clamp(newExtent.height, swapChainCaps.surfaceCapabilities.minImageExtent.height, swapChainCaps.surfaceCapabilities.maxImageExtent.height);
+		swapChainCreateInfo.imageExtent = newExtent;
+
+		swapChainCreateInfo.minImageCount = imageCount;												// Minimum images in swapchain
+		swapChainCreateInfo.imageArrayLayers = 1;													// Number of layers for each image in chain
+		swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;						// What attachment images will be used as
+		swapChainCreateInfo.preTransform = swapChainCaps.surfaceCapabilities.currentTransform;		// Transform to perform on swap chain images
+		swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;						// How to handle blending images with external graphics (e.g. other windows)
+		swapChainCreateInfo.clipped = VK_TRUE;														// Whether to clip parts of image not in view (e.g. behind another window, off screen, etc)
+		VkSwapchainKHR oldSwapChain = m_swapChain;
+		swapChainCreateInfo.oldSwapchain = oldSwapChain;
+		VK_CHECK(vkCreateSwapchainKHR(m_vkDevice.logicalDevice, &swapChainCreateInfo, nullptr, &m_swapChain))
+
+			if (oldSwapChain != VK_NULL_HANDLE)
+				destroySwapChain();
+
+		// get swap chain images
+		uint32_t swapChainImageCount;
+		vkGetSwapchainImagesKHR(m_vkDevice.logicalDevice, m_swapChain, &swapChainImageCount, nullptr);
+		std::vector<VkImage> vImages(swapChainImageCount);
+		vkGetSwapchainImagesKHR(m_vkDevice.logicalDevice, m_swapChain, &swapChainImageCount, vImages.data());
+
+		// create images view from swapchain images
+		for (const VkImage& img : vImages)
 		{
-			uint32_t deviceCount = 0;
-			vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, nullptr);
+			BaseImage swapChainImg{ .image = img };
+			createImageView(swapChainImg.image, surfaceFormat.format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImg.imageView);
+			m_vSwapchainImages.emplace_back(swapChainImg);
+		}
+	}
 
-			std::vector<VkPhysicalDevice> deviceList(deviceCount);
-			vkEnumeratePhysicalDevices(m_vulkanInst, &deviceCount, deviceList.data());
+	void VK_Renderer::destroySwapChain()
+	{
+		for (const auto& image : m_vSwapchainImages)
+			vkDestroyImageView(m_vkDevice.logicalDevice, image.imageView, nullptr);
+		vkDestroySwapchainKHR(m_vkDevice.logicalDevice, m_swapChain, nullptr);
+		m_vSwapchainImages.clear();
+	}
 
-			// choose physical device
-			m_device.physical = deviceList[a_deviceIndex];
+	VK_Renderer::VK_Renderer(const VkPhysicalDevice a_physicalDevice, RenderDeviceConf&& a_rendererConf,
+		const std::vector<std::string>& a_deviceExt, const std::shared_ptr<VK_WindowSystemProxy>& a_pWwinProxy) : VK_Device{ a_physicalDevice },
+		m_RendererConf{std::move(a_rendererConf)},
+		m_swapChain { VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }, m_renderingIndex{ 0 },
+		m_pWindowProxy{ a_pWwinProxy }, m_acquireFence{ VK_NULL_HANDLE }
+	{
+		// create logical device
+		VK_Device::createLogicalDevice(m_RendererConf.queueConf, a_deviceExt, m_vkDevice);
 
-			// get queues configuration
-			checkPhysicalDeviceQueues(m_device.physical, m_windowProxy->surface(), m_vkConf.queues);
-
-			// create logical device
-			createVulkanDevice(m_vkConf.queues, m_vkConf.deviceExt, m_device);
-
-			// create queues
-			bool supportPresentation = false;
-			int indexGraphics = m_vkConf.queues.queueVKIndex(VK_QUEUE_GRAPHICS_BIT, supportPresentation);
-			vkGetDeviceQueue(m_device.logicalDevice, indexGraphics, 0, &m_graphicsQueue);
-			if (supportPresentation)
-			{
-				m_presentationQueue = m_graphicsQueue;
-			}
-			else
-			{
-				int indexPresentation = m_vkConf.queues.presentationQueueVKIndex();
-				vkGetDeviceQueue(m_device.logicalDevice, indexPresentation, 0, &m_presentationQueue);
-			}
-
+		if (m_pWindowProxy)
+		{
 			// create swapchain
-			VkSurfaceFormatKHR surfaceFormat;
-			createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
+			createSwapChain();
 			resetSemaphores();
 
+			if (m_acquireFence == VK_NULL_HANDLE)
+			{
+				// create acquire fence
+				VkFenceCreateInfo fenceCreate = Initializers::fenceCreateInfo();
+				vkCreateFence(m_vkDevice.logicalDevice, &fenceCreate, nullptr, &m_acquireFence);
+			}
+
 			// setup depth buffer
-			if (m_vkConf.useDepthBuffer)
+			if (m_RendererConf.useDepthBuffer)
 				createDepthBufferImages();
 		}
 		else
@@ -143,19 +158,23 @@ namespace Vulkan
 		}
 	}
 
+	VK_Renderer::~VK_Renderer()
+	{
+		release();
+	}
+
 	void VK_Renderer::onWindowResized()
 	{
 		// Ensure all operations on the device have been finished before destroying resources
-		vkDeviceWaitIdle(m_device.logicalDevice);
+		vkDeviceWaitIdle(m_vkDevice.logicalDevice);
 
 
 		// recreate swapchain
-		VkSurfaceFormatKHR surfaceFormat;
-		createSwapChain(m_device, m_swapChain, surfaceFormat, std::move(m_windowProxy), m_vSwapchainImages);
+		createSwapChain();
 		resetSemaphores();
 
 		// release and setup depth buffer
-		if (m_vkConf.useDepthBuffer)
+		if (m_RendererConf.useDepthBuffer)
 		{
 			destroyDepthBufferImages();
 			createDepthBufferImages();
@@ -168,8 +187,8 @@ namespace Vulkan
 	{
 		for (int i = 0; i < m_vAcquireSemaphore.size(); ++i)
 		{
-			vkDestroySemaphore(m_device.logicalDevice, m_vAcquireSemaphore[i], nullptr);
-			vkDestroySemaphore(m_device.logicalDevice, m_vPresentSemaphore[i], nullptr);
+			vkDestroySemaphore(m_vkDevice.logicalDevice, m_vAcquireSemaphore[i], nullptr);
+			vkDestroySemaphore(m_vkDevice.logicalDevice, m_vPresentSemaphore[i], nullptr);
 		}
 
 		m_vAcquireSemaphore.clear();
@@ -185,8 +204,8 @@ namespace Vulkan
 		for (int i = 0; i < m_vSwapchainImages.size(); ++i)
 		{
 			VkSemaphore presentSemaphore, acquireSemaphore;
-			vkCreateSemaphore(m_device.logicalDevice, &infoPresent, nullptr, &presentSemaphore);
-			vkCreateSemaphore(m_device.logicalDevice, &infoAcquire, nullptr, &acquireSemaphore);
+			vkCreateSemaphore(m_vkDevice.logicalDevice, &infoPresent, nullptr, &presentSemaphore);
+			vkCreateSemaphore(m_vkDevice.logicalDevice, &infoAcquire, nullptr, &acquireSemaphore);
 			m_vPresentSemaphore.emplace_back(presentSemaphore);
 			m_vAcquireSemaphore.emplace_back(acquireSemaphore);
 		}
@@ -200,10 +219,7 @@ namespace Vulkan
 
 	void VK_Renderer::release()
 	{
-		if (m_debugCallbackHandle != VK_NULL_HANDLE)// optional
-			vkDestroyDebugReportCallbackEXT(m_vulkanInst, m_debugCallbackHandle, nullptr);
-		m_debugCallbackHandle = VK_NULL_HANDLE;
-
+		
 		// release resources----------------------------------------------------		
 		destoyPipelines();
 		
@@ -212,29 +228,23 @@ namespace Vulkan
 		// destroy command pool
 		
 		// destroy depth buffer
-		if (m_vkConf.useDepthBuffer)
+		if (m_RendererConf.useDepthBuffer)
 			destroyDepthBufferImages();
 
 		// destroy swapchain
-		destroySwapChain(m_device, m_swapChain, m_vSwapchainImages);
+		destroySwapChain();
 		
 		destroySemaphores();
 
 		// destoy surface
-		vkDestroySurfaceKHR(m_vulkanInst, m_windowProxy->surface(), nullptr);
-		m_windowProxy->resetSurface();
-
-		// destroy logical device
-		destroyVulkanDevice(m_device);
-
-		// destroy instance
-		destroyVulkanInstance(m_vulkanInst);
+		vkDestroySurfaceKHR(m_RendererConf.vkInstance, m_pWindowProxy->surface(), nullptr);
+		m_pWindowProxy->resetSurface();
 		m_renderingIndex = 0;
 	}
 
 	void VK_Renderer::destroyDepthBufferImages()
 	{		
-		destroyImagePool(m_device.logicalDevice, m_depthImagesPool);
+		destroyImagePool(m_depthImagesPool);
 	}
 
 	void VK_Renderer::createDepthBufferImages()
@@ -243,25 +253,23 @@ namespace Vulkan
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
-
-		VkImageCreateInfo imageCreateInfo = {};
-		imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-		imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;							// Type of image (1D, 2D, or 3D)
-		imageCreateInfo.extent.width = m_windowProxy->width();					// Width of image extent
-		imageCreateInfo.extent.height = m_windowProxy->height();				// Height of image extent
-		imageCreateInfo.extent.depth = 1;										// Depth of image (just 1, no 3D aspect)
-		imageCreateInfo.mipLevels = 1;											// Number of mipmap levels
-		imageCreateInfo.arrayLayers = 1;										// Number of levels in image array
-		imageCreateInfo.format = bestFormat;									// Format type of image
-		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;						// How image data should be "tiled" (arranged for optimal reading)
-		imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;				// Layout of image data on creation
-		imageCreateInfo.usage = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;	// Bit flags defining what image will be used for
-		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;						// Number of samples for multi-sampling
-		imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;				// Whether image can be shared between queues
-
-		VkPhysicalDeviceMemoryProperties memoryProperties;
-		vkGetPhysicalDeviceMemoryProperties(m_device.physical, &memoryProperties);
-		createImagePool(m_device.logicalDevice, memoryProperties, static_cast<unsigned int >(m_vSwapchainImages.size()), imageCreateInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImagesPool);
+		MemorySameImagePoolConf memConf;
+		memConf.imageCount = static_cast<unsigned int>(m_vSwapchainImages.size());
+		memConf.imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		memConf.imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;							// Type of image (1D, 2D, or 3D)
+		memConf.imageCreateInfo.extent.width = m_pWindowProxy->width();					// Width of image extent
+		memConf.imageCreateInfo.extent.height = m_pWindowProxy->height();				// Height of image extent
+		memConf.imageCreateInfo.extent.depth = 1;										// Depth of image (just 1, no 3D aspect)
+		memConf.imageCreateInfo.mipLevels = 1;											// Number of mipmap levels
+		memConf.imageCreateInfo.arrayLayers = 1;										// Number of levels in image array
+		memConf.imageCreateInfo.format = bestFormat;									// Format type of image
+		memConf.imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;						// How image data should be "tiled" (arranged for optimal reading)
+		memConf.imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;				// Layout of image data on creation
+		memConf.imageCreateInfo.usage = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;	// Bit flags defining what image will be used for
+		memConf.imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;						// Number of samples for multi-sampling
+		memConf.imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;				// Whether image can be shared between queues
+		memConf.memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		createImagePool(memConf, m_depthImagesPool);
 	}
 
 	VkFormat VK_Renderer::findBestImageFormat(const std::vector<VkFormat>& a_preferedFormats, const VkImageTiling a_preferedTiling, const VkFormatFeatureFlags a_preferedFlags)
@@ -270,7 +278,7 @@ namespace Vulkan
 		{
 			// Get properties for give format on this device
 			VkFormatProperties properties;
-			vkGetPhysicalDeviceFormatProperties(m_device.physical, format, &properties);
+			vkGetPhysicalDeviceFormatProperties(m_vkDevice.physical, format, &properties);
 
 			// Depending on tiling choice, need to check for different bit flag
 			if (a_preferedTiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & a_preferedFlags) == a_preferedFlags)
@@ -285,10 +293,6 @@ namespace Vulkan
 		throw Vulkan::VK_Exception(std::format("Can't find any prefered format with tiling {} and flags {}", to_string(a_preferedTiling), Flag<VkFormatFeatureFlagBits>::to_string(a_preferedFlags)), std::source_location::current());
 	}
 
-	VkInstance VK_Renderer::vulkanInstance()const noexcept
-	{
-		return m_vulkanInst;
-	}
 
 	bool VK_Renderer::registerPipeline(VK_PipelinePtr& a_pipeline)
 	{
@@ -344,7 +348,7 @@ namespace Vulkan
 	void VK_Renderer::destoyPipelines()
 	{
 		for (auto pPipeline : m_PipelineList)
-			pPipeline->destroy(m_device.logicalDevice);
+			pPipeline->destroy(m_vkDevice.logicalDevice);
 		m_PipelineList.clear();
 	}
 
@@ -352,10 +356,10 @@ namespace Vulkan
 	{
 		bool bRet = false;
 
+
 		// Get frame to render
-		VkFence acquireFence;
 		uint32_t frameIndex = 0;
-		VkResult resAquire = vkAcquireNextImageKHR(m_device.logicalDevice, m_swapChain, m_vkConf.frameTimeout, m_vAcquireSemaphore[m_renderingIndex], acquireFence, &frameIndex);
+		VkResult resAquire = vkAcquireNextImageKHR(m_vkDevice.logicalDevice, m_swapChain, m_RendererConf.frameTimeout, m_vAcquireSemaphore[m_renderingIndex], m_acquireFence, &frameIndex);
 		switch (resAquire)
 		{
 		case VK_SUCCESS:

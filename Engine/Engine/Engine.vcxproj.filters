@@ -54,12 +54,6 @@
     <ClInclude Include="vk_WindowSystemProxy.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="vk_destroy.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_create.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
     <ClInclude Include="vk_check.h">
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
@@ -88,9 +82,6 @@
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
     <ClInclude Include="vk_enum_to_string.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_enumerate.h">
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
     <ClInclude Include="vk_pipeline.h">
@@ -138,15 +129,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="vk_check.cpp">
-      <Filter>Fichiers sources\functions</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_create.cpp">
-      <Filter>Fichiers sources\functions</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_destroy.cpp">
-      <Filter>Fichiers sources\functions</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_enumerate.cpp">
       <Filter>Fichiers sources\functions</Filter>
     </ClCompile>
     <ClCompile Include="vk_display.cpp">

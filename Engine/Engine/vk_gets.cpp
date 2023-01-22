@@ -167,24 +167,6 @@ namespace Vulkan
 		throw Vulkan::VK_Exception("Can't find Memory index.", std::source_location::current());
 	}
 
-	VkSurfaceFormatKHR getBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& a_vformats)
-	{
-		// If only 1 format available and is undefined, then this means ALL formats are available (no restrictions)
-		if (a_vformats.size() == 1 && a_vformats[0].format == VK_FORMAT_UNDEFINED)
-			return{ VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
-
-		// If restricted, search for optimal format
-		auto iter = std::find_if(a_vformats.begin(), a_vformats.end(), [&](const auto& format)
-			{
-				return (format.format == VK_FORMAT_R8G8B8A8_UNORM || format.format == VK_FORMAT_B8G8R8A8_UNORM)
-				&& format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-		});
-		if(iter != a_vformats.end())
-			return *iter;
-
-		// If can't find optimal format, then just return first format
-		return a_vformats[0];
-	}
 
 	VkPresentModeKHR getBestPresentationMode(const std::vector<VkPresentModeKHR>& a_vPresentationModes)
 	{

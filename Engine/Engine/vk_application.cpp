@@ -1,9 +1,12 @@
 #include "pch.h"
+#include <algorithm>
+#include <iterator>
 #include "vk_display.h"
 #include "IDisplayer.h"
 #include "vk_configuration.h"
 #include "vk_logger.h"
 #include "vk_WindowSystemProxy.h"
+#include "vk_Renderer.h"
 
 
 namespace Vulkan
@@ -12,7 +15,7 @@ namespace Vulkan
 	PFN_vkCreateDebugReportCallbackEXT VK_Application::vkCreateDebugReportCallbackEXT = nullptr;
 	PFN_vkDestroyDebugReportCallbackEXT VK_Application::vkDestroyDebugReportCallbackEXT = nullptr;
 	
-	VK_Application::VK_Application() : m_vulkanInst{ VK_NULL_HANDLE }
+	VK_Application::VK_Application() : m_vulkanInst{ VK_NULL_HANDLE }, m_debugCallbackHandle{VK_NULL_HANDLE}
 	{
 		// get  vulkan instance capabilities
 		uint32_t propCount = 0;
@@ -66,11 +69,11 @@ namespace Vulkan
 
 		// generate table of char* from vectors of string
 		std::vector<const char*> vNameData;
-		for (auto& ext : a_conf.instanceExtProps)
-			vNameData.emplace_back(ext.c_str());
+		std::transform(a_conf.instanceExtProps.begin(), a_conf.instanceExtProps.end(), std::back_inserter(vNameData), 
+			[](const auto& ext) {return ext.c_str(); });
 
-		for (auto& layer : a_conf.instanceLayers)
-			vNameData.emplace_back(layer.c_str());
+		std::transform(a_conf.instanceLayers.begin(), a_conf.instanceLayers.end(), std::back_inserter(vNameData),
+			[](const auto& layer) {return layer.c_str(); });
 
 		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_conf.instanceExtProps.size());
 		instCreateInfo.ppEnabledExtensionNames = vNameData.data();
@@ -96,7 +99,7 @@ namespace Vulkan
 			}
 			else
 			{
-				throw Vulkan::VK_Exception("Failed to load PFN_vkCreateDebugUtilsMessengerEXT and vkDestroyDebugUtilsMessengerEXT functions", std::source_location::current());
+				throw VK_Exception("Failed to load PFN_vkCreateDebugUtilsMessengerEXT and vkDestroyDebugUtilsMessengerEXT functions", std::source_location::current());
 			}
 		}
 		//--------------------------------------------------------------------------------
@@ -121,38 +124,24 @@ namespace Vulkan
 
 	bool VK_Application::checkInstanceLayer(const std::string& a_layer)const noexcept
 	{
-		return std::find_if(m_capabilities.layerPops.begin(), m_capabilities.layerPops.end(), [&a_layer](const auto& lay)
-			{
-				return a_layer.compare(lay.layerName) == 0;
-			}) != m_capabilities.layerPops.end();
+		return std::any_of(m_capabilities.layerPops.begin(), m_capabilities.layerPops.end(),
+			[&a_layer](const auto& lay) {return a_layer.compare(lay.layerName) == 0; });
 	}
 
 	bool VK_Application::checkInstanceLayers(const std::vector<std::string>& a_vLayer)const noexcept
 	{
-		for (const auto& layer : a_vLayer)
-		{
-			if (!checkInstanceLayer(layer))
-				return false;
-		}
-		return true;
+		return !std::any_of(a_vLayer.begin(), a_vLayer.end(), [this](const auto& layer) {return !checkInstanceLayer(layer); });
 	}
 
 	bool VK_Application::checkInstanceExtension(const std::string& a_ext)const noexcept
 	{
-		return std::find_if(m_capabilities.extensionProps.begin(), m_capabilities.extensionProps.end(), [&a_ext](const auto& ext)
-			{
-				return a_ext.compare(ext.extensionName) == 0;
-			}) != m_capabilities.extensionProps.end();
+		return std::any_of(m_capabilities.extensionProps.begin(), m_capabilities.extensionProps.end(), 
+			[&a_ext](const auto& ext) {return a_ext.compare(ext.extensionName) == 0; });
 	}
 
 	bool VK_Application::checkInstanceExtensions(const std::vector<std::string>& a_vExt)const noexcept
 	{
-		for (const auto& ext : a_vExt)
-		{
-			if (!checkInstanceExtension(ext))
-				return false;
-		}
-		return true;
+		return !std::any_of(a_vExt.begin(), a_vExt.end(), [this](const auto& ext) {return !checkInstanceExtension(ext); });
 	}
 
 	void VK_Application::displayInstanceCapabilities(IDisplayer& a_displayer)const
@@ -231,6 +220,7 @@ namespace Vulkan
 							queueConf.index = iFamilyIndex;
 							if (a_winProxy)
 							{
+								VkBool32 presentationSupport = VK_FALSE;
 								VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(devCap.physicalDevice, iFamilyIndex, a_winProxy->surface(), &presentationSupport))
 								queueConf.presentationSupport = presentationSupport == VK_TRUE;
 							}
@@ -245,6 +235,42 @@ namespace Vulkan
 			
 			++iDeviceIndex;
 		}
+	}
+	
+	std::shared_ptr<VK_Renderer> VK_Application::createRenderer(const VulkanConfiguration& a_conf, const DeviceInfo& a_chosenDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy)
+	{
+		if(m_vulkanInst == VK_NULL_HANDLE)
+			throw VK_Exception("Can't create renderer without Vulkan instance.", std::source_location::current());
+		
+		RenderDeviceConf renderConf;
+		renderConf.vkInstance = m_vulkanInst;
+		renderConf.frameTimeout = a_conf.frameTimeout;
+		renderConf.useDepthBuffer = a_conf.useDepthBuffer;
+		renderConf.queueConf = a_conf.queues;
+		for (auto& queueConf : renderConf.queueConf.vQueueConf)
+		{
+			int iFamilyIndex = 0;
+			for (const auto& queueCap : m_vDeviceCapabilities[a_chosenDevice.deviceIndex].queueFamilies)
+			{
+				if (queueCap.queueCount > 0)
+				{
+					if (queueConf.type == (queueConf.type & queueCap.queueFlags))
+					{
+						queueConf.index = iFamilyIndex;
+						if (a_winProxy)
+						{
+							VkBool32 presentationSupport = VK_FALSE;
+							VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(m_vDeviceCapabilities[a_chosenDevice.deviceIndex].physicalDevice, iFamilyIndex, a_winProxy->surface(), &presentationSupport))
+							queueConf.presentationSupport = presentationSupport == VK_TRUE;
+						}
+					}
+				}
+				++iFamilyIndex;
+			}
+		}
+
+		return std::make_shared<VK_Renderer>(m_vDeviceCapabilities[a_chosenDevice.deviceIndex].physicalDevice, std::move(renderConf),
+			a_conf.deviceExt, a_winProxy);
 	}
 	//-----------------------------------------------------------------------------------------------------------------------
 	VkBool32 VKAPI_ATTR VK_Application::messageCallback(VkDebugReportFlagsEXT flags,				// Type of error

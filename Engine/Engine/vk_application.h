@@ -13,6 +13,7 @@ namespace Vulkan
 	class VK_Logger;
 	class IDisplayer;
 	class VK_Device;
+	class VK_Renderer;
 	class VK_WindowSystemProxy;
 
 	/*@brief device short informations*/
@@ -73,5 +74,7 @@ namespace Vulkan
 		//--------------------------------------------------------------
 		/*@brief search compatible device for configuration*/
 		void searchCompatibleDevice(const VulkanConfiguration& a_conf, std::vector<DeviceInfo>& a_vDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy);
+
+		[[nodiscard]] std::shared_ptr<VK_Renderer> createRenderer(const VulkanConfiguration& a_conf, const DeviceInfo& a_chosenDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy);
 	};
 }

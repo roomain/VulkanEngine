@@ -107,7 +107,7 @@ namespace Vulkan::Initializers
 
 	[[nodiscard]] constexpr VkBufferCreateInfo&& bufferCreateInfo()
 	{
-		return std::move(VkBufferCreateInfo{ .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, .pNext = nullptr, .queueFamilyIndexCount = 0, .pQueueFamilyIndices = nullptr });
+		return std::move(VkBufferCreateInfo{ .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, .pNext = nullptr, .size = 0, .queueFamilyIndexCount = 0, .pQueueFamilyIndices = nullptr });
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetLayoutBinding&& descriptorSetLayoutBinding(
@@ -517,6 +517,11 @@ namespace Vulkan::Initializers
 
 	[[nodiscard]] constexpr VkSemaphoreCreateInfo&& semaphoreCreateInfo(VkSemaphoreCreateFlags a_flags = 0)
 	{
-		return VkSemaphoreCreateInfo{.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, .pNext = nullptr, .flags = a_flags};
+		return std::move(VkSemaphoreCreateInfo{.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, .pNext = nullptr, .flags = a_flags});
+	}
+
+	[[nodiscard]] constexpr VkFenceCreateInfo&& fenceCreateInfo(VkFenceCreateFlags a_flags = 0)
+	{
+		return std::move(VkFenceCreateInfo{ .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, .pNext = nullptr, .flags = a_flags });
 	}
 }

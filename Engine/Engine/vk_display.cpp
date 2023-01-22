@@ -25,8 +25,8 @@ namespace Vulkan
 		a_displayer.attribute("maxPushConstantsSize", a_limits.maxPushConstantsSize);
 		a_displayer.attribute("maxMemoryAllocationCount", a_limits.maxMemoryAllocationCount);
 		a_displayer.attribute("maxSamplerAllocationCount", a_limits.maxSamplerAllocationCount);
-		a_displayer.attribute("bufferImageGranularity", static_cast<size_t>(a_features.a_limits.bufferImageGranularity));
-		a_displayer.attribute("sparseAddressSpaceSize", static_cast<size_t>(a_features.a_limits.sparseAddressSpaceSize));
+		a_displayer.attribute("bufferImageGranularity", static_cast<size_t>(a_limits.bufferImageGranularity));
+		a_displayer.attribute("sparseAddressSpaceSize", static_cast<size_t>(a_limits.sparseAddressSpaceSize));
 		a_displayer.attribute("maxBoundDescriptorSets", a_limits.maxBoundDescriptorSets);
 		a_displayer.attribute("maxPerStageDescriptorSamplers", a_limits.maxPerStageDescriptorSamplers);
 		a_displayer.attribute("maxPerStageDescriptorUniformBuffers", a_limits.maxPerStageDescriptorUniformBuffers);
@@ -87,9 +87,9 @@ namespace Vulkan
 		a_displayer.attribute("viewportBoundsRange[1]", a_limits.viewportBoundsRange[1]);
 		a_displayer.attribute("viewportSubPixelBits", a_limits.viewportSubPixelBits);
 		a_displayer.attribute("minMemoryMapAlignment", a_limits.minMemoryMapAlignment);
-		a_displayer.attribute("minTexelBufferOffsetAlignment", static_cast<size_t>(a_features.a_limits.minTexelBufferOffsetAlignment));
-		a_displayer.attribute("minUniformBufferOffsetAlignment", static_cast<size_t>(a_features.a_limits.minUniformBufferOffsetAlignment));
-		a_displayer.attribute("minStorageBufferOffsetAlignment", static_cast<size_t>(a_features.a_limits.minStorageBufferOffsetAlignment));
+		a_displayer.attribute("minTexelBufferOffsetAlignment", static_cast<size_t>(a_limits.minTexelBufferOffsetAlignment));
+		a_displayer.attribute("minUniformBufferOffsetAlignment", static_cast<size_t>(a_limits.minUniformBufferOffsetAlignment));
+		a_displayer.attribute("minStorageBufferOffsetAlignment", static_cast<size_t>(a_limits.minStorageBufferOffsetAlignment));
 		a_displayer.attribute("minTexelOffset", a_limits.minTexelOffset);
 		a_displayer.attribute("maxTexelOffset", a_limits.maxTexelOffset);
 		a_displayer.attribute("minTexelGatherOffset", a_limits.minTexelGatherOffset);
@@ -125,9 +125,9 @@ namespace Vulkan
 		a_displayer.attribute("lineWidthGranularity", a_limits.lineWidthGranularity);
 		a_displayer.attribute("strictLines", a_limits.strictLines);
 		a_displayer.attribute("standardSampleLocations", a_limits.standardSampleLocations);
-		a_displayer.attribute("optimalBufferCopyOffsetAlignment", static_cast<size_t>(a_features.a_limits.optimalBufferCopyOffsetAlignment));
-		a_displayer.attribute("optimalBufferCopyRowPitchAlignment", static_cast<size_t>(a_features.a_limits.optimalBufferCopyRowPitchAlignment));
-		a_displayer.attribute("nonCoherentAtomSize", static_cast<size_t>(a_features.a_limits.nonCoherentAtomSize));
+		a_displayer.attribute("optimalBufferCopyOffsetAlignment", static_cast<size_t>(a_limits.optimalBufferCopyOffsetAlignment));
+		a_displayer.attribute("optimalBufferCopyRowPitchAlignment", static_cast<size_t>(a_limits.optimalBufferCopyRowPitchAlignment));
+		a_displayer.attribute("nonCoherentAtomSize", static_cast<size_t>(a_limits.nonCoherentAtomSize));
 		a_displayer.endNode();
 	}
 
@@ -176,7 +176,7 @@ namespace Vulkan
 		a_displayer.beginNode("Device Memory");
 
 		a_displayer.beginNode("Memory Types");
-		for (int i = 0; i < a_memPops.memoryTypeCount; ++i)
+		for (uint32_t i = 0; i < a_memPops.memoryTypeCount; ++i)
 		{
 			a_displayer.beginNode("Type");
 			a_displayer.attribute("property flags", Flag<VkMemoryPropertyFlagBits>::to_string(a_memPops.memoryTypes[i].propertyFlags));
@@ -186,7 +186,7 @@ namespace Vulkan
 		a_displayer.endNode();
 
 		a_displayer.beginNode("Memory heaps");
-		for (int i = 0; i < a_memPops.memoryHeapCount; ++i)
+		for (uint32_t i = 0; i < a_memPops.memoryHeapCount; ++i)
 		{
 			a_displayer.beginNode("Heap");
 			a_displayer.attribute("flags", Flag<VkMemoryHeapFlagBits>::to_string(a_memPops.memoryHeaps[i].flags));
@@ -264,7 +264,7 @@ namespace Vulkan
 	void displayDeviceFormats(const std::vector<FormatProperty>& a_format, IDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Device Formats properties");
-		for (auto& format : a_format)
+		for (const auto& format : a_format)
 		{
 			a_displayer.beginNode("Formats");
 			a_displayer.attribute("format", to_string(format.format));
@@ -299,7 +299,7 @@ namespace Vulkan
 		a_displayer.endNode();
 
 		a_displayer.beginNode("Supported formats");
-		for (auto& format : a_swapChain.supportedFormats)
+		for (const auto& format : a_swapChain.supportedFormats)
 		{
 			a_displayer.beginNode("Format");
 			a_displayer.attribute("format", to_string(format.format));
@@ -309,7 +309,7 @@ namespace Vulkan
 		a_displayer.endNode();
 
 		a_displayer.beginNode("Supported modes");
-		for (auto& mode : a_swapChain.supportedModes)
+		for (const auto mode : a_swapChain.supportedModes)
 		{
 			a_displayer.attribute("mode", to_string(mode));
 		}

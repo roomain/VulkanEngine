@@ -27,7 +27,7 @@ public:
 class ConsoleLogger : public Vulkan::VK_Logger
 {
 public:
-    [[nodiscard]] ConsoleLogger(Vulkan::VK_Logger::MessageFilter a_filter = Vulkan::VK_Logger::MessageFilter::None);
+    [[nodiscard]] explicit ConsoleLogger(Vulkan::VK_Logger::MessageFilter a_filter = Vulkan::VK_Logger::MessageFilter::None);
     ConsoleLogger(auto&) = delete;
 
 protected:

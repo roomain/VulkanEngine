@@ -14,7 +14,6 @@
 #include "vk_ext_struct.h"
 #include "vk_check.h"
 #include "vk_gets.h"
-#include "vk_create.h"
 #include "vk_macros.h"
 #include "vk_struct_initializers.h"
 #include "vk_files.h"
