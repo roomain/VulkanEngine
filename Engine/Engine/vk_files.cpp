@@ -37,17 +37,17 @@ namespace Vulkan
 
 	void getDataList(boost::property_tree::ptree& a_parent, const std::string& a_tag, std::vector<std::string>& a_toFill)
 	{
-		for (auto item : a_parent.get_child(a_tag))
+		for (const auto& [first, sec] : a_parent.get_child(a_tag))
 		{
-			a_toFill.emplace_back(item.second.data());
+			a_toFill.emplace_back(sec.data());
 		}
 	}
 
 	void getDataList(boost::property_tree::ptree& a_parent, const std::string& a_tag, std::function<void (const std::string&)> a_fun)
 	{
-		for (auto item : a_parent.get_child(a_tag))
+		for (const auto& [first, sec] : a_parent.get_child(a_tag))
 		{
-			a_fun(item.second.data());
+			a_fun(sec.data());
 		}
 	}
 

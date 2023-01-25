@@ -140,29 +140,6 @@ int main(const int a_argc, const char** a_argv)
 		std::cerr << except.what() << std::endl;
 	}
 
-	/*Vulkan::VK_Renderer renderer;
-	try
-	{
-		std::vector<Vulkan::PhysicalDeviceInfo> vCompatibleDevices;
-		renderer.init(parentPath.string() + R"(\Conf\configuration.xml)", &logger, glfwVulkanExt, vCompatibleDevices);
-
-		displayer.reset();
-		for (const auto& dev : vCompatibleDevices)
-			displayDeviceCapabilities(renderer.vulkanInstance(), dev.index, displayer);
-
-		int index = chooseDevice(vCompatibleDevices);
-		if(index >= 0)
-			renderer.startRendering(index, std::make_unique<WindowProxy>(renderer.vulkanInstance(), pGLFW_window));
-	}
-	catch (Vulkan::VK_Exception& except)
-	{
-		std::cerr << except.what();
-	}
-	catch (std::exception& except)
-	{
-		std::cerr << except.what();
-	}*/
-
 
 	// GLFW loop
 	while (!glfwWindowShouldClose(pGLFW_window))

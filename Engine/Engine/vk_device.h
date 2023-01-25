@@ -1,6 +1,7 @@
 #pragma once
 #include "vulkan/vulkan.h"
 #include <vector>
+#include "vk_globals.h"
 
 namespace Vulkan
 {
@@ -63,7 +64,7 @@ namespace Vulkan
     };
 
     /*@brief represents a vulkan device with basic functionalities*/
-    class VK_Device
+    class ENGINE_EXPORT VK_Device
     {
     protected:
         Device m_vkDevice;                              /*!< vulkan device*/
