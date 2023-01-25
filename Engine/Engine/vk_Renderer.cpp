@@ -180,7 +180,7 @@ namespace Vulkan
 			createDepthBufferImages();
 		}
 
-		// TODO
+		// TODO 
 	}
 
 	void VK_Renderer::destroySemaphores()
@@ -224,6 +224,7 @@ namespace Vulkan
 		destoyPipelines();
 		
 		//----------------------------------------------------------------------
+		//destoy fences
 
 		// destroy command pool
 		
@@ -255,7 +256,7 @@ namespace Vulkan
 
 		MemorySameImagePoolConf memConf;
 		memConf.imageCount = static_cast<unsigned int>(m_vSwapchainImages.size());
-		memConf.imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		memConf.imageCreateInfo = Vulkan::Initializers::imageCreateInfo();
 		memConf.imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;							// Type of image (1D, 2D, or 3D)
 		memConf.imageCreateInfo.extent.width = m_pWindowProxy->width();					// Width of image extent
 		memConf.imageCreateInfo.extent.height = m_pWindowProxy->height();				// Height of image extent

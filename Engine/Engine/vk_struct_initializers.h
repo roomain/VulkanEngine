@@ -100,6 +100,11 @@ namespace Vulkan::Initializers
 		return std::move(VkImageViewCreateInfo{ .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, .pNext = nullptr });
 	}
 
+	[[nodiscard]] constexpr VkBufferViewCreateInfo&& bufferViewCreateInfo(const VkBufferViewCreateFlags a_flag, const VkBuffer a_bufferHandle, const VkFormat a_format, const VkDeviceSize& a_offset, const VkDeviceSize& a_range)
+	{
+		return std::move(VkBufferViewCreateInfo{ .sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO, .pNext = nullptr, .flags = a_flag, .buffer = a_bufferHandle, .format = a_format, .offset = a_offset, .range = a_range });
+	}
+
 	[[nodiscard]] constexpr VkImageCreateInfo&& imageCreateInfo()
 	{
 		return std::move(VkImageCreateInfo{ .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, .pNext = nullptr, .imageType = VK_IMAGE_TYPE_2D });

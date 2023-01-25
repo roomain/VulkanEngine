@@ -181,7 +181,7 @@ namespace Vulkan
         a_imagePool.images.resize(a_memConf.imageCount);
         VkMemoryAllocateInfo memAllocInfo = Vulkan::Initializers::memoryAllocateInfo();
         memAllocInfo.memoryTypeIndex = 0;
-        unsigned int index = 0;
+       
 
 
         // Get image memory requirement
@@ -190,10 +190,10 @@ namespace Vulkan
         for (unsigned int iCount = 0; iCount < a_memConf.imageCount; ++iCount)
         {
             // create image handle
-            VK_CHECK(vkCreateImage(m_vkDevice.logicalDevice, &a_memConf.imageCreateInfo, nullptr, &a_imagePool.images[index].image));
+            VK_CHECK(vkCreateImage(m_vkDevice.logicalDevice, &a_memConf.imageCreateInfo, nullptr, &a_imagePool.images[iCount].image));
             if (memAllocInfo.allocationSize == 0)
             {
-                vkGetImageMemoryRequirements(m_vkDevice.logicalDevice, a_imagePool.images[index].image, &memoryRequirements);
+                vkGetImageMemoryRequirements(m_vkDevice.logicalDevice, a_imagePool.images[iCount].image, &memoryRequirements);
                 memAllocInfo.allocationSize = memoryRequirements.size;
                 memAllocInfo.memoryTypeIndex = memoryTypeIndex(memoryRequirements.memoryTypeBits, a_memConf.memProps);
             }
@@ -203,12 +203,13 @@ namespace Vulkan
         memAllocInfo.allocationSize *= a_memConf.imageCount;
         VK_CHECK(vkAllocateMemory(m_vkDevice.logicalDevice, &memAllocInfo, nullptr, &a_imagePool.memory));
 
-        // bind memory for each image
-        index = 0;
+        // bind memory for each image 
+        unsigned int index = 0;
+        VkDeviceSize curOffset = 0;
         for (BaseImage& img : a_imagePool.images)
         {
-            VK_CHECK(vkBindImageMemory(m_vkDevice.logicalDevice, img.image, a_imagePool.memory, imageOffset));
-            imageOffset += imageOffset;
+            VK_CHECK(vkBindImageMemory(m_vkDevice.logicalDevice, img.image, a_imagePool.memory, curOffset));
+            curOffset += imageOffset;
             ++index;
         }
     }
@@ -256,7 +257,7 @@ namespace Vulkan
         vkFreeMemory(m_vkDevice.logicalDevice, a_toDestroy.memory, nullptr);
     }
 
-    void VK_Device::createImageView(const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView)
+    void VK_Device::createImageView(const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView)const
     {
         VkImageViewCreateInfo viewCreateInfo = Vulkan::Initializers::imageViewCreateInfo();
         viewCreateInfo.image = a_image;											// Image to create view for
@@ -275,6 +276,12 @@ namespace Vulkan
         viewCreateInfo.subresourceRange.layerCount = 1;							// Number of array levels to view
 
         VK_CHECK(vkCreateImageView(m_vkDevice.logicalDevice, &viewCreateInfo, nullptr, &a_imgView))
+    }
+
+    void VK_Device::createBufferView(const VkBufferViewCreateFlags a_flag, const VkBuffer a_bufferHandle, const VkFormat a_format, const VkDeviceSize& a_offset, const VkDeviceSize& a_range, VkBufferView& a_buffView)const
+    {
+        VkBufferViewCreateInfo createInfo = Vulkan::Initializers::bufferViewCreateInfo(a_flag, a_bufferHandle, a_format, a_offset, a_range);
+        VK_CHECK(vkCreateBufferView(m_vkDevice.logicalDevice, &createInfo, nullptr, &a_buffView))
     }
 
 }

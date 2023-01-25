@@ -171,7 +171,7 @@ namespace Vulkan
 
 	void VK_Application::displayDevicesCapabilities(IDisplayer& a_displayer)const
 	{
-		if (VK_NULL_HANDLE != m_vulkanInst)
+		if (VK_NULL_HANDLE == m_vulkanInst)
 			throw VK_Exception("Vulkan instance is missing!", std::source_location::current());
 		
 		a_displayer.beginNode("Physical Devices");

@@ -8,6 +8,7 @@
 #include "vk_globals.h"
 #include "vk_pipeline.h"
 #include "vk_device.h"
+#include "vk_configuration.h"
 
 #pragma warning(push)
 #pragma warning( disable : 4251)
@@ -15,6 +16,7 @@
 namespace Vulkan
 {
 	class VK_WindowSystemProxy;
+	struct SwapchainCapabilities;
 
 	struct RenderDeviceConf
 	{

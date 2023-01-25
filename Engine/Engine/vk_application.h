@@ -57,7 +57,7 @@ namespace Vulkan
 	public:
 		[[nodiscard]] static VK_Application* const instance();
 		virtual ~VK_Application();
-		
+		constexpr VkInstance vulkanInstance()const { return m_vulkanInst; }
 		//----------------------------------------------------------------------
 		/*@brief create vulkan instance*/
 		void createVulkanInstance(const InstanceConf& a_conf, VK_Logger* const a_pLogger);

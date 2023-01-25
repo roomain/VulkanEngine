@@ -4,13 +4,13 @@
 #include <iostream>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include "vk_display.h"
-#include "vk_enumerate.h"
 #include "ConsoleDisplayer.h"
 #include "vk_Renderer.h"
 #include <filesystem>
 #include "windowProxy.h"
 #include "vk_Exception.h"
+#include "vk_configuration.h"
+#include "vk_application.h"
 
 //------------------------------------------------------------------------
 // GLFW
@@ -26,7 +26,7 @@ GLFWwindow* createWindow(const std::string& wName = "Test Window", const int wid
 	return glfwCreateWindow(width, height, wName.c_str(), nullptr, nullptr);
 }
 
-int chooseDevice(const std::vector<Vulkan::PhysicalDeviceInfo>& a_CompatibleDevices)
+[[nodiscard]] int chooseDevice(const std::vector<Vulkan::DeviceInfo>& a_CompatibleDevices)
 {
 	int iDev = -1;
 
@@ -46,7 +46,7 @@ int chooseDevice(const std::vector<Vulkan::PhysicalDeviceInfo>& a_CompatibleDevi
 		std::cout << std::endl;
 	} while (iDev >= iSize);
 
-	return iDev >= 0 ? a_CompatibleDevices[iDev].index : -1;
+	return iDev >= 0 ? a_CompatibleDevices[iDev].deviceIndex : -1;
 }
 
 
@@ -59,8 +59,8 @@ int main(const int a_argc, const char** a_argv)
 
 	// display vulkan capabilities
 	ConsoleDisplayer displayer;
-	Vulkan::displayInstanceLayerProps(displayer);
-	Vulkan::displayInstanceExtensionProps(displayer);
+	Vulkan::VK_Application* const pVkApp = Vulkan::VK_Application::instance();
+	pVkApp->displayInstanceCapabilities(displayer);
 
 
 	std::filesystem::path execPath(a_argv[0]);
@@ -77,9 +77,70 @@ int main(const int a_argc, const char** a_argv)
 	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
 		glfwVulkanExt.emplace_back(glfwExtensions[i]);
 	//------------------------------------------------------------------------------------------------------------------------------------------------
-
+	std::shared_ptr<WindowProxy> pWindowProxy;
 	ConsoleLogger logger;
-	Vulkan::VK_Renderer renderer;
+	std::string vkConfFile = parentPath.string() + R"(\Conf\configuration.xml)";
+	std::shared_ptr<Vulkan::VK_Renderer> pRenderer;
+	try
+	{
+		Vulkan::VulkanConfiguration vkConf;
+		Vulkan::loadConfiguration(vkConfFile, vkConf);
+
+		// get glfw extensions names
+		uint32_t glfwExtensionCount = 0;				// GLFW may require multiple extensions
+		const char** glfwExtensions;					// Extensions passed as array of cstrings, so need pointer (the array) to pointer (the cstring)
+
+		// Get GLFW extensions
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+		// Add GLFW extensions to list of extensions
+		for (size_t i = 0; i < glfwExtensionCount; i++)
+		{
+			vkConf.instanceExtProps.push_back(glfwExtensions[i]);
+		}
+
+		if (pVkApp->checkInstanceExtensions(vkConf.instanceExtProps) && pVkApp->checkInstanceLayers(vkConf.instanceLayers))
+		{
+			// create vulkan instance
+			pVkApp->createVulkanInstance(vkConf, &logger);
+			pVkApp->displayDevicesCapabilities(displayer);
+
+			pWindowProxy = std::make_shared<WindowProxy>(pVkApp->vulkanInstance(), pGLFW_window);
+			std::vector<Vulkan::DeviceInfo> compatibleDeviceList;
+			pVkApp->searchCompatibleDevice(vkConf, compatibleDeviceList, pWindowProxy);
+			
+			if (compatibleDeviceList.empty())
+			{
+				std::cerr << "No compatible device found." << std::endl;
+			}
+			else
+			{
+				int devIndex = chooseDevice(compatibleDeviceList);
+				if (devIndex >= 0)
+				{
+					pRenderer = pVkApp->createRenderer(vkConf, compatibleDeviceList[devIndex], pWindowProxy);
+				}
+				else
+				{
+					std::cout << "No device chosen." << std::endl;
+				}
+			}
+		}
+		else
+		{
+			std::cerr << "Some instance extensions and/or instance layers are not supported." << std::endl;
+		}
+	}
+	catch (Vulkan::VK_Exception& except)
+	{
+		std::cerr << except.what() << std::endl;
+	}
+	catch (std::exception& except)
+	{
+		std::cerr << except.what() << std::endl;
+	}
+
+	/*Vulkan::VK_Renderer renderer;
 	try
 	{
 		std::vector<Vulkan::PhysicalDeviceInfo> vCompatibleDevices;
@@ -100,7 +161,7 @@ int main(const int a_argc, const char** a_argv)
 	catch (std::exception& except)
 	{
 		std::cerr << except.what();
-	}
+	}*/
 
 
 	// GLFW loop

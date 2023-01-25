@@ -13,6 +13,8 @@ namespace Vulkan
     /*@brief represents a buffer pool*/
     struct BufferPool;
 
+    struct DeviceQueuesConfiguration;
+
     /*@brief represents vulkan device*/
     struct Device
     {
@@ -101,7 +103,7 @@ namespace Vulkan
         /*@brief destroy BufferPool and release memory*/
         void destroyBufferPool(BufferPool& a_toDestroy)const;
         //-----------------------------------------------------------------------------------------------------
-        void createImageView(const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView);
-
+        void createImageView(const VkImage a_image, const VkFormat a_format, const VkImageAspectFlags a_aspectFlags, VkImageView& a_imgView)const;
+        void createBufferView(const VkBufferViewCreateFlags a_flag, const VkBuffer a_bufferHandle, const VkFormat a_format, const VkDeviceSize& a_offset, const VkDeviceSize& a_range, VkBufferView& a_buffView)const;
     };
 }
