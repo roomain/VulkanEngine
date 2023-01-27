@@ -66,17 +66,6 @@ int main(const int a_argc, const char** a_argv)
 	std::filesystem::path execPath(a_argv[0]);
 	auto parentPath = execPath.parent_path();
 
-	// GET GLFW EXTENSIONS FOR VULKAN
-	// Set up extensions Instance will use
-	uint32_t glfwExtensionCount = 0;				// GLFW may require multiple extensions
-	const char** glfwExtensions;					// Extensions passed as array of cstrings, so need pointer (the array) to pointer (the cstring)
-
-	// Get GLFW extensions
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	std::vector<std::string> glfwVulkanExt;
-	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
-		glfwVulkanExt.emplace_back(glfwExtensions[i]);
-	//------------------------------------------------------------------------------------------------------------------------------------------------
 	std::shared_ptr<WindowProxy> pWindowProxy;
 	ConsoleLogger logger;
 	std::string vkConfFile = parentPath.string() + R"(\Conf\configuration.xml)";
