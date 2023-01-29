@@ -1,6 +1,7 @@
 #pragma once
 #include "vulkan/vulkan.h"
 #include <utility>
+#include <vector>
 
 /*@brief functions for structure initialisation*/
 namespace Vulkan::Initializers
@@ -250,17 +251,17 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo(
-		const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions,
-		const std::vector<VkVertexInputAttributeDescription>& vertexAttributeDescriptions
+		const std::vector<VkVertexInputBindingDescription>& a_vertexBindingDescriptions,
+		const std::vector<VkVertexInputAttributeDescription>& a_vertexAttributeDescriptions
 	)
 	{
 		return VkPipelineVertexInputStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptions.size()),
-		.pVertexBindingDescriptions = vertexBindingDescriptions.data(),
-		.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptions.size()),
-		.pVertexAttributeDescriptions = vertexAttributeDescriptions.data() };
+		.vertexBindingDescriptionCount = static_cast<uint32_t>(a_vertexBindingDescriptions.size()),
+		.pVertexBindingDescriptions = a_vertexBindingDescriptions.data(),
+		.vertexAttributeDescriptionCount = static_cast<uint32_t>(a_vertexAttributeDescriptions.size()),
+		.pVertexAttributeDescriptions = a_vertexAttributeDescriptions.data() };
 	}
 
 	[[nodiscard]] constexpr VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo(
@@ -294,12 +295,12 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineColorBlendAttachmentState pipelineColorBlendAttachmentState(
-		VkColorComponentFlags colorWriteMask,
-		VkBool32 blendEnable)
+		VkColorComponentFlags a_colorWriteMask,
+		VkBool32 a_blendEnable)
 	{
 		return VkPipelineColorBlendAttachmentState{
-		.blendEnable = blendEnable,
-		.colorWriteMask = colorWriteMask};
+		.blendEnable = a_blendEnable,
+		.colorWriteMask = a_colorWriteMask};
 	}
 
 	[[nodiscard]] constexpr VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo(

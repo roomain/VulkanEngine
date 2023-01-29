@@ -13,7 +13,6 @@ namespace Vulkan
 	void getQueueFamiliesProperties(const VkPhysicalDevice a_device, std::vector<VkQueueFamilyProperties>& a_familiesProperties);
 	void getFormatsProperties(const VkPhysicalDevice a_device, std::vector<FormatProperty>& a_formatsProperties);
 	void getDeviceExtensions(const VkPhysicalDevice a_device, std::vector<VkExtensionProperties>& a_extensions);
-	void getSwapChainCapabilities(const VkPhysicalDevice a_device, const VkSurfaceKHR a_surface, SwapchainCapabilities& a_swapChainCap);
 	void getDeviceCapabilities(const VkPhysicalDevice a_device, DeviceCapabilities& a_capabilities);
 	void getDeviceQueues(const VkPhysicalDevice a_physicalDevice, const VkSurfaceKHR a_surface, DeviceQueuesConfiguration& a_queueConf);
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------

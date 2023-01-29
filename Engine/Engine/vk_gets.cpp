@@ -1009,27 +1009,6 @@ namespace Vulkan
 		vkEnumerateDeviceExtensionProperties(a_device, nullptr, &extensionCount, a_extensions.data());
 	}
 
-	void getSwapChainCapabilities(const VkPhysicalDevice a_device, const VkSurfaceKHR a_surface, SwapchainCapabilities& a_swapChainCap)
-	{
-		VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_device, a_surface, &a_swapChainCap.surfaceCapabilities));
-
-		uint32_t formatCount = 0;
-		VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, nullptr));
-		if (formatCount > 0)
-		{
-			a_swapChainCap.supportedFormats.resize(static_cast<int>(formatCount));
-			VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, a_swapChainCap.supportedFormats.data()));
-		}
-
-		uint32_t presentCount = 0;
-		VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, nullptr));
-		if (presentCount > 0)
-		{
-			a_swapChainCap.supportedModes.resize(static_cast<int>(presentCount));
-			VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, a_swapChainCap.supportedModes.data()));
-		}
-	}
-
 	void getDeviceCapabilities(const VkPhysicalDevice a_device, DeviceCapabilities& a_capabilities)
 	{
 		vkGetPhysicalDeviceProperties(a_device, &a_capabilities.deviceProperties);

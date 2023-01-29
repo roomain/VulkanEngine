@@ -66,7 +66,6 @@ namespace Vulkan
 		// choose optimal surface values
 		VkSurfaceFormatKHR surfaceFormat = getBestSurfaceFormat(swapChainCaps.supportedFormats);
 		VkPresentModeKHR presentMode = getBestPresentationMode(swapChainCaps.supportedModes);
-		//VkExtent2D extent = chooseSwapExtent(swapChainDetails.surfaceCapabilities);
 
 		// How many images are in the swap chain? Get 1 more than the minimum to allow triple buffering
 		uint32_t imageCount = swapChainCaps.surfaceCapabilities.minImageCount + 1;
@@ -78,10 +77,10 @@ namespace Vulkan
 
 		// Creation information for swap chain
 		VkSwapchainCreateInfoKHR swapChainCreateInfo = Vulkan::Initializers::swapChainCreateInfoKHR();
-		swapChainCreateInfo.surface = m_pWindowProxy->surface();							// Swapchain surface
+		swapChainCreateInfo.surface = m_pWindowProxy->surface();					// Swapchain surface
 		swapChainCreateInfo.imageFormat = surfaceFormat.format;						// Swapchain format
 		swapChainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;				// Swapchain colour space
-		swapChainCreateInfo.presentMode = presentMode;									// Swapchain presentation mode
+		swapChainCreateInfo.presentMode = presentMode;								// Swapchain presentation mode
 
 		VkExtent2D newExtent = {};
 		newExtent.width = m_pWindowProxy->width();
@@ -120,8 +119,20 @@ namespace Vulkan
 
 	void VK_Renderer::destroySwapChain()
 	{
+		// destroy color image
 		for (const auto& image : m_vSwapchainImages)
 			vkDestroyImageView(m_vkDevice.logicalDevice, image.imageView, nullptr);
+
+		// destroy depth buffer
+		for (auto& imageStruct : m_depthImagesPool.images)
+		{
+			vkDestroyImageView(m_vkDevice.logicalDevice, imageStruct.imageView, nullptr);
+			vkDestroyImage(m_vkDevice.logicalDevice, imageStruct.image, nullptr);
+		}
+		vkFreeMemory(m_vkDevice.logicalDevice, m_depthImagesPool.memory, nullptr);
+
+	
+
 		vkDestroySwapchainKHR(m_vkDevice.logicalDevice, m_swapChain, nullptr);
 		m_vSwapchainImages.clear();
 	}
@@ -266,11 +277,15 @@ namespace Vulkan
 		memConf.imageCreateInfo.format = bestFormat;									// Format type of image
 		memConf.imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;						// How image data should be "tiled" (arranged for optimal reading)
 		memConf.imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;				// Layout of image data on creation
-		memConf.imageCreateInfo.usage = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;	// Bit flags defining what image will be used for
+		memConf.imageCreateInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;	// Bit flags defining what image will be used for
 		memConf.imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;						// Number of samples for multi-sampling
 		memConf.imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;				// Whether image can be shared between queues
 		memConf.memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		createImagePool(memConf, m_depthImagesPool);
+
+		// create image view
+		for(auto& imageStruct  : m_depthImagesPool.images)
+			createImageView(imageStruct.image, bestFormat, VK_IMAGE_ASPECT_DEPTH_BIT, imageStruct.imageView);
 	}
 
 	VkFormat VK_Renderer::findBestImageFormat(const std::vector<VkFormat>& a_preferedFormats, const VkImageTiling a_preferedTiling, const VkFormatFeatureFlags a_preferedFlags)

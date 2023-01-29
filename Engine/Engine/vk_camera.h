@@ -19,6 +19,8 @@ namespace Vulkan
 
 		/*@brief perspective projection*/
 		VK_Camera& setPerspectiveProjection(const float a_fovY, const float a_ratio, const float a_near, const float a_far);
+
+		[[nodiscard]] constexpr const glm::mat4& projection()const { return m_projection; }
 	};
 
 	using VK_CameraPtr = std::shared_ptr<VK_Camera>;
