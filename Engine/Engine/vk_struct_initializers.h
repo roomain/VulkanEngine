@@ -117,132 +117,132 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetLayoutBinding descriptorSetLayoutBinding(
-		VkDescriptorType type,
-		VkShaderStageFlags stageFlags,
-		uint32_t binding,
-		uint32_t descriptorCount = 1)
+		VkDescriptorType a_type,
+		VkShaderStageFlags a_stageFlags,
+		uint32_t a_binding,
+		uint32_t a_descriptorCount = 1)
 	{
-		return VkDescriptorSetLayoutBinding{ .binding = binding, .descriptorType = type,  .descriptorCount = descriptorCount, .stageFlags = stageFlags };
+		return VkDescriptorSetLayoutBinding{ .binding = a_binding, .descriptorType = a_type,  .descriptorCount = a_descriptorCount, .stageFlags = a_stageFlags };
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo(
-		const VkDescriptorSetLayoutBinding* pBindings,
-		uint32_t bindingCount)
+		const VkDescriptorSetLayoutBinding* a_pBindings,
+		uint32_t a_bindingCount)
 	{
 		return VkDescriptorSetLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 		.pNext = nullptr,
-		.bindingCount = bindingCount,
-		.pBindings = pBindings};
+		.bindingCount = a_bindingCount,
+		.pBindings = a_pBindings};
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo(
-		const std::vector<VkDescriptorSetLayoutBinding>& bindings)
+		const std::vector<VkDescriptorSetLayoutBinding>& a_bindings)
 	{
 		return VkDescriptorSetLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 		.pNext = nullptr,
-		.bindingCount = static_cast<uint32_t>(bindings.size()),
-		.pBindings = bindings.data() };
+		.bindingCount = static_cast<uint32_t>(a_bindings.size()),
+		.pBindings = a_bindings.data() };
 	}
 
 	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
-		const VkDescriptorSetLayout* pSetLayouts,
-		uint32_t setLayoutCount = 1)
+		const VkDescriptorSetLayout* a_pSetLayouts,
+		uint32_t a_setLayoutCount = 1)
 	{
 		return VkPipelineLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		.pNext = nullptr,
-		.setLayoutCount = setLayoutCount,
-		.pSetLayouts = pSetLayouts };
+		.setLayoutCount = a_setLayoutCount,
+		.pSetLayouts = a_pSetLayouts };
 	}
 
 	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
-		uint32_t setLayoutCount = 1)
+		uint32_t a_setLayoutCount = 1)
 	{
 		return VkPipelineLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		.pNext = nullptr,
-		.setLayoutCount = setLayoutCount };
+		.setLayoutCount = a_setLayoutCount };
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetAllocateInfo descriptorSetAllocateInfo(
-		VkDescriptorPool descriptorPool,
-		const VkDescriptorSetLayout* pSetLayouts,
-		uint32_t descriptorSetCount)
+		VkDescriptorPool a_descriptorPool,
+		const VkDescriptorSetLayout* a_pSetLayouts,
+		uint32_t a_descriptorSetCount)
 	{
 		return VkDescriptorSetAllocateInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 		.pNext = nullptr,
-		.descriptorPool = descriptorPool,
-		.descriptorSetCount = descriptorSetCount,
-		.pSetLayouts = pSetLayouts };
+		.descriptorPool = a_descriptorPool,
+		.descriptorSetCount = a_descriptorSetCount,
+		.pSetLayouts = a_pSetLayouts };
 	}
 
-	[[nodiscard]] constexpr VkDescriptorImageInfo descriptorImageInfo(VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout)
+	[[nodiscard]] constexpr VkDescriptorImageInfo descriptorImageInfo(VkSampler a_sampler, VkImageView a_imageView, VkImageLayout a_imageLayout)
 	{
 		return VkDescriptorImageInfo{
-		.sampler = sampler,
-		.imageView = imageView,
-		.imageLayout = imageLayout };
+		.sampler = a_sampler,
+		.imageView = a_imageView,
+		.imageLayout = a_imageLayout };
 	}
 
 	[[nodiscard]] constexpr VkWriteDescriptorSet writeDescriptorSet(
-		VkDescriptorSet dstSet,
-		VkDescriptorType type,
-		uint32_t binding,
-		VkDescriptorBufferInfo* bufferInfo,
-		uint32_t descriptorCount = 1)
+		VkDescriptorSet a_dstSet,
+		VkDescriptorType a_type,
+		uint32_t a_binding,
+		VkDescriptorBufferInfo* a_bufferInfo,
+		uint32_t a_descriptorCount = 1)
 	{
 		return VkWriteDescriptorSet{
 		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 		.pNext = nullptr,
-		.dstSet = dstSet,
-		.dstBinding = binding,
-		.descriptorCount = descriptorCount,
-		.descriptorType = type,
-		.pBufferInfo = bufferInfo};
+		.dstSet = a_dstSet,
+		.dstBinding = a_binding,
+		.descriptorCount = a_descriptorCount,
+		.descriptorType = a_type,
+		.pBufferInfo = a_bufferInfo};
 	}
 
 	[[nodiscard]] constexpr VkWriteDescriptorSet writeDescriptorSet(
-		VkDescriptorSet dstSet,
-		VkDescriptorType type,
-		uint32_t binding,
-		VkDescriptorImageInfo* imageInfo,
-		uint32_t descriptorCount = 1)
+		VkDescriptorSet a_dstSet,
+		VkDescriptorType a_type,
+		uint32_t a_binding,
+		VkDescriptorImageInfo* a_imageInfo,
+		uint32_t a_descriptorCount = 1)
 	{
 		return VkWriteDescriptorSet {
 		.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 		.pNext = nullptr,
-		.dstSet = dstSet,
-		.dstBinding = binding,
-		.descriptorCount = descriptorCount,
-		.descriptorType = type,
-		.pImageInfo = imageInfo };
+		.dstSet = a_dstSet,
+		.dstBinding = a_binding,
+		.descriptorCount = a_descriptorCount,
+		.descriptorType = a_type,
+		.pImageInfo = a_imageInfo };
 	}
 
 	[[nodiscard]] constexpr VkVertexInputBindingDescription vertexInputBindingDescription(
-		uint32_t binding,
-		uint32_t stride,
-		VkVertexInputRate inputRate)
+		uint32_t a_binding,
+		uint32_t a_stride,
+		VkVertexInputRate a_inputRate)
 	{
 		return VkVertexInputBindingDescription{
-		.binding = binding,
-		.stride = stride,
-		.inputRate = inputRate };
+		.binding = a_binding,
+		.stride = a_stride,
+		.inputRate = a_inputRate };
 	}
 
 	[[nodiscard]] constexpr VkVertexInputAttributeDescription vertexInputAttributeDescription(
-		uint32_t binding,
-		uint32_t location,
-		VkFormat format,
-		uint32_t offset)
+		uint32_t a_binding,
+		uint32_t a_location,
+		VkFormat a_format,
+		uint32_t a_offset)
 	{
 		return VkVertexInputAttributeDescription{
-		.location = location,
-		.binding = binding,
-		.format = format,
-		.offset = offset };
+		.location = a_location,
+		.binding = a_binding,
+		.format = a_format,
+		.offset = a_offset };
 	}
 	
 	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo()
@@ -265,32 +265,32 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo(
-		VkPrimitiveTopology topology,
-		VkPipelineInputAssemblyStateCreateFlags flags,
-		VkBool32 primitiveRestartEnable)
+		VkPrimitiveTopology a_topology,
+		VkPipelineInputAssemblyStateCreateFlags a_flags,
+		VkBool32 a_primitiveRestartEnable)
 	{
 		return VkPipelineInputAssemblyStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
-		.topology = topology,
-		.primitiveRestartEnable = primitiveRestartEnable };
+		.flags = a_flags,
+		.topology = a_topology,
+		.primitiveRestartEnable = a_primitiveRestartEnable };
 	}
 
 	[[nodiscard]] constexpr VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo(
-		VkPolygonMode polygonMode,
-		VkCullModeFlags cullMode,
-		VkFrontFace frontFace,
-		VkPipelineRasterizationStateCreateFlags flags = 0)
+		VkPolygonMode a_polygonMode,
+		VkCullModeFlags a_cullMode,
+		VkFrontFace a_frontFace,
+		VkPipelineRasterizationStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineRasterizationStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
+		.flags = a_flags,
 		.depthClampEnable = VK_FALSE,
-		.polygonMode = polygonMode,
-		.cullMode = cullMode,
-		.frontFace = frontFace,
+		.polygonMode = a_polygonMode,
+		.cullMode = a_cullMode,
+		.frontFace = a_frontFace,
 		.lineWidth = 1.0f };
 	}
 
@@ -304,98 +304,98 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo(
-		uint32_t attachmentCount,
-		const VkPipelineColorBlendAttachmentState* pAttachments)
+		uint32_t a_attachmentCount,
+		const VkPipelineColorBlendAttachmentState* a_pAttachments)
 	{
 		return VkPipelineColorBlendStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.attachmentCount = attachmentCount,
-		.pAttachments = pAttachments };
+		.attachmentCount = a_attachmentCount,
+		.pAttachments = a_pAttachments };
 	}
 
 	[[nodiscard]] constexpr VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo(
-		VkBool32 depthTestEnable,
-		VkBool32 depthWriteEnable,
-		VkCompareOp depthCompareOp)
+		VkBool32 a_depthTestEnable,
+		VkBool32 a_depthWriteEnable,
+		VkCompareOp a_depthCompareOp)
 	{
 		return VkPipelineDepthStencilStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.depthTestEnable = depthTestEnable,
-		.depthWriteEnable = depthWriteEnable,
-		.depthCompareOp = depthCompareOp,
+		.depthTestEnable = a_depthTestEnable,
+		.depthWriteEnable = a_depthWriteEnable,
+		.depthCompareOp = a_depthCompareOp,
 		.back{.compareOp = VK_COMPARE_OP_ALWAYS} };
 	}
 
 	[[nodiscard]] constexpr VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo(
-		uint32_t viewportCount,
-		uint32_t scissorCount,
-		VkPipelineViewportStateCreateFlags flags = 0)
+		uint32_t a_viewportCount,
+		uint32_t a_scissorCount,
+		VkPipelineViewportStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineViewportStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
-		.viewportCount = viewportCount,
-		.scissorCount = scissorCount};
+		.flags = a_flags,
+		.viewportCount = a_viewportCount,
+		.scissorCount = a_scissorCount};
 	}
 
 	[[nodiscard]] constexpr VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo(
-		VkSampleCountFlagBits rasterizationSamples,
-		VkPipelineMultisampleStateCreateFlags flags = 0)
+		VkSampleCountFlagBits a_rasterizationSamples,
+		VkPipelineMultisampleStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineMultisampleStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
-		.rasterizationSamples = rasterizationSamples };
+		.flags = a_flags,
+		.rasterizationSamples = a_rasterizationSamples };
 	}
 
 	[[nodiscard]] constexpr VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo(
-		const VkDynamicState* pDynamicStates,
-		uint32_t dynamicStateCount,
-		VkPipelineDynamicStateCreateFlags flags = 0)
+		const VkDynamicState* a_pDynamicStates,
+		uint32_t a_dynamicStateCount,
+		VkPipelineDynamicStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineDynamicStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
-		.dynamicStateCount = dynamicStateCount,
-		.pDynamicStates = pDynamicStates };
+		.flags = a_flags,
+		.dynamicStateCount = a_dynamicStateCount,
+		.pDynamicStates = a_pDynamicStates };
 	}
 
 	[[nodiscard]] constexpr VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo(
-		const std::vector<VkDynamicState>& pDynamicStates,
-		VkPipelineDynamicStateCreateFlags flags = 0)
+		const std::vector<VkDynamicState>& a_pDynamicStates,
+		VkPipelineDynamicStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineDynamicStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
-		.dynamicStateCount = static_cast<uint32_t>(pDynamicStates.size()),
-		.pDynamicStates = pDynamicStates.data() };
+		.flags = a_flags,
+		.dynamicStateCount = static_cast<uint32_t>(a_pDynamicStates.size()),
+		.pDynamicStates = a_pDynamicStates.data() };
 	}
 
-	[[nodiscard]] constexpr VkPipelineTessellationStateCreateInfo pipelineTessellationStateCreateInfo(uint32_t patchControlPoints)
+	[[nodiscard]] constexpr VkPipelineTessellationStateCreateInfo pipelineTessellationStateCreateInfo(uint32_t a_patchControlPoints)
 	{
 		return VkPipelineTessellationStateCreateInfo {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.patchControlPoints = patchControlPoints };
+		.patchControlPoints = a_patchControlPoints };
 	}
 
 	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo pipelineCreateInfo(
-		VkPipelineLayout layout,
-		VkRenderPass renderPass,
-		VkPipelineCreateFlags flags = 0)
+		VkPipelineLayout a_layout,
+		VkRenderPass a_renderPass,
+		VkPipelineCreateFlags a_flags = 0)
 	{
 		return VkGraphicsPipelineCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 		.pNext = nullptr,
-		.flags = flags,
-		.layout = layout,
-		.renderPass = renderPass,
+		.flags = a_flags,
+		.layout = a_layout,
+		.renderPass = a_renderPass,
 		.basePipelineHandle = VK_NULL_HANDLE,
 		.basePipelineIndex = -1 };
 	}
@@ -421,14 +421,14 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPushConstantRange pushConstantRange(
-		VkShaderStageFlags stageFlags,
-		uint32_t size,
-		uint32_t offset)
+		VkShaderStageFlags a_stageFlags,
+		uint32_t a_size,
+		uint32_t a_offset)
 	{
 		return VkPushConstantRange{
-		.stageFlags = stageFlags,
-		.offset = offset,
-		.size = size };
+		.stageFlags = a_stageFlags,
+		.offset = a_offset,
+		.size = a_size };
 	}
 
 	[[nodiscard]] constexpr VkBindSparseInfo bindSparseInfo()
@@ -437,32 +437,34 @@ namespace Vulkan::Initializers
 	}
 
 	/** @brief Initialize a map entry for a shader specialization constant */
-	[[nodiscard]] constexpr VkSpecializationMapEntry specializationMapEntry(uint32_t constantID, uint32_t offset, size_t size)
+	[[nodiscard]] constexpr VkSpecializationMapEntry specializationMapEntry(uint32_t a_constantID, uint32_t a_offset, size_t a_size)
 	{
 		return VkSpecializationMapEntry{
-		.constantID = constantID,
-		.offset = offset,
-		.size = size };
+		.constantID = a_constantID,
+		.offset = a_offset,
+		.size = a_size };
 	}
 
 	/** @brief Initialize a specialization constant info structure to pass to a shader stage */
-	[[nodiscard]] constexpr VkSpecializationInfo specializationInfo(uint32_t mapEntryCount, const VkSpecializationMapEntry* mapEntries, size_t dataSize, const void* data)
+	[[nodiscard]] constexpr VkSpecializationInfo specializationInfo(uint32_t a_mapEntryCount,
+		const VkSpecializationMapEntry* a_mapEntries, size_t a_dataSize, const void* a_data)
 	{
 		return VkSpecializationInfo{
-		.mapEntryCount = mapEntryCount,
-		.pMapEntries = mapEntries,
-		.dataSize = dataSize,
-		.pData = data };
+		.mapEntryCount = a_mapEntryCount,
+		.pMapEntries = a_mapEntries,
+		.dataSize = a_dataSize,
+		.pData = a_data };
 	}
 
 	/** @brief Initialize a specialization constant info structure to pass to a shader stage */
-	[[nodiscard]] constexpr VkSpecializationInfo specializationInfo(const std::vector<VkSpecializationMapEntry>& mapEntries, size_t dataSize, const void* data)
+	[[nodiscard]] constexpr VkSpecializationInfo specializationInfo(const std::vector<VkSpecializationMapEntry>& a_mapEntries, 
+		size_t a_dataSize, const void* a_data)
 	{
 		return VkSpecializationInfo{
-		.mapEntryCount = static_cast<uint32_t>(mapEntries.size()),
-		.pMapEntries = mapEntries.data(),
-		.dataSize = dataSize,
-		.pData = data };
+		.mapEntryCount = static_cast<uint32_t>(a_mapEntries.size()),
+		.pMapEntries = a_mapEntries.data(),
+		.dataSize = a_dataSize,
+		.pData = a_data };
 	}
 
 	// Ray tracing related
