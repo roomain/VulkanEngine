@@ -11,7 +11,7 @@
 namespace Vulkan
 {
 	class VK_Logger;
-	class IDisplayer;
+	class IDataDisplayer;
 	class VK_Device;
 	class VK_Renderer;
 	class VK_WindowSystemProxy;
@@ -68,9 +68,9 @@ namespace Vulkan
 		[[nodiscard]] bool checkInstanceExtensions(const std::vector<std::string>& a_vExt)const noexcept;
 		//-----------------------------------------------------------------------
 		/*@brief display instance capabilities*/
-		void displayInstanceCapabilities(IDisplayer& a_displayer)const;
+		void displayInstanceCapabilities(IDataDisplayer& a_displayer)const;
 		/*@brief display device capabilities*/
-		void displayDevicesCapabilities(IDisplayer& a_displayer)const;
+		void displayDevicesCapabilities(IDataDisplayer& a_displayer)const;
 		//--------------------------------------------------------------
 		/*@brief search compatible device for configuration*/
 		void searchCompatibleDevice(const VulkanConfiguration& a_conf, std::vector<DeviceInfo>& a_vDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy);

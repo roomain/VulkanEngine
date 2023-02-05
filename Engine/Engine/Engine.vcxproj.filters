@@ -45,7 +45,7 @@
     <ClInclude Include="vk_globals.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="IDisplayer.h">
+    <ClInclude Include="IDataDisplayer.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="vk_logger.h">
@@ -96,12 +96,6 @@
     <ClInclude Include="vk_module.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="vk_camera.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_movable.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="vk_device.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -112,6 +106,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="vk_configuration.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_object.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -150,12 +147,6 @@
       <Filter>Fichiers sources\Pipline</Filter>
     </ClCompile>
     <ClCompile Include="vk_module.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_camera.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_movable.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="vk_device.cpp">

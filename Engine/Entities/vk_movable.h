@@ -1,11 +1,11 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "vk_globals.h"
+#include "entities_globals.h"
 
 namespace Vulkan
 {
 	/*@brief base class for movable objects*/
-	class ENGINE_EXPORT VK_Movable
+	class ENTITIES_EXPORT VK_Movable
 	{
 	protected:
 		glm::mat4 m_transformation; /*!< transformation matrix*/

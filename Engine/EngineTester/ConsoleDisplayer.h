@@ -1,9 +1,9 @@
 #pragma once
-#include "IDisplayer.h"
+#include "IDataDisplayer.h"
 #include "vk_logger.h"
 #include <string>
 
-class ConsoleDisplayer : public Vulkan::IDisplayer
+class ConsoleDisplayer : public Vulkan::IDataDisplayer
 {
 private:
     std::string m_linePrefix;

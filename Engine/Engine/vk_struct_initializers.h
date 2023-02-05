@@ -532,4 +532,18 @@ namespace Vulkan::Initializers
 	{
 		return VkFenceCreateInfo{ .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, .pNext = nullptr, .flags = a_flags };
 	}
+
+	[[nodiscard]] constexpr VkFramebufferCreateInfo frameBufferCreateInfo(const std::vector<VkImageView>& a_attachment, 
+		const uint32_t a_width, const uint32_t a_height, const uint32_t a_layers, const VkFramebufferCreateFlags a_flags)
+	{
+		return VkFramebufferCreateInfo{ .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, 
+			.pNext = nullptr, 
+			.flags = a_flags,
+			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
+			.pAttachments = a_attachment.data(),
+			.width = a_width,
+			.height = a_height,
+			.layers = a_layers
+		};
+	}
 }
