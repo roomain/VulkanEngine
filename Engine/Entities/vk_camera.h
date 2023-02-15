@@ -1,11 +1,11 @@
 #pragma once
 #include <memory>
 #include "vk_movable.h"
-#include "vk_globals.h"
+#include "entities_globals.h"
 
 namespace Vulkan
 {
-	class ENGINE_EXPORT VK_Camera : public VK_Movable
+	class ENTITIES_EXPORT VK_Camera : public VK_Movable
 	{
 	private:
 		glm::mat4 m_projection;	/*!< projection matrix*/
@@ -20,6 +20,7 @@ namespace Vulkan
 		/*@brief perspective projection*/
 		VK_Camera& setPerspectiveProjection(const float a_fovY, const float a_ratio, const float a_near, const float a_far);
 
+		/*@return camera projection matrix*/
 		[[nodiscard]] constexpr const glm::mat4& projection()const { return m_projection; }
 	};
 

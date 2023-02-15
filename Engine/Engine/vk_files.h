@@ -10,7 +10,6 @@ namespace Vulkan
 	/*@brief load binary file and store data into a buffer*/
 	ENGINE_EXPORT void readBinary(const std::string& a_filename, std::vector<char>& a_bin);
 
-
 	/*@brief engine configuration*/
 	struct VulkanConfiguration;
 

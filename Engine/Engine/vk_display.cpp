@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "vk_display.h"
-#include "IDisplayer.h"
+#include "IDataDisplayer.h"
 #include "vk_enum_to_string.h"
 #include "vk_ext_struct.h"
 #include <vector>
@@ -11,7 +11,7 @@ namespace Vulkan
 	//-------------------------------------------
 	// auxiliary functions
 	//-------------------------------------------
-	void displayDeviceLimits(const VkPhysicalDeviceLimits& a_limits, IDisplayer& a_displayer)
+	void displayDeviceLimits(const VkPhysicalDeviceLimits& a_limits, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Physical Device limits");
 		a_displayer.attribute("maxImageDimension1D", a_limits.maxImageDimension1D);
@@ -131,7 +131,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	void displayDeviceSparseProps(const VkPhysicalDeviceSparseProperties& a_props, IDisplayer& a_displayer)
+	void displayDeviceSparseProps(const VkPhysicalDeviceSparseProperties& a_props, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Device Sparse properties");
 		a_displayer.attribute("residencyStandard2DBlockShape", a_props.residencyStandard2DBlockShape);
@@ -142,7 +142,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 	//-----------------------------------------------------------------------------------------------------------------
-	void displayDeviceproperties(const VkPhysicalDeviceProperties& a_deviceProperties, IDisplayer& a_displayer)
+	void displayDeviceproperties(const VkPhysicalDeviceProperties& a_deviceProperties, IDataDisplayer& a_displayer)
 	{
 		a_displayer.attribute("deviceName", a_deviceProperties.deviceName);
 		a_displayer.attribute("deviceType", to_string(a_deviceProperties.deviceType));
@@ -155,7 +155,7 @@ namespace Vulkan
 		displayDeviceSparseProps(a_deviceProperties.sparseProperties, a_displayer);
 	}
 
-	void displayDeviceQueuesproperties(const std::vector<VkQueueFamilyProperties>& a_queueFamilies, IDisplayer& a_displayer)
+	void displayDeviceQueuesproperties(const std::vector<VkQueueFamilyProperties>& a_queueFamilies, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Device Queues");
 		for (const auto& familyProp : a_queueFamilies)
@@ -171,7 +171,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	void displayDeviceMemoryProperties(const VkPhysicalDeviceMemoryProperties& a_memPops, IDisplayer& a_displayer)
+	void displayDeviceMemoryProperties(const VkPhysicalDeviceMemoryProperties& a_memPops, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Device Memory");
 
@@ -198,7 +198,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	void displayDeviceFeatures(const VkPhysicalDeviceFeatures& a_features, IDisplayer& a_displayer)
+	void displayDeviceFeatures(const VkPhysicalDeviceFeatures& a_features, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Device Features");
 
@@ -261,7 +261,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 	
-	void displayDeviceFormats(const std::vector<FormatProperty>& a_format, IDisplayer& a_displayer)
+	void displayDeviceFormats(const std::vector<FormatProperty>& a_format, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Device Formats properties");
 		for (const auto& format : a_format)
@@ -278,7 +278,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	void displayDeviceFormats(const SwapchainCapabilities& a_swapChain, IDisplayer& a_displayer)
+	void displayDeviceFormats(const SwapchainCapabilities& a_swapChain, IDataDisplayer& a_displayer)
 	{
 		a_displayer.beginNode("Swapchain capabilities");
 

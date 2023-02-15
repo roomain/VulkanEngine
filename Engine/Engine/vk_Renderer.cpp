@@ -230,12 +230,11 @@ namespace Vulkan
 
 	void VK_Renderer::release()
 	{
-		
-		// release resources----------------------------------------------------		
-		destoyPipelines();
-		
+		vkDeviceWaitIdle(m_vkDevice.logicalDevice);
 		//----------------------------------------------------------------------
 		//destoy fences
+		if (m_acquireFence != VK_NULL_HANDLE)
+			vkDestroyFence(m_vkDevice.logicalDevice, m_acquireFence, nullptr);
 
 		// destroy command pool
 		
@@ -308,66 +307,7 @@ namespace Vulkan
 		}
 		throw Vulkan::VK_Exception(std::format("Can't find any prefered format with tiling {} and flags {}", to_string(a_preferedTiling), Flag<VkFormatFeatureFlagBits>::to_string(a_preferedFlags)), std::source_location::current());
 	}
-
-
-	bool VK_Renderer::registerPipeline(VK_PipelinePtr& a_pipeline)
-	{
-		bool bRet = false;
-		int index = 0;// index of pipelin with higher lower
-		bool bFoundNext = false; // pipeline with lower priority is found;
-		auto iter = std::find_if(m_PipelineList.begin(), m_PipelineList.end(), [&](const VK_PipelinePtr& a_iterPipeline)
-			{
-				if (a_iterPipeline->priority() < a_pipeline->priority() && !bFoundNext)
-				{
-					bFoundNext = true;
-				}
-				else
-				{
-					index++;
-				}
-				return a_iterPipeline == a_pipeline;
-			});
-
-		if (iter == m_PipelineList.end())
-		{
-			if (bFoundNext)
-			{
-				m_PipelineList.insert(m_PipelineList.begin() + index, a_pipeline);
-			}
-			else
-			{
-				m_PipelineList.push_back(a_pipeline);
-			}
-			bRet = true;
-		}
-		return bRet;
-	}
-
-	size_t VK_Renderer::pipelineCount()const noexcept
-	{
-		return m_PipelineList.size();
-	}
-
-	void VK_Renderer::releasePipeline(const size_t& a_index)
-	{
-		if (m_PipelineList.size() < a_index)
-			m_PipelineList.erase(m_PipelineList.begin() + a_index);
-	}
-
-	void VK_Renderer::releasePipeline(VK_PipelinePtr& a_pipeline)
-	{
-		auto iter = std::find(m_PipelineList.begin(), m_PipelineList.end(), a_pipeline);
-		if(iter != m_PipelineList.end())
-			m_PipelineList.erase(iter);
-	}
-
-	void VK_Renderer::destoyPipelines()
-	{
-		for (auto pPipeline : m_PipelineList)
-			pPipeline->destroy(m_vkDevice.logicalDevice);
-		m_PipelineList.clear();
-	}
-
+	
 	bool VK_Renderer::renderOnScreen()
 	{
 		bool bRet = false;

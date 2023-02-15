@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iterator>
 #include "vk_display.h"
-#include "IDisplayer.h"
+#include "IDataDisplayer.h"
 #include "vk_configuration.h"
 #include "vk_logger.h"
 #include "vk_WindowSystemProxy.h"
@@ -144,7 +144,7 @@ namespace Vulkan
 		return !std::any_of(a_vExt.begin(), a_vExt.end(), [this](const auto& ext) {return !checkInstanceExtension(ext); });
 	}
 
-	void VK_Application::displayInstanceCapabilities(IDisplayer& a_displayer)const
+	void VK_Application::displayInstanceCapabilities(IDataDisplayer& a_displayer)const
 	{
 		a_displayer.beginNode("Instance capabilities");
 		a_displayer.beginNode("Instance Layer Properties");
@@ -169,7 +169,7 @@ namespace Vulkan
 		a_displayer.endNode();
 	}
 
-	void VK_Application::displayDevicesCapabilities(IDisplayer& a_displayer)const
+	void VK_Application::displayDevicesCapabilities(IDataDisplayer& a_displayer)const
 	{
 		if (VK_NULL_HANDLE == m_vulkanInst)
 			throw VK_Exception("Vulkan instance is missing!", std::source_location::current());

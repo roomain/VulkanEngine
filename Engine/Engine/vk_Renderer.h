@@ -48,22 +48,14 @@ namespace Vulkan
 		/*@brief called when window is resized*/
 		void onWindowResized();
 
-		/*@brief register a pipline*/
-		bool registerPipeline(VK_PipelinePtr& a_pipeline);
-
-		/*@brief pipline count*/
-		[[nodiscard]] size_t pipelineCount()const noexcept;
-
-		/*@brief release pipline*/
-		void releasePipeline(const size_t& a_index);
-		void releasePipeline(VK_PipelinePtr& a_pipeline);
-		void destoyPipelines();
-
 		/*@brief render on screen frame*/
 		bool renderOnScreen();
 
 		/*@brief render offscreen*/
 		bool renderOffScreen();
+
+		/*@brief create frame buffer*/
+		//void createFramebuffer();
 
 	private:
 		RenderDeviceConf m_RendererConf;					/*!< renderer configuration*/
@@ -71,7 +63,6 @@ namespace Vulkan
 		VkQueue m_presentationQueue;						/*!< presentation queue*/
 
 		// TODO more queues (store and use in a rendering module)
-		std::vector<VK_PipelinePtr> m_PipelineList;			/*!< vulkan pipeline list*/
 
 		VkSwapchainKHR m_swapChain;								/*!< swapchain*/
 		std::vector<BaseImage> m_vSwapchainImages;				/*!< swapchain images*/

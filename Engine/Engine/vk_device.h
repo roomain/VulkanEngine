@@ -83,6 +83,7 @@ namespace Vulkan
 
     public:
         virtual ~VK_Device();
+        const Device& vulkanDevice()const noexcept { return m_vkDevice; }
         //----------------------------------------------------------------------------------------------------
         // memory public functions
         /*@brief create a buffer*/

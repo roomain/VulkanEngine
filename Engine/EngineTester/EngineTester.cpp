@@ -33,7 +33,7 @@ GLFWwindow* createWindow(const std::string& wName = "Test Window", const int wid
 	int iSize = static_cast<int>(a_CompatibleDevices.size());
 	do
 	{
-		std::cout << "Choose device:" << std::endl;
+		std::cout << "Available devices:" << std::endl;
 		int iIndex = 0;
 		for (const auto& dev : a_CompatibleDevices)
 		{

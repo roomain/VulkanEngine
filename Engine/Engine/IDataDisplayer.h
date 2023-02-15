@@ -5,7 +5,7 @@
 namespace Vulkan
 {
     /*@brief interface class to display device capabilities organized in tree*/
-    class ENGINE_EXPORT IDisplayer
+    class ENGINE_EXPORT IDataDisplayer
     {
     public:
         virtual void beginNode(const std::string& a_name) = 0;                                      /*!< begin writing node*/
