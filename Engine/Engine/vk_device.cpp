@@ -30,7 +30,7 @@ namespace Vulkan
         deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();								// List of queue create infos so device can create required queues
         deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_deviceExt.size());			// Number of enabled logical device extensions
         std::vector<const char*> vExtNames;
-        std::transform(a_deviceExt.begin(), a_deviceExt.end(), std::back_inserter(vExtNames), [](const auto& name) {return name.c_str(); });
+        std::transform(a_deviceExt.cbegin(), a_deviceExt.cend(), std::back_inserter(vExtNames), [](const auto& name) {return name.c_str(); });
 
         deviceCreateInfo.ppEnabledExtensionNames = vExtNames.data();
         VK_CHECK(vkCreateDevice(a_device.physical, &deviceCreateInfo, nullptr, &a_device.logicalDevice))

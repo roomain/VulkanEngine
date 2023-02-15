@@ -69,10 +69,10 @@ namespace Vulkan
 
 		// generate table of char* from vectors of string
 		std::vector<const char*> vNameData;
-		std::transform(a_conf.instanceExtProps.begin(), a_conf.instanceExtProps.end(), std::back_inserter(vNameData), 
+		std::transform(a_conf.instanceExtProps.cbegin(), a_conf.instanceExtProps.cend(), std::back_inserter(vNameData), 
 			[](const auto& ext) {return ext.c_str(); });
 
-		std::transform(a_conf.instanceLayers.begin(), a_conf.instanceLayers.end(), std::back_inserter(vNameData),
+		std::transform(a_conf.instanceLayers.cbegin(), a_conf.instanceLayers.cend(), std::back_inserter(vNameData),
 			[](const auto& layer) {return layer.c_str(); });
 
 		instCreateInfo.enabledExtensionCount = static_cast<uint32_t>(a_conf.instanceExtProps.size());
