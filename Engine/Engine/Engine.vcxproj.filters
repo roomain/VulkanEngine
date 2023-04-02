@@ -25,6 +25,9 @@
     <Filter Include="Fichiers d%27en-tête\Pipline">
       <UniqueIdentifier>{f59bc190-00bb-4d3f-be4b-4a8049311b01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\structures">
+      <UniqueIdentifier>{fb12125a-2d42-4129-8337-82f0a7d79a5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,16 +57,7 @@
     <ClInclude Include="vk_WindowSystemProxy.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="vk_check.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
     <ClInclude Include="string_to_enum.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_ext_struct.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_gets.h">
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
     <ClInclude Include="vk_struct_initializers.h">
@@ -73,9 +67,6 @@
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
     <ClInclude Include="enum_to_string.h">
-      <Filter>Fichiers d%27en-tête\functions</Filter>
-    </ClInclude>
-    <ClInclude Include="vk_display.h">
       <Filter>Fichiers d%27en-tête\functions</Filter>
     </ClInclude>
     <ClInclude Include="vk_string_to_enum.h">
@@ -102,13 +93,25 @@
     <ClInclude Include="vk_application.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="vk_capabilities.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="vk_configuration.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="vk_object.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_images.h">
+      <Filter>Fichiers d%27en-tête\structures</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_buffers.h">
+      <Filter>Fichiers d%27en-tête\structures</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_InstanceCapabilities.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_DeviceCapabilities.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_VulkanCapabilities.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -124,15 +127,6 @@
     </ClCompile>
     <ClCompile Include="vk_logger.cpp">
       <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_check.cpp">
-      <Filter>Fichiers sources\functions</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_display.cpp">
-      <Filter>Fichiers sources\functions</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_gets.cpp">
-      <Filter>Fichiers sources\functions</Filter>
     </ClCompile>
     <ClCompile Include="vk_files.cpp">
       <Filter>Fichiers sources\functions</Filter>
@@ -153,6 +147,15 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="vk_application.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_InstanceCapabilities.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_DeviceCapabilities.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_VulkanCapabilities.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

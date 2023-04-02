@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -177,29 +177,29 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="IDataDisplayer.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="vk_capabilities.h" />
+    <ClInclude Include="vk_buffers.h" />
     <ClInclude Include="vk_configuration.h" />
     <ClInclude Include="vk_device.h" />
-    <ClInclude Include="vk_display.h" />
+    <ClInclude Include="vk_DeviceCapabilities.h" />
     <ClInclude Include="vk_enum_to_string.h" />
     <ClInclude Include="vk_Exception.h" />
-    <ClInclude Include="vk_ext_struct.h" />
     <ClInclude Include="vk_files.h" />
-    <ClInclude Include="vk_gets.h" />
     <ClInclude Include="vk_globals.h" />
     <ClInclude Include="vk_application.h" />
+    <ClInclude Include="vk_images.h" />
+    <ClInclude Include="vk_InstanceCapabilities.h" />
     <ClInclude Include="vk_logger.h" />
     <ClInclude Include="vk_macros.h" />
     <ClInclude Include="vk_mesh.h" />
     <ClInclude Include="vk_module.h" />
     <ClInclude Include="vk_object.h" />
     <ClInclude Include="vk_pipeline.h" />
-    <ClInclude Include="vk_check.h" />
     <ClInclude Include="vk_Renderer.h" />
     <ClInclude Include="string_to_enum.h" />
     <ClInclude Include="vk_shader.h" />
     <ClInclude Include="vk_string_to_enum.h" />
     <ClInclude Include="vk_struct_initializers.h" />
+    <ClInclude Include="vk_VulkanCapabilities.h" />
     <ClInclude Include="vk_WindowSystemProxy.h" />
   </ItemGroup>
   <ItemGroup>
@@ -210,18 +210,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vk_device.cpp" />
-    <ClCompile Include="vk_display.cpp" />
+    <ClCompile Include="vk_DeviceCapabilities.cpp" />
     <ClCompile Include="vk_Exception.cpp" />
     <ClCompile Include="vk_files.cpp" />
-    <ClCompile Include="vk_gets.cpp" />
     <ClCompile Include="vk_application.cpp" />
+    <ClCompile Include="vk_InstanceCapabilities.cpp" />
     <ClCompile Include="vk_logger.cpp" />
     <ClCompile Include="vk_mesh.cpp" />
     <ClCompile Include="vk_module.cpp" />
     <ClCompile Include="vk_pipeline.cpp" />
-    <ClCompile Include="vk_check.cpp" />
     <ClCompile Include="vk_Renderer.cpp" />
     <ClCompile Include="vk_shader.cpp" />
+    <ClCompile Include="vk_VulkanCapabilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

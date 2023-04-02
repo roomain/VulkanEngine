@@ -5,7 +5,6 @@
 #include "vulkan/vulkan.h"
 #include "vk_globals.h"
 #include "vk_macros.h"
-#include "vk_capabilities.h"
 #include "vk_configuration.h"
 
 namespace Vulkan
@@ -15,16 +14,8 @@ namespace Vulkan
 	class VK_Device;
 	class VK_Renderer;
 	class VK_WindowSystemProxy;
-
-	/*@brief device short informations*/
-	struct DeviceInfo
-	{
-		const int deviceIndex;	/*!< device index in vulkan instance*/
-		std::string name;		/*!< device name*/
-		std::string deviceType;	/*!< device type*/
-		uint32_t apiVersion;	/*!< API version*/
-		uint32_t driverVersion;	/*!< Driver version*/
-	};
+	struct DeviceInfo;
+	
 
 	/*@brief singleton dealing with vulkan*/
 	class ENGINE_EXPORT VK_Application
@@ -35,9 +26,6 @@ namespace Vulkan
 		static VK_Application* m_pInstance;	/*!< singleton instance*/
 		VkInstance m_vulkanInst;			/*!< vulkan instance*/
 
-		InstanceCapabilities m_capabilities;						/*!< vulkan instance capabilities*/
-		std::vector<DeviceCapabilities> m_vDeviceCapabilities;		/*!< capabilities for each vulkan device*/
-		
 		VkDebugReportCallbackEXT m_debugCallbackHandle;								/*!< vulkan debug message handle*/
 		static PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;	/*!< create messenger loaded function*/
 		static PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;	/*!< destroy messenger loaded function*/
@@ -55,26 +43,18 @@ namespace Vulkan
 			void* userData);
 
 	public:
+		VK_Application(const VK_Application& ) = delete;
+		VK_Application& operator = (const VK_Application&) = delete;
+
 		[[nodiscard]] static VK_Application* const instance();
 		virtual ~VK_Application();
 		constexpr VkInstance vulkanInstance()const { return m_vulkanInst; }
 		//----------------------------------------------------------------------
 		/*@brief create vulkan instance*/
 		void createVulkanInstance(const InstanceConf& a_conf, VK_Logger* const a_pLogger);
-		//-----------------------------------------------------------------------
-		[[nodiscard]] bool checkInstanceLayer(const std::string& a_layer)const noexcept;
-		[[nodiscard]] bool checkInstanceLayers(const std::vector<std::string>& a_vLayer)const noexcept;
-		[[nodiscard]] bool checkInstanceExtension(const std::string& a_ext)const noexcept;
-		[[nodiscard]] bool checkInstanceExtensions(const std::vector<std::string>& a_vExt)const noexcept;
-		//-----------------------------------------------------------------------
-		/*@brief display instance capabilities*/
-		void displayInstanceCapabilities(IDataDisplayer& a_displayer)const;
-		/*@brief display device capabilities*/
-		void displayDevicesCapabilities(IDataDisplayer& a_displayer)const;
-		//--------------------------------------------------------------
-		/*@brief search compatible device for configuration*/
-		void searchCompatibleDevice(const VulkanConfiguration& a_conf, std::vector<DeviceInfo>& a_vDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy);
 
-		[[nodiscard]] std::shared_ptr<VK_Renderer> createRenderer(const VulkanConfiguration& a_conf, const DeviceInfo& a_chosenDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy);
+		//--------------------------------------------------------------
+
+		[[nodiscard]] std::shared_ptr<VK_Renderer> createRenderer(const VulkanConfiguration& a_conf, const DeviceInfo& a_chosenDevice, const std::shared_ptr<VK_WindowSystemProxy>& a_winProxy)const;
 	};
 }

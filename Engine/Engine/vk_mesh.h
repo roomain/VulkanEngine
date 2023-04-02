@@ -1,5 +1,5 @@
 #pragma once
-#include "vk_ext_struct.h"
+#include "vk_buffers.h"
 
 namespace Vulkan
 {

@@ -9,63 +9,13 @@
 
 namespace Vulkan
 {
-	VkPresentModeKHR VK_Renderer::getBestPresentationMode(const std::vector<VkPresentModeKHR>& a_vPresentationModes)
-	{
-		if (std::find(a_vPresentationModes.cbegin(), a_vPresentationModes.cend(), VK_PRESENT_MODE_MAILBOX_KHR) != a_vPresentationModes.cend())
-			return VK_PRESENT_MODE_MAILBOX_KHR;
-
-		return VK_PRESENT_MODE_FIFO_KHR;
-	}
-
-	VkSurfaceFormatKHR VK_Renderer::getBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& a_vformats)
-	{
-		// If only 1 format available and is undefined, then this means ALL formats are available (no restrictions)
-		if (a_vformats.size() == 1 && a_vformats[0].format == VK_FORMAT_UNDEFINED)
-			return{ VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
-
-		// If restricted, search for optimal format
-		auto iter = std::find_if(a_vformats.begin(), a_vformats.end(), [&](const auto& format)
-			{
-				return (format.format == VK_FORMAT_R8G8B8A8_UNORM || format.format == VK_FORMAT_B8G8R8A8_UNORM)
-				&& format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-			});
-		if (iter != a_vformats.end())
-			return *iter;
-
-		// If can't find optimal format, then just return first format
-		return a_vformats[0];
-	}
-
-	void VK_Renderer::getSwapChainCapabilities(const VkPhysicalDevice a_device, const VkSurfaceKHR a_surface, SwapchainCapabilities& a_swapChainCap)
-	{
-		VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_device, a_surface, &a_swapChainCap.surfaceCapabilities));
-
-		uint32_t formatCount = 0;
-		VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, nullptr));
-		if (formatCount > 0)
-		{
-			a_swapChainCap.supportedFormats.resize(static_cast<int>(formatCount));
-			VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(a_device, a_surface, &formatCount, a_swapChainCap.supportedFormats.data()));
-		}
-
-		uint32_t presentCount = 0;
-		VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, nullptr));
-		if (presentCount > 0)
-		{
-			a_swapChainCap.supportedModes.resize(static_cast<int>(presentCount));
-			VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(a_device, a_surface, &presentCount, a_swapChainCap.supportedModes.data()));
-		}
-	}
-
 	void VK_Renderer::createSwapChain()
 	{
 		// Get swap chain capabilities
-		SwapchainCapabilities swapChainCaps;
-		getSwapChainCapabilities(m_vkDevice.physical, m_pWindowProxy->surface(), swapChainCaps);
-
+		const SwapchainCapabilities& swapChainCaps = VK_VulkanCapabilities::instance()[m_vkDevice.deviceIndex].swapchainCapabilities();
 		// choose optimal surface values
-		VkSurfaceFormatKHR surfaceFormat = getBestSurfaceFormat(swapChainCaps.supportedFormats);
-		VkPresentModeKHR presentMode = getBestPresentationMode(swapChainCaps.supportedModes);
+		VkSurfaceFormatKHR surfaceFormat = VK_VulkanCapabilities::instance()[m_vkDevice.deviceIndex].bestSurfaceFormat();
+		VkPresentModeKHR presentMode = VK_VulkanCapabilities::instance()[m_vkDevice.deviceIndex].bestPresentationMode();
 
 		// How many images are in the swap chain? Get 1 more than the minimum to allow triple buffering
 		uint32_t imageCount = swapChainCaps.surfaceCapabilities.minImageCount + 1;
@@ -137,8 +87,8 @@ namespace Vulkan
 		m_vSwapchainImages.clear();
 	}
 
-	VK_Renderer::VK_Renderer(const VkPhysicalDevice a_physicalDevice, RenderDeviceConf&& a_rendererConf,
-		const std::vector<std::string>& a_deviceExt, const std::shared_ptr<VK_WindowSystemProxy>& a_pWwinProxy) : VK_Device{ a_physicalDevice },
+	VK_Renderer::VK_Renderer(const uint32_t a_deviceIndex, RenderDeviceConf&& a_rendererConf,
+		const std::vector<std::string>& a_deviceExt, const std::shared_ptr<VK_WindowSystemProxy>& a_pWwinProxy) : VK_Device{ a_deviceIndex },
 		m_RendererConf{std::move(a_rendererConf)},
 		m_swapChain { VK_NULL_HANDLE }, m_graphicsQueue{ VK_NULL_HANDLE }, m_presentationQueue{ VK_NULL_HANDLE }, m_renderingIndex{ 0 },
 		m_pWindowProxy{ a_pWwinProxy }, m_acquireFence{ VK_NULL_HANDLE }

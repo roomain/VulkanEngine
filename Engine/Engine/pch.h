@@ -11,12 +11,13 @@
 //#include "framework.h"
 #include "vulkan/vulkan.h"
 #include "vk_application.h"
-#include "vk_ext_struct.h"
-#include "vk_check.h"
-#include "vk_gets.h"
+#include "vk_images.h"
+#include "vk_buffers.h"
+#include "vk_VulkanCapabilities.h"
 #include "vk_macros.h"
 #include "vk_struct_initializers.h"
 #include "vk_files.h"
 #include "vk_Exception.h"
+#include "vk_macros.h"
 
 #endif //PCH_H

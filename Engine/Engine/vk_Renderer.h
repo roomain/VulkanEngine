@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "vk_files.h"
-#include "vk_ext_struct.h"
+#include "vk_images.h"
 #include "vk_globals.h"
 #include "vk_pipeline.h"
 #include "vk_device.h"
@@ -30,14 +30,11 @@ namespace Vulkan
 	class ENGINE_EXPORT VK_Renderer : public VK_Device
 	{
 	private:
-		static [[nodiscard]] VkPresentModeKHR getBestPresentationMode(const std::vector<VkPresentModeKHR>& a_vPresentationModes);
-		static [[nodiscard]] VkSurfaceFormatKHR getBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& a_vformats);
-		static void getSwapChainCapabilities(const VkPhysicalDevice a_device, const VkSurfaceKHR a_surface, SwapchainCapabilities& a_swapChainCap);
 		void createSwapChain();
 		void destroySwapChain();
 
 	public:
-		[[nodiscard]] explicit VK_Renderer(const VkPhysicalDevice a_physicalDevice, RenderDeviceConf&& a_rendererConf,
+		[[nodiscard]] explicit VK_Renderer(const uint32_t a_deviceIndex, RenderDeviceConf&& a_rendererConf,
 			const std::vector<std::string>& a_deviceExt, const std::shared_ptr<VK_WindowSystemProxy>& a_pWwinProxy);
 
 		VK_Renderer(const VK_Renderer&) = delete;

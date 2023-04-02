@@ -10,10 +10,10 @@ namespace Vulkan
 	{
 	public:
 		virtual ~VK_WindowSystemProxy() {}
-		virtual VkSurfaceKHR surface() = 0;
-		virtual uint32_t width() = 0;
-		virtual uint32_t height() = 0;
-		virtual void resetSurface() = 0;
+		virtual VkSurfaceKHR surface() = 0;	/*!< get rendering surface*/
+		virtual uint32_t width() = 0;		/*!< get window width*/
+		virtual uint32_t height() = 0;		/*!< get window height*/
+		virtual void resetSurface() = 0;	/*!< reset surface handle*/
 		// TODO
 	};
 

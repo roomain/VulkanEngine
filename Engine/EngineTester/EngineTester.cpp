@@ -88,7 +88,7 @@ int main(const int a_argc, const char** a_argv)
 			vkConf.instanceExtProps.push_back(glfwExtensions[i]);
 		}
 
-		if (pVkApp->checkInstanceExtensions(vkConf.instanceExtProps) && pVkApp->checkInstanceLayers(vkConf.instanceLayers))
+		//if (pVkApp->checkInstanceExtensions(vkConf.instanceExtProps) && pVkApp->checkInstanceLayers(vkConf.instanceLayers))
 		{
 			// create vulkan instance
 			pVkApp->createVulkanInstance(vkConf, &logger);
@@ -115,10 +115,10 @@ int main(const int a_argc, const char** a_argv)
 				}
 			}
 		}
-		else
+		/*else
 		{
 			std::cerr << "Some instance extensions and/or instance layers are not supported." << std::endl;
-		}
+		}*/
 	}
 	catch (Vulkan::VK_Exception& except)
 	{

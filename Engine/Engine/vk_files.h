@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "vk_ext_struct.h"
 #include "vk_globals.h"
 
 /*@brief loading files*/

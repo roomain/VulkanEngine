@@ -5,6 +5,7 @@
 
 namespace Vulkan
 {
+    struct BaseImage;
     /*@brief image with memory*/
     struct Image;
     /*@brief a pool of image with same format and size*/
@@ -19,6 +20,7 @@ namespace Vulkan
     /*@brief represents vulkan device*/
     struct Device
     {
+        uint32_t deviceIndex;                           /*!< device index*/
         VkPhysicalDevice physical = VK_NULL_HANDLE;		/*!< physical device*/
         VkDevice logicalDevice = VK_NULL_HANDLE;		/*!< logical device*/
     };
@@ -74,7 +76,7 @@ namespace Vulkan
         /*@brief get index of compatible memory for device local memory*/
         [[nodiscard]] uint32_t memoryTypeIndex(const uint32_t a_memTypeBits, const VkMemoryPropertyFlags a_flags)const;
 
-        [[nodiscard]] explicit VK_Device(const VkPhysicalDevice a_physicalDevice);
+        [[nodiscard]] explicit VK_Device(const uint32_t a_deviceIndex);
 
         static void createLogicalDevice(const DeviceQueuesConfiguration& a_queueConf, const std::vector<std::string>& a_deviceExt, Device& a_device);
 

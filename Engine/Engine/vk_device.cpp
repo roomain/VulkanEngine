@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <iterator>
 #include "vk_device.h"
-#include "vk_ext_struct.h"
 
 namespace Vulkan
 {
@@ -36,7 +35,7 @@ namespace Vulkan
         VK_CHECK(vkCreateDevice(a_device.physical, &deviceCreateInfo, nullptr, &a_device.logicalDevice))
     }
 
-    VK_Device::VK_Device(const VkPhysicalDevice a_physicalDevice) : m_vkDevice{ a_physicalDevice, VK_NULL_HANDLE }
+    VK_Device::VK_Device(const uint32_t a_deviceIndex) : m_vkDevice{ a_deviceIndex, VK_VulkanCapabilities::instance()[a_deviceIndex].physicalDevice(), VK_NULL_HANDLE}
     {
         vkGetPhysicalDeviceMemoryProperties(m_vkDevice.physical, &m_memProps);
     }
