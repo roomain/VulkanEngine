@@ -2,22 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <GLM_DIR Condition="exists('D:\Libraries\glm')">D:\Libraries\glm</GLM_DIR>
-    <GLM_DIR Condition="exists('C:\Libraries\glm')">C:\Libraries\glm</GLM_DIR>
-    <GLM_INC>$(GLM_DIR)</GLM_INC>
+    <VK_MEMORY_DIR Condition="exists('D:\Libraries\VulkanMemoryAllocator')">D:\Libraries\VulkanMemoryAllocator\install\VMA</VK_MEMORY_DIR>
+    <VK_MEMORY_DIR Condition="exists('C:\Libraries\VulkanMemoryAllocator')">C:\Libraries\VulkanMemoryAllocator\install\VMA</VK_MEMORY_DIR>
+    <VK_MEMORY_DIR_INC>$(VK_MEMORY_DIR)\include</VK_MEMORY_DIR_INC>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(GLM_INC);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VK_MEMORY_DIR_INC);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <BuildMacro Include="GLM_DIR">
-      <Value>$(GLM_DIR)</Value>
+    <BuildMacro Include="VK_MEMORY_DIR">
+      <Value>$(VK_MEMORY_DIR)</Value>
     </BuildMacro>
-    <BuildMacro Include="GLM_INC">
-      <Value>$(GLM_INC)</Value>
+    <BuildMacro Include="VK_MEMORY_DIR_INC">
+      <Value>$(VK_MEMORY_DIR_INC)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>
