@@ -35,3 +35,19 @@ classname::classname()\
 {\
     classname::deserialize(this);\
 }\
+
+#define DESERIALIZE_INLINE_IMPL(classname) \
+inline void classname::deserializeMembers(classname& a_this, const SerializedObject& a_serialized)\
+{\
+    _DESERIALIZE_##classname \
+}\
+\
+inline void classname::deserialize(const classname* a_this)\
+{\
+    DeserializeManager::instance().deserialize(a_this, #classname);\
+}\
+\
+inline classname::classname()\
+{\
+    classname::deserialize(this);\
+}\

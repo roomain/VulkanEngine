@@ -5,14 +5,15 @@
 * @author Roomain
 ************************************************/
 #include <memory>
+#include <vector>
 #include "VulkanParameter.h"
 #include "vulkan/vulkan.hpp"
 
 struct VulkanQueueCreateInfo
 {
-	int queueIndex;
+	uint32_t queueIndex;
 	VkQueueFlags flags;
-	int queueCount;	
+	uint32_t queueCount;
 };
 
 struct VulkanDeviceCreateInfo
@@ -31,7 +32,7 @@ private:
 	VkPhysicalDevice m_physicalDevice;	/*!< vulkan physical device*/
 	VkDevice m_logicalevice;			/*!< vulkan logical device*/
 
-	VulkanDevice(const VulkanDeviceCreateInfo& a_createInfo);
+	explicit VulkanDevice(const VulkanDeviceCreateInfo& a_createInfo);
 
 public:
 	VulkanDevice() = delete;

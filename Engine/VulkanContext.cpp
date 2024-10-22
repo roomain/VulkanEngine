@@ -1,8 +1,10 @@
 #include "pch.h"
+#include <vector>
 #include "VulkanContext.h"
 #include "VulkanParameter.h"
 #include "common/string_utils.h"
 #include "common/contains.h"
+#include "VulkanDevice.h"
 
 
 VulkanCapabilities VulkanContext::m_capabilities;
@@ -64,6 +66,9 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 	std::vector<int> vCompatibleDevice;
 	int deviceIndex = 0;
 
+	// available devices configurations
+	std::unordered_map<int, std::vector<VulkanQueueCreateInfo>> devicesConf;
+
 	// find compatible devices
 	for (auto deviceCap = VulkanContext::m_capabilities.deviceBegin(); deviceCap != VulkanContext::m_capabilities.deviceEnd(); ++deviceCap)
 	{
@@ -87,11 +92,14 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			continue;
 		}
 
+
+		std::vector<VulkanQueueCreateInfo> queueConf;
 		// contains number of available queue per family
 		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues; 
 		int missingQueueCount = 0;
 		for (auto queueFamilyParam : a_param.queues)// need a copy
 		{
+
 			uint32_t queueFamilyIndex = 0;
 			for (auto iter = deviceCap->queueBegin(); iter != deviceCap->queueEnd() && (queueFamilyParam.count > 0); ++iter)
 			{
@@ -106,18 +114,20 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 					}
 
 					
+					uint32_t minKeep = 0;
 					if (auto iterQueue = QueuesFamilyRemainQueues.find(queueFamilyIndex); iterQueue != QueuesFamilyRemainQueues.end())
 					{
-						int minKeep = std::min(iterQueue->second, queueFamilyParam.count);
+						minKeep = std::min(iterQueue->second, queueFamilyParam.count);
 						iterQueue->second -= minKeep;
 						queueFamilyParam.count -= minKeep;
 					}
 					else
 					{
-						int minKeep = std::min(iter->queueCount, queueFamilyParam.count);
+						minKeep = std::min(iter->queueCount, queueFamilyParam.count);
 						QueuesFamilyRemainQueues[queueFamilyIndex] = iter->queueCount - minKeep;
 						queueFamilyParam.count -= minKeep;
 					}
+					queueConf.emplace_back(VulkanQueueCreateInfo{ queueFamilyIndex, queueFamilyParam.flags, minKeep });
 				}
 				queueFamilyIndex++;
 			}
@@ -127,7 +137,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		// check if all queues are available
 		if (missingQueueCount == 0)
 		{
-			// todo
+			devicesConf.emplace(deviceIndex, std::move(queueConf));
 		}
 
 		++deviceIndex;

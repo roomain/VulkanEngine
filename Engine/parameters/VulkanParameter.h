@@ -17,7 +17,7 @@ struct VulkanParameter
 	std::vector<std::string> layers;		/*!< vulkan instance desired layer*/
 };
 
-DESERIALIZE_IMPL(VulkanParameter)
+DESERIALIZE_INLINE_IMPL(VulkanParameter)
 
 
 
@@ -33,7 +33,7 @@ struct VulkanQueueFamilyParameter
 	uint32_t count;				/*!< number of queue*/
 };
 
-DESERIALIZE_IMPL(VulkanQueueFamilyParameter)
+DESERIALIZE_INLINE_IMPL(VulkanQueueFamilyParameter)
 
 
 
@@ -50,4 +50,4 @@ struct VulkanDeviceParameter
 	std::vector<VulkanQueueFamilyParameter> queues;	/*!< vulkan queue family parameters*/
 };
 
-DESERIALIZE_IMPL(VulkanDeviceParameter)
+DESERIALIZE_INLINE_IMPL(VulkanDeviceParameter)
