@@ -16,6 +16,7 @@ struct VulkanDeviceParameter;
 class VulkanDevice;
 using VulkanDevicePtr = std::shared_ptr<VulkanDevice>;
 
+
 class VulkanContext
 {
 private:
@@ -26,12 +27,14 @@ private:
 	VkInstance m_instance = VK_NULL_HANDLE;		/*!< vulkan instance*/
 	std::vector<VulkanDevicePtr> m_vDevices;	/*!< vulkan devices*/
 
+
+
 public:
 	static VulkanCapabilities& getCapabilities();
+	explicit VulkanContext(const VulkanParameter& a_param);
 
 	NOT_COPIABLE(VulkanContext)
 	VulkanContext() = delete;
-	explicit VulkanContext(const VulkanParameter& a_param);
 	[[nodiscard]] bool isValid()const noexcept;
 
 	VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, VkSurfaceKHR a_surface = VK_NULL_HANDLE);

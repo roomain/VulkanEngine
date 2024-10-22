@@ -87,12 +87,13 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			continue;
 		}
 
-		// contains number of queue per family
+		// contains number of available queue per family
 		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues; 
-		for (const auto& queueFamilyParam : a_param.queues)
+		int missingQueueCount = 0;
+		for (auto queueFamilyParam : a_param.queues)// need a copy
 		{
 			uint32_t queueFamilyIndex = 0;
-			for (auto iter = deviceCap->queueBegin(); iter != deviceCap->queueEnd(); ++iter)
+			for (auto iter = deviceCap->queueBegin(); iter != deviceCap->queueEnd() && (queueFamilyParam.count > 0); ++iter)
 			{
 				if ((iter->queueFlags & queueFamilyParam.flags) == queueFamilyParam.flags)
 				{
@@ -103,9 +104,30 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 						if (!supported)
 							continue;
 					}
+
+					
+					if (auto iterQueue = QueuesFamilyRemainQueues.find(queueFamilyIndex); iterQueue != QueuesFamilyRemainQueues.end())
+					{
+						int minKeep = std::min(iterQueue->second, queueFamilyParam.count);
+						iterQueue->second -= minKeep;
+						queueFamilyParam.count -= minKeep;
+					}
+					else
+					{
+						int minKeep = std::min(iter->queueCount, queueFamilyParam.count);
+						QueuesFamilyRemainQueues[queueFamilyIndex] = iter->queueCount - minKeep;
+						queueFamilyParam.count -= minKeep;
+					}
 				}
 				queueFamilyIndex++;
 			}
+			missingQueueCount += queueFamilyParam.count;
+		}
+
+		// check if all queues are available
+		if (missingQueueCount == 0)
+		{
+			// todo
 		}
 
 		++deviceIndex;
