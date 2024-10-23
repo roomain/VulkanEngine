@@ -27,6 +27,8 @@ struct VulkanSwapchainCapabilities
     std::vector<VkPresentModeKHR> supportedModes;		/*!< supported presentation modes*/
 };
 
+struct VulkanDeviceFeatures;
+
 
 class VulkanDeviceCapabilities
 {
@@ -67,11 +69,15 @@ public:
     [[nodiscard]] Layer_const_iterator layerBegin()const noexcept;
     [[nodiscard]] Layer_const_iterator layerEnd()const noexcept;
 
+    
+
     //------------------------------------------------------------------------------------------
     /*@brief get best presentation modes*/
 	[[nodiscard]] VkPresentModeKHR bestPresentationMode()const;
 	/*@brief get best surface format*/
 	[[nodiscard]] VkSurfaceFormatKHR bestSurfaceFormat()const;
     void getSwapChainCapabilities(const VkSurfaceKHR a_surface);
-
+    /*@brief chech features validity*/
+    [[nodiscard]] bool isFeaturesAvailable(const VulkanDeviceFeatures& a_features)const;
+    static [[nodiscard]] VkPhysicalDeviceFeatures toFeatures(const VulkanDeviceFeatures& a_features);
 };

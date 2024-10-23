@@ -6,6 +6,7 @@
 ************************************************/
 #include <vector>
 #include <memory>
+#include <functional>
 #include "vulkan/vulkan.h"
 #include "VulkanCapabilities.h"
 #include "common/notCopiable.h"
@@ -16,6 +17,8 @@ struct VulkanDeviceParameter;
 class VulkanDevice;
 using VulkanDevicePtr = std::shared_ptr<VulkanDevice>;
 
+/*@brief callback to choose device : get index of compatible device, return the chosen device*/
+using DeviceChoice = std::function<int(const std::vector<int>&)>;
 
 class VulkanContext
 {
@@ -37,6 +40,6 @@ public:
 	VulkanContext() = delete;
 	[[nodiscard]] bool isValid()const noexcept;
 
-	VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
+	VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 };
 

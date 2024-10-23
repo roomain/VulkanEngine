@@ -5,6 +5,7 @@
 #include "common/string_utils.h"
 #include "common/contains.h"
 #include "VulkanDevice.h"
+#include "VulkanInitializers.h"
 
 
 VulkanCapabilities VulkanContext::m_capabilities;
@@ -60,7 +61,7 @@ bool VulkanContext::isValid()const noexcept
 	return m_instance != VK_NULL_HANDLE;
 }
 
-VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_param, VkSurfaceKHR a_surface)
+VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface)
 {
 	VulkanDevicePtr vulkanDev;
 	std::vector<int> vCompatibleDevice;
@@ -68,6 +69,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 
 	// available devices configurations
 	std::unordered_map<int, std::vector<VulkanQueueCreateInfo>> devicesConf;
+	std::vector<int> compatibleDevices;
 
 	// find compatible devices
 	for (auto deviceCap = VulkanContext::m_capabilities.deviceBegin(); deviceCap != VulkanContext::m_capabilities.deviceEnd(); ++deviceCap)
@@ -91,6 +93,8 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		{
 			continue;
 		}
+
+		//todo check feature
 
 
 		std::vector<VulkanQueueCreateInfo> queueConf;
@@ -138,15 +142,33 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		if (missingQueueCount == 0)
 		{
 			devicesConf.emplace(deviceIndex, std::move(queueConf));
+			compatibleDevices.emplace_back(deviceIndex);
 		}
 
 		++deviceIndex;
 	}
 
-	// by default get first device else (need a other parameter for user device choice maybe a function)
+	if (!compatibleDevices.empty())
+	{
+		int chosenDevice = compatibleDevices[0];
+		// by default get first device else (need a other parameter for user device choice maybe a function)
+		if (compatibleDevices.size() > 1)
+		{
+			chosenDevice = a_choose(compatibleDevices);
+		}
 
-	//
-	//vkCreateDevice()
-	//
+		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
+		devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
+		auto vExtents = vStringToChar(a_param.extensions);
+		devInfo.ppEnabledExtensionNames = vExtents.data();
+		devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
+		auto vLayers = vStringToChar(a_param.layers);
+		devInfo.ppEnabledLayerNames = vLayers.data();
+		devInfo.pEnabledFeatures;
+		// TODO
+		//
+		//vkCreateDevice()
+		//
+	}
 	return vulkanDev;
 }
