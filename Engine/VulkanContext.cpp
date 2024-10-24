@@ -80,9 +80,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			{
 				return a_search.compare(a_layer.layerName) == 0;
 			}))
-		{
 			continue;
-		}
 
 		// check extensions
 		if (!contains<VkExtensionProperties>(deviceCap->extensionBegin(), deviceCap->extensionEnd(), a_param.extensions,
@@ -90,11 +88,10 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			{
 				return a_search.compare(a_extension.extensionName) == 0;
 			}))
-		{
 			continue;
-		}
 
-		//todo check feature
+		if(!deviceCap->isFeaturesAvailable(a_param.features))
+			continue;
 
 
 		std::vector<VulkanQueueCreateInfo> queueConf;
@@ -157,14 +154,20 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			chosenDevice = a_choose(compatibleDevices);
 		}
 
-		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
-		devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
+
 		auto vExtents = vStringToChar(a_param.extensions);
+		auto vLayers = vStringToChar(a_param.layers);
+		auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
+		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
+
+		devInfo.flags;
+		devInfo.queueCreateInfoCount;
+		devInfo.pQueueCreateInfos;
+		devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
 		devInfo.ppEnabledExtensionNames = vExtents.data();
 		devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
-		auto vLayers = vStringToChar(a_param.layers);
 		devInfo.ppEnabledLayerNames = vLayers.data();
-		devInfo.pEnabledFeatures;
+		devInfo.pEnabledFeatures = &features;
 		// TODO
 		//
 		//vkCreateDevice()

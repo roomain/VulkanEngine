@@ -1,7 +1,7 @@
 #pragma once
 /***********************************************
 * @headerfile VulkanParameter.generated.h
-* @date 23/10/2024
+* @date 24/10/2024
 * @author reflecGen.py
 ************************************************/
 #include <variant>
@@ -156,5 +156,7 @@ for(const auto&[name, data] : a_serialized) \
 		std::visit(Deserializer<std::vector<std::string>>{ &a_this.layers }, data); \
 	if(name == "queues") \
 		std::visit(Deserializer<std::vector<VulkanQueueFamilyParameter>>{ &a_this.queues }, data); \
+	if(name == "features") \
+		std::visit(Deserializer<VulkanDeviceFeatures>{ &a_this.features }, data); \
 }\
 

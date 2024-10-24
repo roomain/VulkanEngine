@@ -163,6 +163,8 @@ struct VulkanDeviceParameter
 	std::vector<std::string> layers;				/*!< vulkan device desired layer*/
 	REFLECT_MEMBER
 	std::vector<VulkanQueueFamilyParameter> queues;	/*!< vulkan queue family parameters*/
+    REFLECT_MEMBER
+    VulkanDeviceFeatures features;                  /*!< device requested features*/
 };
 
 DESERIALIZE_INLINE_IMPL(VulkanDeviceParameter)
