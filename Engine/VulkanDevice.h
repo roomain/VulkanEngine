@@ -32,7 +32,7 @@ private:
 	VkPhysicalDevice m_physicalDevice;	/*!< vulkan physical device*/
 	VkDevice m_logicalevice;			/*!< vulkan logical device*/
 
-	explicit VulkanDevice(const VulkanDeviceCreateInfo& a_createInfo);
+	explicit VulkanDevice(const VkPhysicalDevice a_physicalDev, const VkDevice a_logicalDev);
 
 public:
 	VulkanDevice() = delete;

@@ -177,12 +177,12 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 
 		auto vExtents = vStringToChar(a_param.extensions);
 		auto vLayers = vStringToChar(a_param.layers);
-		auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
+		//auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
 
 
 		devInfo.flags = static_cast<VkDeviceCreateFlags>(0);
-		devInfo.queueCreateInfoCount = devicesConf[chosenDevice].baseCreateInfo.size();
+		devInfo.queueCreateInfoCount = static_cast<uint32_t>(devicesConf[chosenDevice].baseCreateInfo.size());
 
 		// set queue priority to conf struct
 		float* iter = devicesConf[chosenDevice].priorities.data();
@@ -198,10 +198,13 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
 		devInfo.ppEnabledLayerNames = vLayers.data();
 		devInfo.pEnabledFeatures = nullptr;// &features;
-		// TODO
-		//
-		//vkCreateDevice()
-		//
+
+		VkDevice logical;
+		VK_CHECK_EXCEPT(vkCreateDevice((VulkanContext::m_capabilities.deviceBegin() + chosenDevice)->physicalDevice(),
+			&devInfo, nullptr, &logical))
+
+		vulkanDev = std::shared_ptr<VulkanDevice>(new VulkanDevice((VulkanContext::m_capabilities.deviceBegin() + chosenDevice)->physicalDevice(),
+			logical));
 	}
 	return vulkanDev;
 }
