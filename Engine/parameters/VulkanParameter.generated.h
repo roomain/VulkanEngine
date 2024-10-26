@@ -1,7 +1,7 @@
 #pragma once
 /***********************************************
 * @headerfile VulkanParameter.generated.h
-* @date 24/10/2024
+* @date 26/10/2024
 * @author reflecGen.py
 ************************************************/
 #include <variant>
@@ -28,6 +28,8 @@ for(const auto&[name, data] : a_serialized) \
 		std::visit(Deserializer<VkQueueFlags>{ &a_this.flags }, data); \
 	if(name == "count") \
 		std::visit(Deserializer<uint32_t>{ &a_this.count }, data); \
+	if(name == "priority") \
+		std::visit(Deserializer<float>{ &a_this.priority }, data); \
 }\
 
 /* class deserialization macro */

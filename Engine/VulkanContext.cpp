@@ -68,7 +68,13 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 	int deviceIndex = 0;
 
 	// available devices configurations
-	std::unordered_map<int, std::vector<VulkanQueueCreateInfo>> devicesConf;
+	struct DeviceQueuesConf
+	{
+		std::vector<VkDeviceQueueCreateInfo> baseCreateInfo;
+		std::vector<float> priorities;// size = Sum of queues in baseCreateInfo
+	};
+
+	std::unordered_map<int, DeviceQueuesConf> devicesConf;
 	std::vector<int> compatibleDevices;
 
 	// find compatible devices
@@ -94,7 +100,9 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			continue;
 
 
-		std::vector<VulkanQueueCreateInfo> queueConf;
+
+		DeviceQueuesConf queueConf;
+
 		// contains number of available queue per family
 		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues; 
 		int missingQueueCount = 0;
@@ -128,7 +136,19 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 						QueuesFamilyRemainQueues[queueFamilyIndex] = iter->queueCount - minKeep;
 						queueFamilyParam.count -= minKeep;
 					}
-					queueConf.emplace_back(VulkanQueueCreateInfo{ queueFamilyIndex, queueFamilyParam.flags, minKeep });
+
+					queueConf.baseCreateInfo.emplace_back(
+						VkDeviceQueueCreateInfo{ 
+							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+						.pNext = nullptr,
+						.flags = queueFamilyParam.flags,
+						.queueFamilyIndex = queueFamilyIndex,
+						.queueCount = minKeep,
+						.pQueuePriorities = nullptr 
+						}
+					);
+					for (uint32_t index = 0; index < minKeep; ++index)
+						queueConf.priorities.emplace_back(queueFamilyParam.priority);
 				}
 				queueFamilyIndex++;
 			}
@@ -160,14 +180,24 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
 
-		devInfo.flags;
-		devInfo.queueCreateInfoCount;
-		devInfo.pQueueCreateInfos;
+
+		devInfo.flags = static_cast<VkDeviceCreateFlags>(0);
+		devInfo.queueCreateInfoCount = devicesConf[chosenDevice].baseCreateInfo.size();
+
+		// set queue priority to conf struct
+		float* iter = devicesConf[chosenDevice].priorities.data();
+		for (auto& queueConf : devicesConf[chosenDevice].baseCreateInfo)
+		{
+			queueConf.pQueuePriorities = iter;
+			iter += queueConf.queueCount;
+		}
+
+		devInfo.pQueueCreateInfos = devicesConf[chosenDevice].baseCreateInfo.data();
 		devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
 		devInfo.ppEnabledExtensionNames = vExtents.data();
 		devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
 		devInfo.ppEnabledLayerNames = vLayers.data();
-		devInfo.pEnabledFeatures = &features;
+		devInfo.pEnabledFeatures = nullptr;// &features;
 		// TODO
 		//
 		//vkCreateDevice()

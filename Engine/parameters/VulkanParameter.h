@@ -31,6 +31,8 @@ struct VulkanQueueFamilyParameter
 	VkQueueFlags flags;			/*!< queue flags*/
 	REFLECT_MEMBER
 	uint32_t count;				/*!< number of queue*/
+    REFLECT_MEMBER
+    float priority = 0;         /*!< queue priorities*/
 };
 
 DESERIALIZE_INLINE_IMPL(VulkanQueueFamilyParameter)
