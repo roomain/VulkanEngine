@@ -26,7 +26,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param)
 	{
 		throw Exception("Some extension are not supported");
 	}
-	
+
 	if (!contains<VkLayerProperties>(VulkanContext::m_capabilities.layerBegin(), VulkanContext::m_capabilities.layerEnd(), a_param.layers,
 		[](const std::string_view& a_search, const VkLayerProperties& a_layer)
 		{
@@ -52,7 +52,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param)
 	createInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
 	createInfo.ppEnabledLayerNames = layers.data();
 	createInfo.pApplicationInfo = &appInfo;
-	
+
 	vkCreateInstance(&createInfo, nullptr, &m_instance);
 }
 
@@ -96,15 +96,13 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			}))
 			continue;
 
-		if(!deviceCap->isFeaturesAvailable(a_param.features))
+		if (!deviceCap->isFeaturesAvailable(a_param.features))
 			continue;
-
-
 
 		DeviceQueuesConf queueConf;
 
 		// contains number of available queue per family
-		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues; 
+		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues;
 		int missingQueueCount = 0;
 		for (auto queueFamilyParam : a_param.queues)// need a copy
 		{
@@ -118,11 +116,11 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 					{
 						VkBool32 supported = false;
 						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(deviceCap->physicalDevice(), queueFamilyIndex, a_surface, &supported))
-						if (!supported)
-							continue;
+							if (!supported)
+								continue;
 					}
 
-					
+
 					uint32_t minKeep = 0;
 					if (auto iterQueue = QueuesFamilyRemainQueues.find(queueFamilyIndex); iterQueue != QueuesFamilyRemainQueues.end())
 					{
@@ -138,13 +136,13 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 					}
 
 					queueConf.baseCreateInfo.emplace_back(
-						VkDeviceQueueCreateInfo{ 
+						VkDeviceQueueCreateInfo{
 							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-						.pNext = nullptr,
-						.flags = queueFamilyParam.flags,
-						.queueFamilyIndex = queueFamilyIndex,
-						.queueCount = minKeep,
-						.pQueuePriorities = nullptr 
+							.pNext = nullptr,
+							.flags = queueFamilyParam.flags,
+							.queueFamilyIndex = queueFamilyIndex,
+							.queueCount = minKeep,
+							.pQueuePriorities = nullptr
 						}
 					);
 					for (uint32_t index = 0; index < minKeep; ++index)
@@ -177,7 +175,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 
 		auto vExtents = vStringToChar(a_param.extensions);
 		auto vLayers = vStringToChar(a_param.layers);
-		//auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
+		auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
 
 
@@ -197,7 +195,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		devInfo.ppEnabledExtensionNames = vExtents.data();
 		devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
 		devInfo.ppEnabledLayerNames = vLayers.data();
-		devInfo.pEnabledFeatures = nullptr;// &features;
+		devInfo.pEnabledFeatures =  &features;
 
 		VkDevice logical;
 		VK_CHECK_EXCEPT(vkCreateDevice((VulkanContext::m_capabilities.deviceBegin() + chosenDevice)->physicalDevice(),

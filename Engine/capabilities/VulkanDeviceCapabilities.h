@@ -10,6 +10,10 @@
 #include <unordered_map>
 #include <optional>
 #include "vulkan/vulkan.h"
+#include "Engine_globals.h"
+
+#pragma warning(push)
+#pragma warning( disable : 4251 )
 
 struct VulkanDeviceInfo
 {
@@ -30,7 +34,7 @@ struct VulkanSwapchainCapabilities
 struct VulkanDeviceFeatures;
 
 
-class VulkanDeviceCapabilities
+class VULKAN_ENGINE_LIB VulkanDeviceCapabilities
 {
     friend class VulkanCapabilities;
 private:
@@ -81,3 +85,4 @@ public:
     [[nodiscard]] bool isFeaturesAvailable(const VulkanDeviceFeatures& a_features)const;
     static [[nodiscard]] VkPhysicalDeviceFeatures toFeatures(const VulkanDeviceFeatures& a_features);
 };
+#pragma warning(pop)

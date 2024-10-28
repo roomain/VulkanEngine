@@ -8,6 +8,7 @@
 #include <vector>
 #include "VulkanParameter.h"
 #include "vulkan/vulkan.hpp"
+#include "Engine_globals.h"
 
 struct VulkanQueueCreateInfo
 {
@@ -24,7 +25,7 @@ struct VulkanDeviceCreateInfo
 };
 
 /*@brief represents a vulkan device*/
-class VulkanDevice
+class VULKAN_ENGINE_LIB VulkanDevice
 {
 	friend class VulkanContext;
 

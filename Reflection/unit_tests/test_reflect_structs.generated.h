@@ -1,7 +1,7 @@
 #pragma once
 /***********************************************
 * @headerfile test_reflect_structs.generated.h
-* @date 24/10/2024
+* @date 27/10/2024
 * @author reflecGen.py
 ************************************************/
 #include <variant>

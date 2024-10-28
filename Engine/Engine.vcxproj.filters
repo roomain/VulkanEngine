@@ -22,6 +22,12 @@
     <Filter Include="Fichiers d%27en-tête\Parameters">
       <UniqueIdentifier>{81653931-06f3-4476-8060-b9c7cc8e41be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\EngineObjects">
+      <UniqueIdentifier>{b65d480c-4f0d-4d6f-8e3d-ce09c08c8d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\EngineObjects">
+      <UniqueIdentifier>{bffd68a1-df59-4996-88a4-f87b500f4e52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +60,18 @@
     <ClInclude Include="VulkanDevice.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Engine_globals.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineObject.h">
+      <Filter>Fichiers d%27en-tête\EngineObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineResizable.h">
+      <Filter>Fichiers d%27en-tête\EngineObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineWindow.h">
+      <Filter>Fichiers d%27en-tête\EngineObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -73,6 +91,12 @@
     </ClCompile>
     <ClCompile Include="VulkanDevice.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineObject.cpp">
+      <Filter>Fichiers sources\EngineObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineResizable.cpp">
+      <Filter>Fichiers sources\EngineObjects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

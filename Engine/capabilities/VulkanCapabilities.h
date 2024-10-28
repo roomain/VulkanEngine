@@ -5,11 +5,18 @@
 * @author Roomain
 ************************************************/
 #include <vector>
+#include <unordered_map>
 #include "vulkan/vulkan.h"
 #include "common/notCopiable.h"
 #include "VulkanDeviceCapabilities.h"
+#include "Engine_globals.h"
 
-class VulkanCapabilities
+#pragma warning(push)
+#pragma warning( disable : 4251 )
+
+struct VulkanDeviceParameter;
+
+class VULKAN_ENGINE_LIB VulkanCapabilities
 {
 private:
     VkInstance m_instance;                              /*!< vulkan instance*/
@@ -33,5 +40,19 @@ public:
     using Device_const_iterator = std::vector<VulkanDeviceCapabilities>::const_iterator;
     [[nodiscard]] Device_const_iterator deviceBegin()const noexcept;
     [[nodiscard]] Device_const_iterator deviceEnd()const noexcept;
+
+    /*@brief compatible queues configuration for a device*/
+    struct VulkanDeviceQueuesConf
+    {
+        std::vector<VkDeviceQueueCreateInfo> baseCreateInfo;    /*!< queues configurations*/
+        std::vector<float> priorities;                          /*!< queues priorities*/
+    };
+
+    /*@brief Queues configuration per device index*/
+    using VulkanDeviceConfMap = std::unordered_map<int, VulkanDeviceQueuesConf>;
+
+    void findDeviceCompatibleConfiguration(const VulkanDeviceParameter& a_parameters, VulkanDeviceConfMap& a_conf, VkSurfaceKHR a_surface)const;
 };
 
+
+#pragma warning(pop)

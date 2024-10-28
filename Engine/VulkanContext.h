@@ -8,9 +8,13 @@
 #include <memory>
 #include <functional>
 #include "vulkan/vulkan.h"
-#include "VulkanCapabilities.h"
+#include "Capabilities/VulkanCapabilities.h"
 #include "common/notCopiable.h"
+#include "Engine_globals.h"
 
+
+#pragma warning(push)
+#pragma warning( disable : 4251 )
 
 struct VulkanParameter;
 struct VulkanDeviceParameter;
@@ -20,7 +24,7 @@ using VulkanDevicePtr = std::shared_ptr<VulkanDevice>;
 /*@brief callback to choose device : get index of compatible device, return the chosen device*/
 using DeviceChoice = std::function<int(const std::vector<int>&)>;
 
-class VulkanContext
+class VULKAN_ENGINE_LIB VulkanContext
 {
 private:
 	static constexpr uint32_t m_appVersion = 1;
@@ -43,3 +47,5 @@ public:
 	VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 };
 
+
+#pragma warning(pop)
