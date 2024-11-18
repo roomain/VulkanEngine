@@ -38,7 +38,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param)
 
 	// create instance
 	auto appInfo = Vulkan::Initializers::applicationInfo();
-	appInfo.apiVersion = VK_VERSION_1_3;
+	appInfo.apiVersion = 0;// VK_VERSION_1_3;
 	appInfo.applicationVersion = VulkanContext::m_appVersion;
 	appInfo.engineVersion = VulkanContext::m_engineVersion;
 	appInfo.pEngineName = "VulkanEngine";

@@ -165,6 +165,8 @@ reflectGen.py $(ProjectDir)Parameters
   <ItemGroup>
     <ClInclude Include="capabilities\VulkanCapabilities.h" />
     <ClInclude Include="capabilities\VulkanDeviceCapabilities.h" />
+    <ClInclude Include="EngineEvents.h" />
+    <ClInclude Include="EngineEventStatus.h" />
     <ClInclude Include="EngineResizable.h" />
     <ClInclude Include="EngineWindow.h" />
     <ClInclude Include="Engine_globals.h" />

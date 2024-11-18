@@ -3,6 +3,7 @@
 #include <vector>
 #include "Reflection/JsonReflection/deserialize_functions.h"
 #include "Reflection/JsonReflection/deserialize_macros.h"
+#include "vulkan/vulkan.hpp"
 
 #include "VulkanParameter.generated.h"
 
@@ -10,7 +11,8 @@ REFLECT_CLASS(VulkanParameter)
 struct VulkanParameter
 {
 	DESERIALIZE_DECLARE(VulkanParameter)
-	bool bIsDebug = true;
+    REFLECT_MEMBER
+	bool bIsDebug = false;
 	REFLECT_MEMBER
 	std::vector<std::string> extensions;	/*!< vulkan instance extensions properties*/
 	REFLECT_MEMBER

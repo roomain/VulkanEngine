@@ -143,6 +143,9 @@
   <ItemGroup>
     <ClCompile Include="test_engine.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SDLToEngineEvents.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

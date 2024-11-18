@@ -28,6 +28,9 @@
     <Filter Include="Fichiers sources\EngineObjects">
       <UniqueIdentifier>{bffd68a1-df59-4996-88a4-f87b500f4e52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\Events">
+      <UniqueIdentifier>{268967ad-1aac-45a8-9260-63e1413f1af9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -71,6 +74,12 @@
     </ClInclude>
     <ClInclude Include="EngineWindow.h">
       <Filter>Fichiers d%27en-tête\EngineObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineEvents.h">
+      <Filter>Fichiers d%27en-tête\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineEventStatus.h">
+      <Filter>Fichiers d%27en-tête\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
