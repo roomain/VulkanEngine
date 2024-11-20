@@ -81,6 +81,9 @@
     <ClInclude Include="EngineEventStatus.h">
       <Filter>Fichiers d%27en-tête\Events</Filter>
     </ClInclude>
+    <ClInclude Include="vulkan_string_to_enum.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

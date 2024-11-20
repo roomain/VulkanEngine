@@ -1,0 +1,18 @@
+{
+    "$shema" : "not_yet_rated",
+    "title" : "test_engine",
+    "include": [],
+    "ClassArray" :[
+        {
+            "Id" :{
+                "name": "configuration",
+                "parent": null
+            },
+            "VulkanParameter" :{
+                "bIsDebug" : true,
+                "extensions" : ["VK_EXT_debug_utils", "VK_KHR_surface"],
+                "layers" : ["VK_LAYER_KHRONOS_validation"]
+            }
+        }
+    ]
+}

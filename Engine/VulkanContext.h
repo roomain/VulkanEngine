@@ -38,7 +38,7 @@ private:
 
 public:
 	static VulkanCapabilities& getCapabilities();
-	explicit VulkanContext(const VulkanParameter& a_param);
+	explicit VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension = nullptr, const int a_numExt = 0);
 
 	NOT_COPIABLE(VulkanContext)
 	VulkanContext() = delete;

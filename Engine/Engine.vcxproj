@@ -117,7 +117,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)parameters;$(SolutionDir)\Reflection\JsonReflection;$(SolutionDir)\LoggingSystem;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)parameters;$(SolutionDir)\Reflection\ReflectionLib;$(SolutionDir)\LoggingSystem;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -125,10 +125,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(VULKAN_LIB);$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;LoggingSystem.lib;JsonReflection.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;LoggingSystem.lib;ReflectionLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>cd $(SolutionDir)/Reflection/scripts/
+      <Command>cd $(SolutionDir)Reflection\scripts
 reflectGen.py $(ProjectDir)Parameters
 </Command>
     </PreBuildEvent>
@@ -144,7 +144,7 @@ reflectGen.py $(ProjectDir)Parameters
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)parameters;$(SolutionDir)\Reflection\JsonReflection;$(SolutionDir)\LoggingSystem;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)parameters;$(SolutionDir)\Reflection\ReflectionLib;$(SolutionDir)\LoggingSystem;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -154,10 +154,10 @@ reflectGen.py $(ProjectDir)Parameters
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(VULKAN_LIB);$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;LoggingSystem.lib;JsonReflection.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;LoggingSystem.lib;ReflectionLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>cd $(SolutionDir)/Reflection/scripts/
+      <Command>cd $(SolutionDir)Reflection\scripts
 reflectGen.py $(ProjectDir)Parameters
 </Command>
     </PreBuildEvent>
@@ -179,6 +179,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Vulkan_macros.h" />
+    <ClInclude Include="vulkan_string_to_enum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="capabilities\VulkanCapabilities.cpp" />

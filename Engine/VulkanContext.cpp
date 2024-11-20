@@ -15,10 +15,21 @@ VulkanCapabilities& VulkanContext::getCapabilities()
 	return m_capabilities;
 }
 
-VulkanContext::VulkanContext(const VulkanParameter& a_param)
+VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension, const int a_numExt)
 {
+	std::vector<std::string> usedExtension = a_param.extensions;
+	if (a_extraExtension != nullptr && a_numExt > 0)
+	{
+		for (int index = 0; index < a_numExt; ++index)
+		{
+			std::string ext{ a_extraExtension[index] };
+			if(auto iter = std::ranges::find(a_param.extensions, ext); iter == a_param.extensions.cend())
+				usedExtension.emplace_back(ext);
+		}
+	}
+
 	// check instance ansd extensions
-	if (!contains<VkExtensionProperties>(VulkanContext::m_capabilities.extensionBegin(), VulkanContext::m_capabilities.extensionEnd(), a_param.extensions,
+	if (!contains<VkExtensionProperties>(VulkanContext::m_capabilities.extensionBegin(), VulkanContext::m_capabilities.extensionEnd(), usedExtension,
 		[](const std::string_view& a_search, const VkExtensionProperties& a_extension)
 		{
 			return a_search.compare(a_extension.extensionName) == 0;
@@ -38,22 +49,22 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param)
 
 	// create instance
 	auto appInfo = Vulkan::Initializers::applicationInfo();
-	appInfo.apiVersion = 0;// VK_VERSION_1_3;
+	appInfo.apiVersion = VK_API_VERSION_1_0;// VK_VERSION_1_3;
 	appInfo.applicationVersion = VulkanContext::m_appVersion;
 	appInfo.engineVersion = VulkanContext::m_engineVersion;
 	appInfo.pEngineName = "VulkanEngine";
 
 	auto createInfo = Vulkan::Initializers::instanceCreateInfo();
-	std::vector<const char*> extensions = vStringToChar(a_param.extensions);
+	std::vector<const char*> extensions = vStringToChar(usedExtension);
 	std::vector<const char*> layers = vStringToChar(a_param.layers);
 
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(usedExtension.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 	createInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
 	createInfo.ppEnabledLayerNames = layers.data();
 	createInfo.pApplicationInfo = &appInfo;
 
-	vkCreateInstance(&createInfo, nullptr, &m_instance);
+	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
 }
 
 bool VulkanContext::isValid()const noexcept

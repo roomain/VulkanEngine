@@ -6,9 +6,24 @@
 #include <filesystem>
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_vulkan.h"
-//#include "deserialize_functions.h"
+#include "ReflectionManager.h"
 #include "EngineWindow.h"
-#include "DeserializeManager.h"
+#include "common/string_utils.h"
+
+template<typename Enum> requires std::is_enum_v<Enum>
+int convertEnum(const std::string& a_flag)
+{
+    int flag = 0;
+    std::vector<std::string> vValues;
+    split(a_flag, '|', vValues);
+    for (const auto& val : vValues)
+    {
+        Enum enumVal;
+        to_enum(val, enumVal);
+        flag |= static_cast<int>(enumVal);
+    }
+    return flag;
+}
 
 int eventLoop()
 {
@@ -80,17 +95,30 @@ int eventLoop()
 
 int main()
 {
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("TEST_ENGINE", 800, 800, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
-    SDL_SetWindowTitle(window, "TEST");
+    //bool bLoaded = SDL_Vulkan_LoadLibrary(nullptr);
+    //std::cout << std::boolalpha << "loaded: " << bLoaded;
     //auto curPath = std::filesystem::current_path();
     //curPath = curPath.parent_path().parent_path().append("Reflection/test_files/profiles");
     //DeserializeManager::instance().load(curPath.string(), "profile_unit_test");
-    auto& deserializer = DeserializeManager::instance();
+    auto& deserializer = ReflectionManager::instance();
+    //ReflectionValue::registerCast<>(&convertEnum<>);
+    // todo function decode flag 
     deserializer.load(R"(C:\Projets_GIT\VulkanEngine\test_engine\configuration)", "configuration");
     VulkanParameter engineParam;
+
+
     
-    VulkanContext engineCtxt(engineParam);
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window* window = SDL_CreateWindow("TEST_ENGINE", 800, 800, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
+    SDL_SetWindowTitle(window, "TEST");
+
+    // too add specific extensions
+    Uint32 extensionCount;
+    const char* const* extensionNames = SDL_Vulkan_GetInstanceExtensions(&extensionCount);
+    for (Uint32 i = 0; i < extensionCount; ++i)
+        std::cout << extensionNames[i] << std::endl;
+
+    VulkanContext engineCtxt(engineParam, extensionNames, extensionCount);
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     SDL_Vulkan_CreateSurface(window, engineCtxt.vulkanInstance(), nullptr, &surface);
     if (surface == VK_NULL_HANDLE)

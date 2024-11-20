@@ -1,10 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Reflection/JsonReflection/deserialize_functions.h"
-#include "Reflection/JsonReflection/deserialize_macros.h"
-#include "vulkan/vulkan.hpp"
 
+#include "Reflection_macros.h"
+#include "vulkan/vulkan.hpp"
 #include "VulkanParameter.generated.h"
 
 REFLECT_CLASS(VulkanParameter)
