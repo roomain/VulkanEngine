@@ -141,9 +141,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Capabilities.cpp" />
     <ClCompile Include="test_engine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Capabilities.h" />
     <ClInclude Include="SDLToEngineEvents.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

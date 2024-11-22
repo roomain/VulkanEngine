@@ -9,6 +9,7 @@
 #include "ReflectionManager.h"
 #include "EngineWindow.h"
 #include "common/string_utils.h"
+#include "Capabilities.h"
 
 template<typename Enum> requires std::is_enum_v<Enum>
 int convertEnum(const std::string& a_flag)
@@ -36,56 +37,60 @@ int eventLoop()
             switch (evnt.type)
             {
             case SDL_EVENT_WINDOW_MOVED:
-                std::cout << "SDL_EVENT_WINDOW_MOVED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_MOVED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_RESIZED:
-                std::cout << "SDL_EVENT_WINDOW_RESIZED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_RESIZED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-                std::cout << "SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_METAL_VIEW_RESIZED:
-                std::cout << "SDL_EVENT_WINDOW_METAL_VIEW_RESIZED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_METAL_VIEW_RESIZED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_MINIMIZED:
-                std::cout << "SDL_EVENT_WINDOW_MINIMIZED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_MINIMIZED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_MAXIMIZED:
-                std::cout << "SDL_EVENT_WINDOW_MAXIMIZED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_MAXIMIZED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_RESTORED:
-                std::cout << "SDL_EVENT_WINDOW_RESTORED" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_RESTORED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_MOUSE_ENTER:
-                std::cout << "SDL_EVENT_WINDOW_MOUSE_ENTER" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_MOUSE_ENTER" << std::endl;
                 break;
             case  SDL_EVENT_MOUSE_MOTION:
-                std::cout << "SDL_EVENT_MOUSE_MOTION" << std::endl;
+                //std::cout << "SDL_EVENT_MOUSE_MOTION" << std::endl;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                std::cout << "SDL_EVENT_MOUSE_BUTTON_DOWN" << std::endl;
+                //std::cout << "SDL_EVENT_MOUSE_BUTTON_DOWN" << std::endl;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_UP:
-                std::cout << "SDL_EVENT_MOUSE_BUTTON_UP" << std::endl;
+                //std::cout << "SDL_EVENT_MOUSE_BUTTON_UP" << std::endl;
                 break;
             case SDL_EVENT_MOUSE_WHEEL:
-                std::cout << "SDL_EVENT_MOUSE_WHEEL" << std::endl;
+                //std::cout << "SDL_EVENT_MOUSE_WHEEL" << std::endl;
                 break;
             case SDL_EVENT_MOUSE_ADDED:
-                std::cout << "SDL_EVENT_MOUSE_ADDED" << std::endl;
+                //std::cout << "SDL_EVENT_MOUSE_ADDED" << std::endl;
                 break;
             case SDL_EVENT_MOUSE_REMOVED:
-                std::cout << "SDL_EVENT_MOUSE_REMOVED" << std::endl;
+                //std::cout << "SDL_EVENT_MOUSE_REMOVED" << std::endl;
                 break;
             case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-                std::cout << "SDL_EVENT_WINDOW_MOUSE_LEAVE" << std::endl;
+                //std::cout << "SDL_EVENT_WINDOW_MOUSE_LEAVE" << std::endl;
                 break;
             case SDL_EVENT_QUIT:
-                std::cout << "SDL_EVENT_QUIT" << std::endl;
+                //std::cout << "SDL_EVENT_QUIT" << std::endl;
+                bQuit = true;
+                break;
+            case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+                //std::cout << "SDL_EVENT_WINDOW_CLOSE_REQUESTED" << std::endl;
                 bQuit = true;
                 break;
             default:
-                std::cout << "OTHER" << std::endl;
+                //std::cout << "OTHER" << std::endl;
                 break;
             }
         }
@@ -93,40 +98,36 @@ int eventLoop()
     return 0;
 }
 
-int main()
+VulkanContext init(VkSurfaceKHR& a_surface, SDL_Window* a_window)
 {
-    //bool bLoaded = SDL_Vulkan_LoadLibrary(nullptr);
-    //std::cout << std::boolalpha << "loaded: " << bLoaded;
-    //auto curPath = std::filesystem::current_path();
-    //curPath = curPath.parent_path().parent_path().append("Reflection/test_files/profiles");
-    //DeserializeManager::instance().load(curPath.string(), "profile_unit_test");
-    auto& deserializer = ReflectionManager::instance();
-    //ReflectionValue::registerCast<>(&convertEnum<>);
-    // todo function decode flag 
-    deserializer.load(R"(C:\Projets_GIT\VulkanEngine\test_engine\configuration)", "configuration");
     VulkanParameter engineParam;
-
-
-    
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("TEST_ENGINE", 800, 800, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
-    SDL_SetWindowTitle(window, "TEST");
+    a_window = SDL_CreateWindow("TEST_ENGINE", 800, 800, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
+    SDL_SetWindowTitle(a_window, "Vulkan engine");
 
-    // too add specific extensions
     Uint32 extensionCount;
     const char* const* extensionNames = SDL_Vulkan_GetInstanceExtensions(&extensionCount);
-    for (Uint32 i = 0; i < extensionCount; ++i)
-        std::cout << extensionNames[i] << std::endl;
-
     VulkanContext engineCtxt(engineParam, extensionNames, extensionCount);
-    VkSurfaceKHR surface = VK_NULL_HANDLE;
-    SDL_Vulkan_CreateSurface(window, engineCtxt.vulkanInstance(), nullptr, &surface);
-    if (surface == VK_NULL_HANDLE)
-        std::cout << "ERROR!\n";
-    SDL_Vulkan_DestroySurface(engineCtxt.vulkanInstance(), surface, nullptr);
 
-    std::cout << "Hello World!\n";
-    return eventLoop();
+    SDL_Vulkan_CreateSurface(a_window, engineCtxt.vulkanInstance(), nullptr, &a_surface);
+
+    return engineCtxt;
+}
+
+int main()
+{
+    displayCapabilities();
+    auto& deserializer = ReflectionManager::instance();
+    deserializer.load(R"(C:\Projets_GIT\VulkanEngine\test_engine\configuration)", "configuration");
+
+        
+    VkSurfaceKHR surface;
+    SDL_Window* window = nullptr;
+    VulkanContext engineCtxt(init(surface, window));
+    //
+    int eventRet = eventLoop();
+    SDL_Vulkan_DestroySurface(engineCtxt.vulkanInstance(), surface, nullptr);
+    return eventRet;
 }
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
