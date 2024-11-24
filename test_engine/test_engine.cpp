@@ -10,6 +10,7 @@
 #include "EngineWindow.h"
 #include "common/string_utils.h"
 #include "Capabilities.h"
+#include "vulkan_string_to_enum.h"
 
 template<typename Enum> requires std::is_enum_v<Enum>
 int convertEnum(const std::string& a_flag)
@@ -20,11 +21,12 @@ int convertEnum(const std::string& a_flag)
     for (const auto& val : vValues)
     {
         Enum enumVal;
-        to_enum(val, enumVal);
-        flag |= static_cast<int>(enumVal);
+        to_enum(trim(val), enumVal);
+        flag |= static_cast<unsigned int>(enumVal);
     }
     return flag;
 }
+
 
 int eventLoop()
 {
@@ -98,7 +100,7 @@ int eventLoop()
     return 0;
 }
 
-VulkanContext init(VkSurfaceKHR& a_surface, SDL_Window* a_window)
+VulkanContext init(VkSurfaceKHR& a_surface, SDL_Window*& a_window)
 {
     VulkanParameter engineParam;
     SDL_Init(SDL_INIT_VIDEO);
@@ -114,16 +116,30 @@ VulkanContext init(VkSurfaceKHR& a_surface, SDL_Window* a_window)
     return engineCtxt;
 }
 
+int deviceChoice(const std::vector<int>&)
+{
+    return 0;
+}
+
 int main()
 {
     displayCapabilities();
     auto& deserializer = ReflectionManager::instance();
-    deserializer.load(R"(C:\Projets_GIT\VulkanEngine\test_engine\configuration)", "configuration");
+    ReflectionValue::registerCast<QueueFlag>(&convertEnum<QueueFlag>);
+    auto localPath = std::filesystem::current_path();
+    deserializer.load(localPath.string() + std::string(R"(\configuration)"), "configuration");
 
         
     VkSurfaceKHR surface;
     SDL_Window* window = nullptr;
     VulkanContext engineCtxt(init(surface, window));
+    VulkanDeviceParameter devParam;
+
+    VulkanCapabilities& capabilities = VulkanContext::getCapabilities();
+    VulkanCapabilities::VulkanDeviceConfMap conf;
+    capabilities.findDeviceCompatibleConfiguration(devParam, conf, surface);
+
+    auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
     //
     int eventRet = eventLoop();
     SDL_Vulkan_DestroySurface(engineCtxt.vulkanInstance(), surface, nullptr);

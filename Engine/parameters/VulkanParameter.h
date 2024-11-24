@@ -4,7 +4,11 @@
 
 #include "Reflection_macros.h"
 #include "vulkan/vulkan.hpp"
+#include "common/bitOperators.h"
 #include "VulkanParameter.generated.h"
+
+/*Need to override flags because flag in vulkan are unsigned int*/
+using QueueFlag = VkQueueFlagBits;
 
 REFLECT_CLASS(VulkanParameter)
 struct VulkanParameter
@@ -27,13 +31,13 @@ struct VulkanQueueFamilyParameter
 {
 	DESERIALIZE_DECLARE(VulkanQueueFamilyParameter)
 	REFLECT_MEMBER
-	bool bIsRenderer = true;	/*!< is rendering queue*/
+	bool bPresentationAvailable = false;	/*!< is rendering queue*/
 	REFLECT_MEMBER
-	VkQueueFlags flags;			/*!< queue flags*/
+    QueueFlag flags = static_cast<QueueFlag>(0);  /*!< queue flags*/
 	REFLECT_MEMBER
-	uint32_t count;				/*!< number of queue*/
+	uint32_t count = 1;			            /*!< number of queue*/
     REFLECT_MEMBER
-    float priority = 0;         /*!< queue priorities*/
+    float priority = 0;                     /*!< queue priorities*/
 };
 
 DESERIALIZE_INLINE_IMPL(VulkanQueueFamilyParameter)

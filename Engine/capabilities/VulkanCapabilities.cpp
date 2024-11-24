@@ -88,9 +88,9 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 			uint32_t queueFamilyIndex = 0;
 			for (auto iter = deviceCap.queueBegin(); iter != deviceCap.queueEnd() && (queueFamilyParam.count > 0); ++iter)
 			{
-				if ((iter->queueFlags & queueFamilyParam.flags) == queueFamilyParam.flags)
+				if ((iter->queueFlags & static_cast<VkQueueFlags>(queueFamilyParam.flags)) == static_cast<VkQueueFlags>(queueFamilyParam.flags))
 				{
-					if (a_surface && queueFamilyParam.bIsRenderer)
+					if (a_surface && queueFamilyParam.bPresentationAvailable)
 					{
 						VkBool32 supported = false;
 						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(deviceCap.physicalDevice(), queueFamilyIndex, a_surface, &supported))
@@ -117,7 +117,7 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 						VkDeviceQueueCreateInfo{
 							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 							.pNext = nullptr,
-							.flags = queueFamilyParam.flags,
+							.flags = static_cast<VkQueueFlags>(queueFamilyParam.flags),
 							.queueFamilyIndex = queueFamilyIndex,
 							.queueCount = minKeep,
 							.pQueuePriorities = nullptr

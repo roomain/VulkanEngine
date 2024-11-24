@@ -21,6 +21,7 @@ static [[nodiscard]] constexpr std::string to_string(const Type a_value) \
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
 template<typename T> class Flag {};
 
 #define BEGIN_FLAG_TO_STRING(Base, Type) \
