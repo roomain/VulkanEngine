@@ -83,9 +83,14 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 		// contains number of available queue per family
 		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues;
 		int currentMissingQueueCount = 0;
+
+		
 		for (auto queueFamilyParam : a_parameters.queues)// need a copy
 		{
 			uint32_t queueFamilyIndex = 0;
+			bool bPresentableOk = !queueFamilyParam.bPresentationAvailable;
+
+			// search compatiblequeue
 			for (auto iter = deviceCap.queueBegin(); iter != deviceCap.queueEnd() && (queueFamilyParam.count > 0); ++iter)
 			{
 				if ((iter->queueFlags & static_cast<VkQueueFlags>(queueFamilyParam.flags)) == static_cast<VkQueueFlags>(queueFamilyParam.flags))
@@ -94,8 +99,12 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 					{
 						VkBool32 supported = false;
 						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(deviceCap.physicalDevice(), queueFamilyIndex, a_surface, &supported))
-							if (!supported)
-								continue;
+						if (!supported)
+						{
+							queueFamilyIndex++;
+							continue;
+						}
+						bPresentableOk = true;
 					}
 
 
@@ -127,10 +136,16 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 					for (uint32_t index = 0; index < minKeep; ++index)
 						queueConf.priorities.emplace_back(queueFamilyParam.priority);
 				}
-				queueFamilyIndex++;
 			}
 
+
+			if (!bPresentableOk)
+			{
+				currentMissingQueueCount -= 1;
+				break;
+			}
 		}
+
 		// check if all queues are available
 		if (currentMissingQueueCount == 0)
 		{

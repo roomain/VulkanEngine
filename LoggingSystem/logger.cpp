@@ -41,6 +41,12 @@ Logger::~Logger()
 	m_dispatchThread.join();
 }
 
+void Logger::addLogDisplayer(ILogDisplayerPtr a_displayer)
+{
+	std::scoped_lock lockDispatch(m_dispatchProtection);
+	m_displayers.emplace_back(a_displayer);
+}
+
 void Logger::dispatch(LogData&& a_log)noexcept
 {
 	std::scoped_lock lockDispatch(m_dispatchProtection);

@@ -44,9 +44,9 @@ public:
 	NOT_COPIABLE(VulkanContext)
 	VulkanContext() = delete;
 	[[nodiscard]] bool isValid()const noexcept;
-	VkInstance vulkanInstance()const noexcept { return m_instance; }
-
-	VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
+	[[nodiscard]] VkInstance vulkanInstance()const noexcept { return m_instance; }
+	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
+	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 };
 
 

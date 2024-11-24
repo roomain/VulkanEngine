@@ -22,6 +22,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReflectionLib", "Reflection\ReflectionLib\ReflectionLib.vcxproj", "{CD8F49D8-A7F5-4B8E-B709-6C00E4171DBF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "Reflection\UnitTests\UnitTests.vcxproj", "{A31C016F-43E1-421E-A14B-A2C5FDBDEF8A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD8F49D8-A7F5-4B8E-B709-6C00E4171DBF} = {CD8F49D8-A7F5-4B8E-B709-6C00E4171DBF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

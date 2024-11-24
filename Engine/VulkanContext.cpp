@@ -7,6 +7,10 @@
 #include "VulkanDevice.h"
 #include "VulkanInitializers.h"
 
+#if defined(WIN32)
+#include "vulkan/vulkan_win32.h"
+#endif
+
 
 VulkanCapabilities VulkanContext::m_capabilities;
 
@@ -72,6 +76,19 @@ bool VulkanContext::isValid()const noexcept
 	return m_instance != VK_NULL_HANDLE;
 }
 
+VkSurfaceKHR VulkanContext::createSurface(void* a_platformWindow)const
+{
+	VkSurfaceKHR surface;
+#if defined(WIN32)
+	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.hinstance = (HINSTANCE)m_instance;
+	surfaceCreateInfo.hwnd = (HWND)a_platformWindow;
+	VK_CHECK_EXCEPT(vkCreateWin32SurfaceKHR(m_instance, &surfaceCreateInfo, nullptr, &surface));
+#endif
+	return surface;
+}
+
 VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface)
 {
 	VulkanDevicePtr vulkanDev;
@@ -127,8 +144,11 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 					{
 						VkBool32 supported = false;
 						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(deviceCap->physicalDevice(), queueFamilyIndex, a_surface, &supported))
-							if (!supported)
-								continue;
+						if (!supported)
+						{
+							queueFamilyIndex++;
+							continue;
+						}
 					}
 
 

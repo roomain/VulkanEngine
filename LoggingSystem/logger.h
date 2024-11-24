@@ -34,15 +34,16 @@ private:
 	bool m_bDispatch = false;
 
 	void dispatchThreadFun();
-	static Logger& instance();
 
 	Logger();
 
 	void dispatch(LogData&& a_log)noexcept;
 
 public:
+	static Logger& instance();
 	NOT_COPIABLE(Logger)
 	~Logger();
+	void addLogDisplayer(ILogDisplayerPtr a_displayer);
 	static void setLogLimit(const size_t& a_limit);
 	static void info(const std::string& a_message, const std::source_location& a_location = std::source_location::current());
 	static void warning(const std::string& a_message, const std::source_location& a_location = std::source_location::current());

@@ -4,12 +4,13 @@
 #include "VulkanContext.h"
 #include <iostream>
 #include <filesystem>
-#include "SDL3/SDL.h"
-#include "SDL3/SDL_vulkan.h"
+
 #include "ReflectionManager.h"
 #include "EngineWindow.h"
 #include "common/string_utils.h"
 #include "Capabilities.h"
+#include "logger.h"
+#include "iLogDisplayer.h"
 #include "vulkan_string_to_enum.h"
 
 template<typename Enum> requires std::is_enum_v<Enum>
@@ -28,6 +29,15 @@ int convertEnum(const std::string& a_flag)
 }
 
 
+
+int deviceChoice(const std::vector<int>&)
+{
+    return 0;
+}
+
+#ifdef USE_SDL
+#include "SDL3/SDL.h"
+#include "SDL3/SDL_vulkan.h"
 int eventLoop()
 {
     bool bQuit = false;
@@ -116,11 +126,6 @@ VulkanContext init(VkSurfaceKHR& a_surface, SDL_Window*& a_window)
     return engineCtxt;
 }
 
-int deviceChoice(const std::vector<int>&)
-{
-    return 0;
-}
-
 int main()
 {
     displayCapabilities();
@@ -129,7 +134,7 @@ int main()
     auto localPath = std::filesystem::current_path();
     deserializer.load(localPath.string() + std::string(R"(\configuration)"), "configuration");
 
-        
+
     VkSurfaceKHR surface;
     SDL_Window* window = nullptr;
     VulkanContext engineCtxt(init(surface, window));
@@ -145,6 +150,84 @@ int main()
     SDL_Vulkan_DestroySurface(engineCtxt.vulkanInstance(), surface, nullptr);
     return eventRet;
 }
+#else
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+int eventLoop(GLFWwindow* a_window)
+{
+    int iRet = 0;
+    while (!glfwWindowShouldClose(a_window))
+    {
+        glfwPollEvents();// get event
+        //
+    }
+    return iRet;
+}
+
+class LogDisplayerImpl : public ILogDisplayer
+{
+protected:
+    virtual void intern_process(const LogData& a_logData)
+    {
+        std::cout << a_logData.message << std::endl;
+    }
+
+public:
+    using ILogDisplayer::ILogDisplayer;
+};
+
+
+int main()
+{
+    ILogDisplayerPtr pLogDisplayer = std::make_shared<LogDisplayerImpl>();
+    Logger::instance().addLogDisplayer(pLogDisplayer);
+
+    displayCapabilities();
+    auto& deserializer = ReflectionManager::instance();
+    ReflectionValue::registerCast<QueueFlag>(&convertEnum<QueueFlag>);
+    auto localPath = std::filesystem::current_path();
+    deserializer.load(localPath.string() + std::string(R"(\configuration)"), "configuration");
+
+
+    VulkanDeviceParameter devParam;
+
+    VulkanParameter engineParam;
+    // Initialise GLFW
+    glfwInit();
+
+    // Set GLFW to NOT work with OpenGL
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+    GLFWwindow* window = glfwCreateWindow(800, 800, "GLFW Vulkan", nullptr, nullptr);
+
+    // get glfw extensions names
+    uint32_t glfwExtensionCount = 0;				// GLFW may require multiple extensions
+    const char** glfwExtensions;					// Extensions passed as array of cstrings, so need pointer (the array) to pointer (the cstring)
+
+    // Get GLFW extensions
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    VulkanContext engineCtxt(engineParam, glfwExtensions, glfwExtensionCount);
+    //glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
+
+    VkSurfaceKHR surface = engineCtxt.createSurface(window);
+
+
+    VulkanCapabilities& capabilities = VulkanContext::getCapabilities();
+    VulkanCapabilities::VulkanDeviceConfMap conf;
+    capabilities.findDeviceCompatibleConfiguration(devParam, conf, surface);
+
+    auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
+    //
+    int eventRet = eventLoop(window);
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return eventRet;
+}
+#endif
+
+
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
 // Déboguer le programme : F5 ou menu Déboguer > Démarrer le débogage
