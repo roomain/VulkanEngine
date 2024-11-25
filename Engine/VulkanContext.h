@@ -29,15 +29,13 @@ class VULKAN_ENGINE_LIB VulkanContext
 private:
 	static constexpr uint32_t m_appVersion = 1;
 	static constexpr uint32_t m_engineVersion = 1;
-	static VulkanCapabilities m_capabilities;	/*!< vulkan capabilities*/
-
+	std::unique_ptr<VulkanCapabilities> m_capabilities;
 	VkInstance m_instance = VK_NULL_HANDLE;		/*!< vulkan instance*/
 	std::vector<VulkanDevicePtr> m_vDevices;	/*!< vulkan devices*/
 
 
 
 public:
-	static VulkanCapabilities& getCapabilities();
 	explicit VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension = nullptr, const int a_numExt = 0);
 	VulkanContext(VulkanContext&&) noexcept = default;
 	VulkanContext& operator = (VulkanContext&&) noexcept = default;

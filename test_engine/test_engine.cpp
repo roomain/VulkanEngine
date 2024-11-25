@@ -212,12 +212,7 @@ int main()
     //glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
 
     VkSurfaceKHR surface = engineCtxt.createSurface(window);
-
-
-    VulkanCapabilities& capabilities = VulkanContext::getCapabilities();
-    VulkanCapabilities::VulkanDeviceConfMap conf;
-    capabilities.findDeviceCompatibleConfiguration(devParam, conf, surface);
-
+       
     auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
     //
     int eventRet = eventLoop(window);

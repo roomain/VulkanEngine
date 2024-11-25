@@ -19,23 +19,27 @@ struct VulkanDeviceParameter;
 class VULKAN_ENGINE_LIB VulkanCapabilities
 {
 private:
-    VkInstance m_instance;                              /*!< vulkan instance*/
-    std::vector<VkExtensionProperties> m_extensions;    /*!< instance extension properties*/
-    std::vector<VkLayerProperties> m_layers;            /*!< instance layer properties*/
-    std::vector<VulkanDeviceCapabilities> m_devices;    /*!< devices capabilities*/
+    static std::vector<VkExtensionProperties> m_instanceExt;    /*!< instance extension properties*/
+    static std::vector<VkLayerProperties> m_instanceLay;        /*!< instance layer properties*/
+    VkInstance m_instance;                                      /*!< vulkan instance*/
+    std::vector<VulkanDeviceCapabilities> m_devices;            /*!< devices capabilities*/
+
+    static void initInstanceExt()noexcept;
+    static void initInstanceLay()noexcept;
 
 public:
-    VulkanCapabilities();
+    VulkanCapabilities() = delete;
     ~VulkanCapabilities() = default;
+    explicit VulkanCapabilities(VkInstance a_instance);
     NOT_COPIABLE(VulkanCapabilities)
 
     using Extension_const_iterator = std::vector<VkExtensionProperties>::const_iterator;
-    [[nodiscard]] Extension_const_iterator extensionBegin()const noexcept;
-    [[nodiscard]] Extension_const_iterator extensionEnd()const noexcept;
+    [[nodiscard]]static Extension_const_iterator extensionBegin()noexcept;
+    [[nodiscard]]static Extension_const_iterator extensionEnd()noexcept;
 
     using Layer_const_iterator = std::vector<VkLayerProperties>::const_iterator;
-    [[nodiscard]] Layer_const_iterator layerBegin()const noexcept;
-    [[nodiscard]] Layer_const_iterator layerEnd()const noexcept;
+    [[nodiscard]] static Layer_const_iterator layerBegin()noexcept;
+    [[nodiscard]] static Layer_const_iterator layerEnd()noexcept;
 
     using Device_const_iterator = std::vector<VulkanDeviceCapabilities>::const_iterator;
     [[nodiscard]] Device_const_iterator deviceBegin()const noexcept;

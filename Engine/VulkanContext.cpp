@@ -12,13 +12,6 @@
 #endif
 
 
-VulkanCapabilities VulkanContext::m_capabilities;
-
-VulkanCapabilities& VulkanContext::getCapabilities()
-{
-	return m_capabilities;
-}
-
 VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension, const int a_numExt)
 {
 	std::vector<std::string> usedExtension = a_param.extensions;
@@ -33,7 +26,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* 
 	}
 
 	// check instance ansd extensions
-	if (!contains<VkExtensionProperties>(VulkanContext::m_capabilities.extensionBegin(), VulkanContext::m_capabilities.extensionEnd(), usedExtension,
+	if (!contains<VkExtensionProperties>(VulkanCapabilities::extensionBegin(), VulkanCapabilities::extensionEnd(), usedExtension,
 		[](const std::string_view& a_search, const VkExtensionProperties& a_extension)
 		{
 			return a_search.compare(a_extension.extensionName) == 0;
@@ -42,7 +35,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* 
 		throw Exception("Some extension are not supported");
 	}
 
-	if (!contains<VkLayerProperties>(VulkanContext::m_capabilities.layerBegin(), VulkanContext::m_capabilities.layerEnd(), a_param.layers,
+	if (!contains<VkLayerProperties>(VulkanCapabilities::layerBegin(), VulkanCapabilities::layerEnd(), a_param.layers,
 		[](const std::string_view& a_search, const VkLayerProperties& a_layer)
 		{
 			return a_search.compare(a_layer.layerName) == 0;
@@ -69,6 +62,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* 
 	createInfo.pApplicationInfo = &appInfo;
 
 	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
+	m_capabilities = std::make_unique<VulkanCapabilities>(m_instance);
 }
 
 bool VulkanContext::isValid()const noexcept
@@ -106,7 +100,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 	std::vector<int> compatibleDevices;
 
 	// find compatible devices
-	for (auto deviceCap = VulkanContext::m_capabilities.deviceBegin(); deviceCap != VulkanContext::m_capabilities.deviceEnd(); ++deviceCap)
+	for (auto deviceCap = m_capabilities->deviceBegin(); deviceCap != m_capabilities->deviceEnd(); ++deviceCap)
 	{
 		// check layers
 		if (!contains<VkLayerProperties>(deviceCap->layerBegin(), deviceCap->layerEnd(), a_param.layers,
@@ -229,11 +223,11 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		devInfo.pEnabledFeatures =  &features;
 
 		VkDevice logical;
-		VK_CHECK_EXCEPT(vkCreateDevice((VulkanContext::m_capabilities.deviceBegin() + chosenDevice)->physicalDevice(),
-			&devInfo, nullptr, &logical))
+		VkPhysicalDevice physicalDev = (m_capabilities->deviceBegin() + chosenDevice)->physicalDevice();
+		VK_CHECK_EXCEPT(vkCreateDevice(physicalDev, &devInfo, nullptr, &logical))
 
-		vulkanDev = std::shared_ptr<VulkanDevice>(new VulkanDevice((VulkanContext::m_capabilities.deviceBegin() + chosenDevice)->physicalDevice(),
-			logical));
+		// because ctor is private
+		vulkanDev = std::shared_ptr<VulkanDevice>(new VulkanDevice(physicalDev, logical));
 	}
 	return vulkanDev;
 }

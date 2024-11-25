@@ -8,13 +8,21 @@
 #include "common/contains.h"
 
 
-VulkanCapabilities::VulkanCapabilities()
-{
-	enumerate(&vkEnumerateInstanceExtensionProperties, m_extensions, nullptr);
-	enumerate(&vkEnumerateInstanceLayerProperties, m_layers);
+std::vector<VkExtensionProperties> VulkanCapabilities::m_instanceExt;
+std::vector<VkLayerProperties> VulkanCapabilities::m_instanceLay;
 
-	auto instanceInfo = Vulkan::Initializers::instanceCreateInfo();
-	VK_CHECK_EXCEPT(vkCreateInstance(&instanceInfo, nullptr, &m_instance));
+void VulkanCapabilities::initInstanceExt()noexcept
+{
+	enumerate(&vkEnumerateInstanceExtensionProperties, m_instanceExt, nullptr);
+}
+
+void VulkanCapabilities::initInstanceLay()noexcept
+{
+	enumerate(&vkEnumerateInstanceLayerProperties, m_instanceLay);
+}
+
+VulkanCapabilities::VulkanCapabilities(VkInstance a_instance) : m_instance{ a_instance }
+{
 	std::vector<VkPhysicalDevice> vDevices;
 	enumerate(&vkEnumeratePhysicalDevices, vDevices, m_instance);
 	int index = 0;
@@ -25,24 +33,32 @@ VulkanCapabilities::VulkanCapabilities()
 	}
 }
 
-VulkanCapabilities::Extension_const_iterator VulkanCapabilities::extensionBegin()const noexcept
+VulkanCapabilities::Extension_const_iterator VulkanCapabilities::extensionBegin()noexcept
 {
-	return m_extensions.cbegin();
+	if (m_instanceExt.empty())
+		VulkanCapabilities::initInstanceExt();
+	return m_instanceExt.cbegin();
 }
 
-VulkanCapabilities::Extension_const_iterator VulkanCapabilities::extensionEnd()const noexcept
+VulkanCapabilities::Extension_const_iterator VulkanCapabilities::extensionEnd()noexcept
 {
-	return m_extensions.cend();
+	if (m_instanceExt.empty())
+		VulkanCapabilities::initInstanceExt();
+	return m_instanceExt.cend();
 }
 
-VulkanCapabilities::Layer_const_iterator VulkanCapabilities::layerBegin()const noexcept
+VulkanCapabilities::Layer_const_iterator VulkanCapabilities::layerBegin()noexcept
 {
-	return m_layers.cbegin();
+	if (m_instanceLay.empty())
+		VulkanCapabilities::initInstanceLay();
+	return m_instanceLay.cbegin();
 }
 
-VulkanCapabilities::Layer_const_iterator VulkanCapabilities::layerEnd()const noexcept
+VulkanCapabilities::Layer_const_iterator VulkanCapabilities::layerEnd()noexcept
 {
-	return m_layers.cend();
+	if (m_instanceLay.empty())
+		VulkanCapabilities::initInstanceLay();
+	return m_instanceLay.cend();
 }
 
 VulkanCapabilities::Device_const_iterator VulkanCapabilities::deviceBegin()const noexcept

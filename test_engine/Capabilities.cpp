@@ -11,21 +11,20 @@ std::string toVersion(const uint32_t a_version)
 
 void displayCapabilities()
 {
-	VulkanCapabilities& capabilities = VulkanContext::getCapabilities();
 	std::cout << "Instance Extensions:";
-	for (auto ext = capabilities.extensionBegin(); ext != capabilities.extensionEnd(); ++ext)
+	for (auto ext = VulkanCapabilities::extensionBegin(); ext != VulkanCapabilities::extensionEnd(); ++ext)
 	{
 		std::cout << "\n\t" << ext->extensionName << " version: " << toVersion(ext->specVersion);
 	}
 
 	std::cout << "\n\nInstance layers:";
-	for (auto lay = capabilities.layerBegin(); lay != capabilities.layerEnd(); ++lay)
+	for (auto lay = VulkanCapabilities::layerBegin(); lay != VulkanCapabilities::layerEnd(); ++lay)
 	{
 		std::cout << "\n\t" << lay->layerName << " version: " << toVersion(lay->implementationVersion);
 		std::cout << "\n\t\t" << lay->description << " version: " << toVersion(lay->specVersion);
 	}
 
-	std::cout << "\n\nDevices:";
+	/*std::cout << "\n\nDevices:";
 	for (auto dev = capabilities.deviceBegin(); dev != capabilities.deviceEnd(); ++dev)
 	{
 		VulkanDeviceInfo info = dev->deviceInfo();
@@ -52,6 +51,6 @@ void displayCapabilities()
 			std::cout << "\n\t\tCount" << queue->queueCount;
 			std::cout << "\n";
 		}
-	}
-
+	}*/
+	std::cout << "\n";
 }
