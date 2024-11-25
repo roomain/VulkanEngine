@@ -10,19 +10,6 @@
 #include "vulkan/vulkan.hpp"
 #include "Engine_globals.h"
 
-struct VulkanQueueCreateInfo
-{
-	uint32_t queueIndex;
-	VkQueueFlags flags;
-	uint32_t queueCount;
-};
-
-struct VulkanDeviceCreateInfo
-{
-	VkPhysicalDevice physicalDevice;
-	VkDevice logicalDevice;
-	std::vector<VulkanQueueCreateInfo> queuesInfo;
-};
 
 /*@brief represents a vulkan device*/
 class VULKAN_ENGINE_LIB VulkanDevice
