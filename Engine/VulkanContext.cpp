@@ -62,7 +62,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* 
 	createInfo.pApplicationInfo = &appInfo;
 
 	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
-	m_capabilities = std::make_unique<VulkanCapabilities>(m_instance);
+	m_capabilities = std::make_shared<VulkanCapabilities>(m_instance);
 }
 
 bool VulkanContext::isValid()const noexcept
@@ -227,7 +227,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		VK_CHECK_EXCEPT(vkCreateDevice(physicalDev, &devInfo, nullptr, &logical))
 
 		// because ctor is private
-		vulkanDev = std::shared_ptr<VulkanDevice>(new VulkanDevice(physicalDev, logical));
+		vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(physicalDev, logical)));
 	}
 	return vulkanDev;
 }

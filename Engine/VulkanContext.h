@@ -29,7 +29,7 @@ class VULKAN_ENGINE_LIB VulkanContext
 private:
 	static constexpr uint32_t m_appVersion = 1;
 	static constexpr uint32_t m_engineVersion = 1;
-	std::unique_ptr<VulkanCapabilities> m_capabilities;
+	std::shared_ptr<VulkanCapabilities> m_capabilities;
 	VkInstance m_instance = VK_NULL_HANDLE;		/*!< vulkan instance*/
 	std::vector<VulkanDevicePtr> m_vDevices;	/*!< vulkan devices*/
 
@@ -45,6 +45,7 @@ public:
 	[[nodiscard]] VkInstance vulkanInstance()const noexcept { return m_instance; }
 	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
 	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
+	[[nodiscard]] std::shared_ptr<VulkanCapabilities> capabilities()const noexcept { return m_capabilities; }
 };
 
 
