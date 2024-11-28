@@ -145,7 +145,6 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 							.pNext = nullptr,
 							.flags = 0,
-							//.flags = static_cast<VkQueueFlags>(queueFamilyParam.flags),
 							.queueFamilyIndex = queueFamilyIndex,
 							.queueCount = minKeep,
 							.pQueuePriorities = nullptr
