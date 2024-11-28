@@ -86,148 +86,42 @@ VkSurfaceKHR VulkanContext::createSurface(void* a_platformWindow)const
 VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface)
 {
 	VulkanDevicePtr vulkanDev;
-	std::vector<int> vCompatibleDevice;
-	int deviceIndex = 0;
-
-	// available devices configurations
-	struct DeviceQueuesConf
+	if (m_capabilities)
 	{
-		std::vector<VkDeviceQueueCreateInfo> baseCreateInfo;
-		std::vector<float> priorities;// size = Sum of queues in baseCreateInfo
-	};
-
-	std::unordered_map<int, DeviceQueuesConf> devicesConf;
-	std::vector<int> compatibleDevices;
-
-	// find compatible devices
-	for (auto deviceCap = m_capabilities->deviceBegin(); deviceCap != m_capabilities->deviceEnd(); ++deviceCap)
-	{
-		// check layers
-		if (!contains<VkLayerProperties>(deviceCap->layerBegin(), deviceCap->layerEnd(), a_param.layers,
-			[](const std::string_view& a_search, const VkLayerProperties& a_layer)
-			{
-				return a_search.compare(a_layer.layerName) == 0;
-			}))
-			continue;
-
-		// check extensions
-		if (!contains<VkExtensionProperties>(deviceCap->extensionBegin(), deviceCap->extensionEnd(), a_param.extensions,
-			[](const std::string_view& a_search, const VkExtensionProperties& a_extension)
-			{
-				return a_search.compare(a_extension.extensionName) == 0;
-			}))
-			continue;
-
-		if (!deviceCap->isFeaturesAvailable(a_param.features))
-			continue;
-
-		DeviceQueuesConf queueConf;
-
-		// contains number of available queue per family
-		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues;
-		int missingQueueCount = 0;
-		for (auto queueFamilyParam : a_param.queues)// need a copy
+		VulkanCapabilities::VulkanDeviceConfMap devMap;
+		m_capabilities->findDeviceCompatibleConfiguration(a_param, devMap, a_surface);
+		if (!devMap.empty())
 		{
+			VkDevice logical;
+			auto iter = devMap.begin();
+			auto vExtents = vStringToChar(a_param.extensions);
+			auto vLayers = vStringToChar(a_param.layers);
+			auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 
-			uint32_t queueFamilyIndex = 0;
-			for (auto iter = deviceCap->queueBegin(); iter != deviceCap->queueEnd() && (queueFamilyParam.count > 0); ++iter)
+			if (devMap.size() > 1)
 			{
-				if ((iter->queueFlags & static_cast<VkQueueFlags>(queueFamilyParam.flags)) == static_cast<VkQueueFlags>(queueFamilyParam.flags))
+				std::vector<int> vDeviceIndex;
+				for (const auto& [id, conf] : devMap)
 				{
-					if (a_surface && queueFamilyParam.bPresentationAvailable)
-					{
-						VkBool32 supported = false;
-						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(deviceCap->physicalDevice(), queueFamilyIndex, a_surface, &supported))
-						if (!supported)
-						{
-							queueFamilyIndex++;
-							continue;
-						}
-					}
-
-
-					uint32_t minKeep = 0;
-					if (auto iterQueue = QueuesFamilyRemainQueues.find(queueFamilyIndex); iterQueue != QueuesFamilyRemainQueues.end())
-					{
-						minKeep = std::min(iterQueue->second, queueFamilyParam.count);
-						iterQueue->second -= minKeep;
-						queueFamilyParam.count -= minKeep;
-					}
-					else
-					{
-						minKeep = std::min(iter->queueCount, queueFamilyParam.count);
-						QueuesFamilyRemainQueues[queueFamilyIndex] = iter->queueCount - minKeep;
-						queueFamilyParam.count -= minKeep;
-					}
-
-					queueConf.baseCreateInfo.emplace_back(
-						VkDeviceQueueCreateInfo{
-							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-							.pNext = nullptr,
-							.flags = static_cast<VkQueueFlags>(queueFamilyParam.flags),
-							.queueFamilyIndex = queueFamilyIndex,
-							.queueCount = minKeep,
-							.pQueuePriorities = nullptr
-						}
-					);
-					for (uint32_t index = 0; index < minKeep; ++index)
-						queueConf.priorities.emplace_back(queueFamilyParam.priority);
+					vDeviceIndex.emplace_back(id);
 				}
-				queueFamilyIndex++;
+				iter = devMap.find(a_choose(vDeviceIndex, this));
 			}
-			missingQueueCount += queueFamilyParam.count;
+
+			VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
+			devInfo.pQueueCreateInfos = iter->second.baseCreateInfo.data();
+			devInfo.queueCreateInfoCount = static_cast<uint32_t>(iter->second.baseCreateInfo.size());
+			devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
+			devInfo.ppEnabledExtensionNames = vExtents.data();
+			devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
+			devInfo.ppEnabledLayerNames = vLayers.data();
+			devInfo.pEnabledFeatures = &features;
+			
+			
+			VK_CHECK_EXCEPT(vkCreateDevice(iter->second.physicalDev, &devInfo, nullptr, &logical))
+			// because ctor is private
+			vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(iter->second.physicalDev, logical)));
 		}
-
-		// check if all queues are available
-		if (missingQueueCount == 0)
-		{
-			devicesConf.emplace(deviceIndex, std::move(queueConf));
-			compatibleDevices.emplace_back(deviceIndex);
-		}
-
-		++deviceIndex;
-	}
-
-	if (!compatibleDevices.empty())
-	{
-		int chosenDevice = compatibleDevices[0];
-		// by default get first device else (need a other parameter for user device choice maybe a function)
-		if (compatibleDevices.size() > 1)
-		{
-			chosenDevice = a_choose(compatibleDevices);
-		}
-
-
-		auto vExtents = vStringToChar(a_param.extensions);
-		auto vLayers = vStringToChar(a_param.layers);
-		auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
-		VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
-
-
-		devInfo.flags = static_cast<VkDeviceCreateFlags>(0);
-		devInfo.queueCreateInfoCount = static_cast<uint32_t>(devicesConf[chosenDevice].baseCreateInfo.size());
-
-		// set queue priority to conf struct
-		float* iter = devicesConf[chosenDevice].priorities.data();
-		for (auto& queueConf : devicesConf[chosenDevice].baseCreateInfo)
-		{
-			queueConf.pQueuePriorities = iter;
-			iter += queueConf.queueCount;
-		}
-
-		devInfo.pQueueCreateInfos = devicesConf[chosenDevice].baseCreateInfo.data();
-		devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
-		devInfo.ppEnabledExtensionNames = vExtents.data();
-		devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
-		devInfo.ppEnabledLayerNames = vLayers.data();
-		devInfo.pEnabledFeatures =  &features;
-
-		VkDevice logical;
-		VkPhysicalDevice physicalDev = (m_capabilities->deviceBegin() + chosenDevice)->physicalDevice();
-		VK_CHECK_EXCEPT(vkCreateDevice(physicalDev, &devInfo, nullptr, &logical))
-
-		// because ctor is private
-		vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(physicalDev, logical)));
 	}
 	return vulkanDev;
 }

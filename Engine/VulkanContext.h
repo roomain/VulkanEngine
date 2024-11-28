@@ -20,9 +20,10 @@ struct VulkanParameter;
 struct VulkanDeviceParameter;
 class VulkanDevice;
 using VulkanDevicePtr = std::shared_ptr<VulkanDevice>;
+class VulkanContext;
 
 /*@brief callback to choose device : get index of compatible device, return the chosen device*/
-using DeviceChoice = std::function<int(const std::vector<int>&)>;
+using DeviceChoice = std::function<int(const std::vector<int>&, const VulkanContext*)>;
 
 class VULKAN_ENGINE_LIB VulkanContext
 {

@@ -9,7 +9,7 @@ std::string toVersion(const uint32_t a_version)
 	return  std::to_string(a_version >> 22) + "." + std::to_string((a_version >> 12) & 0x3ff) + "." + std::to_string(a_version & 0xfff);
 }
 
-void displayCapabilities()
+void displayCapabilities(const std::shared_ptr<VulkanCapabilities>& a_capabilities)
 {
 	std::cout << "Instance Extensions:";
 	for (auto ext = VulkanCapabilities::extensionBegin(); ext != VulkanCapabilities::extensionEnd(); ++ext)
@@ -24,8 +24,8 @@ void displayCapabilities()
 		std::cout << "\n\t\t" << lay->description << " version: " << toVersion(lay->specVersion);
 	}
 
-	/*std::cout << "\n\nDevices:";
-	for (auto dev = capabilities.deviceBegin(); dev != capabilities.deviceEnd(); ++dev)
+	std::cout << "\n\nDevices:";
+	for (auto dev = a_capabilities->deviceBegin(); dev != a_capabilities->deviceEnd(); ++dev)
 	{
 		VulkanDeviceInfo info = dev->deviceInfo();
 		std::cout << "\n\t" << info.deviceType << " API version: " << toVersion(info.apiVersion);
@@ -51,6 +51,6 @@ void displayCapabilities()
 			std::cout << "\n\t\tCount" << queue->queueCount;
 			std::cout << "\n";
 		}
-	}*/
+	}
 	std::cout << "\n";
 }

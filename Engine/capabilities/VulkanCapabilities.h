@@ -45,15 +45,16 @@ public:
     [[nodiscard]] Device_const_iterator deviceBegin()const noexcept;
     [[nodiscard]] Device_const_iterator deviceEnd()const noexcept;
 
-    /*@brief compatible queues configuration for a device*/
-    struct VulkanDeviceQueuesConf
+    /*@brief compatible  device*/
+    struct VulkanDeviceConf
     {
+        VkPhysicalDevice physicalDev;                           /*!< physical device*/
         std::vector<VkDeviceQueueCreateInfo> baseCreateInfo;    /*!< queues configurations*/
         std::vector<float> priorities;                          /*!< queues priorities*/
     };
 
     /*@brief Queues configuration per device index*/
-    using VulkanDeviceConfMap = std::unordered_map<int, VulkanDeviceQueuesConf>;
+    using VulkanDeviceConfMap = std::unordered_map<int, VulkanDeviceConf>;
 
     void findDeviceCompatibleConfiguration(const VulkanDeviceParameter& a_parameters, VulkanDeviceConfMap& a_conf, VkSurfaceKHR a_surface)const;
 };

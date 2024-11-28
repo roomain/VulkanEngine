@@ -30,7 +30,7 @@ int convertEnum(const std::string& a_flag)
 
 
 
-int deviceChoice(const std::vector<int>&)
+int deviceChoice(const std::vector<int>&, const VulkanContext*)
 {
     return 0;
 }
@@ -183,7 +183,7 @@ int main()
     ILogDisplayerPtr pLogDisplayer = std::make_shared<LogDisplayerImpl>();
     Logger::instance().addLogDisplayer(pLogDisplayer);
 
-    displayCapabilities();
+    
     auto& deserializer = ReflectionManager::instance();
     ReflectionValue::registerCast<QueueFlag>(&convertEnum<QueueFlag>);
     auto localPath = std::filesystem::current_path();
@@ -212,7 +212,8 @@ int main()
     //glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
 
     VkSurfaceKHR surface = engineCtxt.createSurface(window);
-       
+    displayCapabilities(engineCtxt.capabilities());
+ 
     auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
     //
     int eventRet = eventLoop(window);

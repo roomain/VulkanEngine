@@ -95,7 +95,9 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 		if (!deviceCap.isFeaturesAvailable(a_parameters.features))
 			continue;
 
-		VulkanDeviceQueuesConf queueConf;
+		VulkanDeviceConf devConf{
+			.physicalDev = deviceCap.m_physicalDevice
+		};
 		// contains number of available queue per family
 		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues;
 		int currentMissingQueueCount = 0;
@@ -138,11 +140,12 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 						queueFamilyParam.count -= minKeep;
 					}
 
-					queueConf.baseCreateInfo.emplace_back(
+					devConf.baseCreateInfo.emplace_back(
 						VkDeviceQueueCreateInfo{
 							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 							.pNext = nullptr,
-							.flags = static_cast<VkQueueFlags>(queueFamilyParam.flags),
+							.flags = 0,
+							//.flags = static_cast<VkQueueFlags>(queueFamilyParam.flags),
 							.queueFamilyIndex = queueFamilyIndex,
 							.queueCount = minKeep,
 							.pQueuePriorities = nullptr
@@ -150,7 +153,7 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 					);
 					
 					for (uint32_t index = 0; index < minKeep; ++index)
-						queueConf.priorities.emplace_back(queueFamilyParam.priority);
+						devConf.priorities.emplace_back(queueFamilyParam.priority);
 				}
 			}
 
@@ -165,7 +168,14 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 		// check if all queues are available
 		if (currentMissingQueueCount == 0)
 		{
-			a_conf.emplace(deviceIndex, std::move(queueConf));
+			int Offset = 0;
+			for (auto& queueInfo : devConf.baseCreateInfo)
+			{
+				queueInfo.pQueuePriorities = devConf.priorities.data() + Offset;
+				Offset += queueInfo.queueCount;
+			}
+
+			a_conf.emplace(deviceIndex, std::move(devConf));
 		}
 
 		++deviceIndex;
