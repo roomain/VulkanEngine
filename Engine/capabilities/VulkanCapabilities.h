@@ -49,6 +49,8 @@ public:
     struct VulkanDeviceConf
     {
         VkPhysicalDevice physicalDev;                           /*!< physical device*/
+        int graphicQueueIndex = -1;                             /*!< index of graphic queue in baseCreateInfo*/
+        int presentationQueueIndex = -1;                        /*!< index of presentation queue in baseCreateInfo*/
         std::vector<VkDeviceQueueCreateInfo> baseCreateInfo;    /*!< queues configurations*/
         std::vector<float> priorities;                          /*!< queues priorities*/
     };

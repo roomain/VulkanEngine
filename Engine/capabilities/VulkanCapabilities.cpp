@@ -111,8 +111,11 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 			// search compatiblequeue
 			for (auto iter = deviceCap.queueBegin(); iter != deviceCap.queueEnd() && (queueFamilyParam.count > 0); ++iter)
 			{
+				bool isGraphics = false;
 				if ((iter->queueFlags & static_cast<VkQueueFlags>(queueFamilyParam.flags)) == static_cast<VkQueueFlags>(queueFamilyParam.flags))
 				{
+					constexpr VkQueueFlags graphicFlag = static_cast<VkQueueFlags>(VK_QUEUE_GRAPHICS_BIT);
+					isGraphics = (static_cast<VkQueueFlags>(queueFamilyParam.flags) & graphicFlag) == graphicFlag;
 					if (a_surface && queueFamilyParam.bPresentationAvailable)
 					{
 						VkBool32 supported = false;
@@ -139,6 +142,12 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 						QueuesFamilyRemainQueues[queueFamilyIndex] = iter->queueCount - minKeep;
 						queueFamilyParam.count -= minKeep;
 					}
+
+					if (isGraphics)
+						devConf.graphicQueueIndex = static_cast<int>(devConf.baseCreateInfo.size()) + 1;
+
+					if (bPresentableOk)
+						devConf.presentationQueueIndex = static_cast<int>(devConf.baseCreateInfo.size()) + 1;
 
 					devConf.baseCreateInfo.emplace_back(
 						VkDeviceQueueCreateInfo{
