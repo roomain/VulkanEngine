@@ -27,4 +27,5 @@ public:
 	NOT_COPIABLE(VulkanSwapChain)
 	virtual ~VulkanSwapChain();
 	VkResult acquireNextImage(uint32_t& a_imageIndex, VkSemaphore presentCompleteSemaphore = VK_NULL_HANDLE);
+	void reset(const bool a_vSync, const bool a_fullScreen, const uint32_t a_width, const uint32_t a_height);
 };

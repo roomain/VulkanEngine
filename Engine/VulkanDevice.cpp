@@ -1,7 +1,12 @@
 #include "pch.h"
 #include "VulkanDevice.h"
 
-VulkanDevice::VulkanDevice(const VkPhysicalDevice a_physicalDev, const VkDevice a_logicalDev) : m_physicalDevice{ a_physicalDev }, m_logicalevice{ a_logicalDev }
+VulkanDevice::VulkanDevice(const VulkanDeviceContext& a_context) : VulkanObject<VulkanDeviceContext>{ a_context }
+{
+	// todo
+}
+
+VulkanDevice::VulkanDevice(VulkanDeviceContext&& a_context) noexcept : VulkanObject<VulkanDeviceContext>{ a_context }
 {
 	// todo
 }

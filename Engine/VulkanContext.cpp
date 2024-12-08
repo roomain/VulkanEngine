@@ -120,7 +120,11 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			
 			VK_CHECK_EXCEPT(vkCreateDevice(iter->second.physicalDev, &devInfo, nullptr, &logical))
 			// because ctor is private
-			vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(iter->second.physicalDev, logical)));
+				vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(VulkanDeviceContext{
+					m_instance,
+					iter->second.physicalDev, 
+					logical 
+					})));
 		}
 	}
 	return vulkanDev;

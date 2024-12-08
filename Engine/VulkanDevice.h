@@ -8,19 +8,18 @@
 #include <vector>
 #include "VulkanParameter.h"
 #include "vulkan/vulkan.hpp"
+#include "VulkanObject.h"
 #include "Engine_globals.h"
 
 
 /*@brief represents a vulkan device*/
-class VULKAN_ENGINE_LIB VulkanDevice
+class VULKAN_ENGINE_LIB VulkanDevice : public VulkanObject<VulkanDeviceContext>
 {
 	friend class VulkanContext;
 
 private:
-	VkPhysicalDevice m_physicalDevice;	/*!< vulkan physical device*/
-	VkDevice m_logicalevice;			/*!< vulkan logical device*/
-
-	explicit VulkanDevice(const VkPhysicalDevice a_physicalDev, const VkDevice a_logicalDev);
+	explicit VulkanDevice(const VulkanDeviceContext& a_context);
+	explicit VulkanDevice(VulkanDeviceContext&& a_context) noexcept;
 
 public:
 	VulkanDevice() = delete;
