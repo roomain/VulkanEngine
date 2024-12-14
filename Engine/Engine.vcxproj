@@ -200,6 +200,7 @@ reflectGen.py $(ProjectDir)Parameters
     </ClCompile>
     <ClCompile Include="VulkanContext.cpp" />
     <ClCompile Include="VulkanDevice.cpp" />
+    <ClCompile Include="VulkanSwapChain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

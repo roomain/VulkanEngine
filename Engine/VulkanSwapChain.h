@@ -5,7 +5,9 @@
 * @author Roomain
 ************************************************/
 #include <vulkan/vulkan.hpp>
+#include "VulkanObject.h"
 #include "common/notCopiable.h"
+#include "VulkanLocalsContexts.h"
 
 struct SwapChainBuffer
 {
@@ -13,14 +15,14 @@ struct SwapChainBuffer
 	VkImageView imageView;
 };
 
-class VulkanSwapChain
+class VulkanSwapChain : public VulkanObject<VulkanDeviceContext>
 {
 private:
-	VkFormat colorFormat;
-	VkColorSpaceKHR colorSpace;
-	VkSwapchainKHR swapChain = VK_NULL_HANDLE;
+	VkFormat m_colorFormat;
+	VkColorSpaceKHR m_colorSpace;
+	VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
 
-	VulkanSwapChain(VkSwapchainKHR a_swapChain);
+	VulkanSwapChain(const VulkanDeviceContext& a_ctxt, VkSwapchainKHR a_swapChain);
 
 public:
 	VulkanSwapChain() = delete;
