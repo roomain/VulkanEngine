@@ -17,3 +17,8 @@ struct VulkanDeviceContext : VulkanInstanceContext
 	VkPhysicalDevice physicalDevice;
 	VkDevice logicalDevice;
 };
+
+struct VulkanSwapChainContext : VulkanDeviceContext
+{
+	VkSurfaceKHR surface;
+};

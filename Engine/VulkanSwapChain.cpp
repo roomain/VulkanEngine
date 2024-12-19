@@ -1,7 +1,9 @@
+#include "pch.h"
 #include "VulkanSwapChain.h"
+#include "Vulkan_macros.h"
 
-VulkanSwapChain::VulkanSwapChain(const VulkanDeviceContext& a_ctxt, VkSwapchainKHR a_swapChain) : 
-	VulkanObject<VulkanDeviceContext>{ a_ctxt }, m_swapChain{ a_swapChain }
+VulkanSwapChain::VulkanSwapChain(const VulkanSwapChainContext& a_ctxt, VkSwapchainKHR a_swapChain) :
+	VulkanObject<VulkanSwapChainContext>{ a_ctxt }, m_swapChain{ a_swapChain }
 {
 	//
 }

@@ -18,6 +18,7 @@
 
 struct VulkanParameter;
 struct VulkanDeviceParameter;
+struct VulkanSwapChainContext;
 class VulkanDevice;
 using VulkanDevicePtr = std::shared_ptr<VulkanDevice>;
 class VulkanContext;
@@ -45,8 +46,9 @@ public:
 	[[nodiscard]] bool isValid()const noexcept;
 	[[nodiscard]] VkInstance vulkanInstance()const noexcept { return m_instance; }
 	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
-	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
+	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, const DeviceChoice& a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 	[[nodiscard]] std::shared_ptr<VulkanCapabilities> capabilities()const noexcept { return m_capabilities; }
+	[[nodiscard]] VkSwapchainKHR createSwapChain(const VulkanSwapChainContext& a_ctxt, const uint32_t a_width, const uint32_t a_height)const;
 };
 
 

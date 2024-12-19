@@ -4,6 +4,7 @@
 #include "VulkanParameter.h"
 #include "common/string_utils.h"
 #include "common/contains.h"
+#include "common/enumerate.h"
 #include "VulkanDevice.h"
 #include "VulkanInitializers.h"
 
@@ -83,7 +84,7 @@ VkSurfaceKHR VulkanContext::createSurface(void* a_platformWindow)const
 	return surface;
 }
 
-VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_param, DeviceChoice a_choose, VkSurfaceKHR a_surface)
+VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_param, const DeviceChoice& a_choose, VkSurfaceKHR a_surface)
 {
 	VulkanDevicePtr vulkanDev;
 	if (m_capabilities)
@@ -128,4 +129,15 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		}
 	}
 	return vulkanDev;
+}
+
+VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ctxt, const uint32_t a_width, const uint32_t a_height)const
+{
+	// Get physical device surface properties and formats
+	VkSurfaceCapabilitiesKHR surfCaps;
+	VK_CHECK_EXCEPT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(a_ctxt.physicalDevice, a_ctxt.surface, &surfCaps));
+	
+	std::vector<VkPresentModeKHR> presentationModes;
+	enumerate(&vkGetPhysicalDeviceSurfacePresentModesKHR, presentationModes, a_ctxt.physicalDevice, a_ctxt.surface);
+	//
 }

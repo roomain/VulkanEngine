@@ -15,14 +15,14 @@ struct SwapChainBuffer
 	VkImageView imageView;
 };
 
-class VulkanSwapChain : public VulkanObject<VulkanDeviceContext>
+class VulkanSwapChain : public VulkanObject<VulkanSwapChainContext>
 {
 private:
 	VkFormat m_colorFormat;
 	VkColorSpaceKHR m_colorSpace;
 	VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
 
-	VulkanSwapChain(const VulkanDeviceContext& a_ctxt, VkSwapchainKHR a_swapChain);
+	VulkanSwapChain(const VulkanSwapChainContext& a_ctxt, VkSwapchainKHR a_swapChain);
 
 public:
 	VulkanSwapChain() = delete;
