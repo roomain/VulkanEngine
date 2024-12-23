@@ -131,7 +131,37 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 	return vulkanDev;
 }
 
-VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ctxt, const uint32_t a_width, const uint32_t a_height)const
+VkExtent2D VulkanContext::getCorrectedExtent(const VkSurfaceCapabilitiesKHR& surfCaps, uint32_t& a_width, uint32_t& a_height)
+{
+	VkExtent2D extent;
+	if (surfCaps.currentExtent.width == (uint32_t)-1)
+	{
+		// If the surface size is undefined, the size is set to
+		// the size of the images requested.
+		extent.width = a_width;
+		extent.height = a_height;
+	}
+	else
+	{
+		// If the surface size is defined, the swap chain size must match
+		extent = surfCaps.currentExtent;
+		a_width = surfCaps.currentExtent.width;
+		a_height = surfCaps.currentExtent.height;
+	}
+	return extent;
+}
+
+uint32_t VulkanContext::getSwapChainImageCount(const VkSurfaceCapabilitiesKHR& surfCaps)
+{
+	uint32_t desiredNumberOfSwapchainImages = surfCaps.minImageCount + 1;
+	if ((surfCaps.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surfCaps.maxImageCount))
+	{
+		desiredNumberOfSwapchainImages = surfCaps.maxImageCount;
+	}
+	return desiredNumberOfSwapchainImages;
+}
+
+VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ctxt, uint32_t& a_width, uint32_t& a_height)const
 {
 	// Get physical device surface properties and formats
 	VkSurfaceCapabilitiesKHR surfCaps;
@@ -139,5 +169,39 @@ VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ct
 	
 	std::vector<VkPresentModeKHR> presentationModes;
 	enumerate(&vkGetPhysicalDeviceSurfacePresentModesKHR, presentationModes, a_ctxt.physicalDevice, a_ctxt.surface);
-	//
+	
+	// get image extents
+	const VkExtent2D swapchainExtent = getCorrectedExtent(surfCaps, a_width, a_height);
+
+	// Determine the number of images in swapchain
+	const uint32_t desiredNumberOfSwapchainImages = getSwapChainImageCount(surfCaps);
+
+	// Find the transformation of the surface
+	VkSurfaceTransformFlagsKHR preTransform;
+	if (surfCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
+	{
+		// We prefer a non-rotated transform
+		preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	}
+	else
+	{
+		preTransform = surfCaps.currentTransform;
+	}
+
+	// Find a supported composite alpha format (not all devices support alpha opaque)
+	VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	static constexpr std::array<VkCompositeAlphaFlagBitsKHR, 4>  compositeAlphaFlags = {
+		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+		VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+		VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+		VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+	};
+
+	for (const auto& compositeAlphaFlag : compositeAlphaFlags) {
+		if (surfCaps.supportedCompositeAlpha & compositeAlphaFlag) {
+			compositeAlpha = compositeAlphaFlag;
+			break;
+		};
+	}
+
 }
