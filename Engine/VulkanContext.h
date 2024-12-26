@@ -50,7 +50,7 @@ public:
 	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
 	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, const DeviceChoice& a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 	[[nodiscard]] std::shared_ptr<VulkanCapabilities> capabilities()const noexcept { return m_capabilities; }
-	[[nodiscard]] VkSwapchainKHR createSwapChain(const VulkanSwapChainContext& a_ctxt, uint32_t& a_width, uint32_t& a_height)const;
+	[[nodiscard]] VkSwapchainKHR createSwapChain(const VulkanSwapChainContext& a_ctxt, uint32_t& a_width, uint32_t& a_height, const VkSwapchainKHR a_oldSwpaChain = VK_NULL_HANDLE)const;
 };
 
 

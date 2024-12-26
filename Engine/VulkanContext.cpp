@@ -161,7 +161,7 @@ uint32_t VulkanContext::getSwapChainImageCount(const VkSurfaceCapabilitiesKHR& s
 	return desiredNumberOfSwapchainImages;
 }
 
-VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ctxt, uint32_t& a_width, uint32_t& a_height)const
+VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ctxt, uint32_t& a_width, uint32_t& a_height, const VkSwapchainKHR a_oldSwpaChain)const
 {
 	// Get physical device surface properties and formats
 	VkSurfaceCapabilitiesKHR surfCaps;
@@ -201,7 +201,34 @@ VkSwapchainKHR VulkanContext::createSwapChain(const VulkanSwapChainContext& a_ct
 		if (surfCaps.supportedCompositeAlpha & compositeAlphaFlag) {
 			compositeAlpha = compositeAlphaFlag;
 			break;
-		};
+		}
 	}
 
+	// The VK_PRESENT_MODE_FIFO_KHR mode must always be present as per spec
+	// This mode waits for the vertical blank ("v-sync")
+	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+
+	VkSwapchainCreateInfoKHR swapchainCI = {};
+	swapchainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	swapchainCI.surface = a_ctxt.surface;
+	swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
+	swapchainCI.imageFormat = colorFormat;
+	swapchainCI.imageColorSpace = colorSpace;
+	swapchainCI.imageExtent = { swapchainExtent.width, swapchainExtent.height };
+	swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	swapchainCI.preTransform = (VkSurfaceTransformFlagBitsKHR)preTransform;
+	swapchainCI.imageArrayLayers = 1;
+	swapchainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	swapchainCI.queueFamilyIndexCount = 0;
+	swapchainCI.presentMode = swapchainPresentMode;
+	// Setting oldSwapChain to the saved handle of the previous swapchain aids in resource reuse and makes sure that we can still present already acquired images
+	swapchainCI.oldSwapchain = a_oldSwpaChain;
+	// Setting clipped to VK_TRUE allows the implementation to discard rendering outside of the surface area
+	swapchainCI.clipped = VK_TRUE;
+	swapchainCI.compositeAlpha = compositeAlpha;
+
+	// Enable transfer source on swap chain images if supported
+	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
+		swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	}
 }
