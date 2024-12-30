@@ -4,6 +4,7 @@
 * @date 03 / 12 / 2024
 * @author Roomain
 ************************************************/
+#include <memory>
 #include <type_traits>
 #include "VulkanLocalsContexts.h"
 
@@ -12,7 +13,7 @@ template<typename Context> requires std::is_base_of_v<VulkanInstanceContext, Con
 class VulkanObject
 {
 protected:
-	Context m_ctxt;	/*!< vulkan local context*/
+	Context m_ctxt;		/*!< vulkan local active context*/
 
 public:
 	VulkanObject() = delete;

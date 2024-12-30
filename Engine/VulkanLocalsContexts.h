@@ -9,16 +9,18 @@
 /*@brief structures representing differnt level of a vulkan context*/
 struct VulkanInstanceContext
 {
-	VkInstance instanceHandle;
+	VkInstance instanceHandle = VK_NULL_HANDLE;
 };
 
 struct VulkanDeviceContext : VulkanInstanceContext
 {
-	VkPhysicalDevice physicalDevice;
-	VkDevice logicalDevice;
+	int deviceIndex = -1;								/*!< device index in context*/
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;	/*!< physical device handle*/
+	VkDevice logicalDevice = VK_NULL_HANDLE;			/*!< logical device handle*/
 };
 
 struct VulkanSwapChainContext : VulkanDeviceContext
 {
-	VkSurfaceKHR surface;
+	VkSurfaceKHR surface = VK_NULL_HANDLE;
+	VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
 };

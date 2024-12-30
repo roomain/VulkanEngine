@@ -16,13 +16,15 @@
 
 struct VulkanDeviceParameter;
 
+
 class VULKAN_ENGINE_LIB VulkanCapabilities
 {
 private:
     static std::vector<VkExtensionProperties> m_instanceExt;    /*!< instance extension properties*/
     static std::vector<VkLayerProperties> m_instanceLay;        /*!< instance layer properties*/
     VkInstance m_instance;                                      /*!< vulkan instance*/
-    std::vector<VulkanDeviceCapabilities> m_devices;            /*!< devices capabilities*/
+    std::vector<VkPhysicalDevice> m_physicalDevices;            /*!< physical devices*/
+    std::vector<VulkanDeviceCapabilities> m_devicesCap;         /*!< devices capabilities*/
 
     static void initInstanceExt()noexcept;
     static void initInstanceLay()noexcept;
@@ -45,6 +47,7 @@ public:
     [[nodiscard]] Device_const_iterator deviceBegin()const noexcept;
     [[nodiscard]] Device_const_iterator deviceEnd()const noexcept;
 
+#pragma region compatible_devices
     /*@brief compatible  device*/
     struct VulkanDeviceConf
     {
@@ -57,8 +60,8 @@ public:
 
     /*@brief Queues configuration per device index*/
     using VulkanDeviceConfMap = std::unordered_map<int, VulkanDeviceConf>;
-
     void findDeviceCompatibleConfiguration(const VulkanDeviceParameter& a_parameters, VulkanDeviceConfMap& a_conf, VkSurfaceKHR a_surface)const;
+#pragma endregion
 };
 
 

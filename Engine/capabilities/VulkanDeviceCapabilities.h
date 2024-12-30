@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include <optional>
+#include <memory>
 #include "vulkan/vulkan.h"
 #include "Engine_globals.h"
 
@@ -34,55 +35,33 @@ struct VulkanSwapchainCapabilities
 struct VulkanDeviceFeatures;
 
 
-class VULKAN_ENGINE_LIB VulkanDeviceCapabilities
+/*@brief get device capabilities*/
+struct VULKAN_ENGINE_LIB VulkanDeviceCapabilities
 {
-    friend class VulkanCapabilities;
-private:
-    uint32_t m_deviceIndex;                                                 /*!< device index*/
-	VkPhysicalDevice m_physicalDevice;						                /*!< handle to physical device*/
+    uint32_t m_deviceIndex;  /*!< device index*/
     std::optional<VulkanSwapchainCapabilities> m_swapChainCapabilities;     /*!< swap chain capabilities*/
-	VkPhysicalDeviceProperties m_deviceProperties;			                /*!< porperties of the device*/
-	VkPhysicalDeviceFeatures m_deviceFeatures;				                /*!< features supported by device*/
-	std::vector<VkExtensionProperties> m_extensions;		                /*!< device extensions*/
+    VkPhysicalDeviceProperties m_deviceProperties;			                /*!< porperties of the device*/
+    VkPhysicalDeviceFeatures m_deviceFeatures;				                /*!< features supported by device*/
+    std::vector<VkExtensionProperties> m_extensions;		                /*!< device extensions*/
     std::vector<VkLayerProperties> m_layersProperties;                      /*!< device layer properties*/
-	VkPhysicalDeviceMemoryProperties m_memoryProperties;	                /*!< device memory properties*/
-	std::unordered_map<VkFormat, VkFormatProperties> m_formatsCapabilities;	/*!< Capabilities for each supported format*/
-	std::vector<VkQueueFamilyProperties> m_queueFamilies;	                /*!< Capabilities of queue families*/
+    VkPhysicalDeviceMemoryProperties m_memoryProperties;	                /*!< device memory properties*/
+    std::unordered_map<VkFormat, VkFormatProperties> m_formatsCapabilities;	/*!< Capabilities for each supported format*/
+    std::vector<VkQueueFamilyProperties> m_queueFamilies;	                /*!< Capabilities of queue families*/
 
-    explicit VulkanDeviceCapabilities(const uint32_t a_deviceIndex, const VkPhysicalDevice a_device);
-    
-public:
     VulkanDeviceCapabilities() = delete;
-    ~VulkanDeviceCapabilities() = default;
-
-	[[nodiscard]] VkPhysicalDevice physicalDevice()const;
+    VulkanDeviceCapabilities(const uint32_t a_deviceIndex, const VkPhysicalDevice a_device);
     [[nodiscard]] VulkanDeviceInfo deviceInfo()const;
-    void supportedFormats(std::vector<VkFormat>& a_vFormat)const;
-    [[nodiscard]] const VkFormatProperties formatProperties(const VkFormat a_format)const;
-    [[nodiscard]] const std::optional<VulkanSwapchainCapabilities> swapchainCapabilties()const;
-
-    using Queue_const_iterator = std::vector<VkQueueFamilyProperties>::const_iterator;
-    [[nodiscard]] Queue_const_iterator queueBegin()const noexcept;
-    [[nodiscard]] Queue_const_iterator queueEnd()const noexcept;
-
-    using Extension_const_iterator = std::vector<VkExtensionProperties>::const_iterator;
-    [[nodiscard]] Extension_const_iterator extensionBegin()const noexcept;
-    [[nodiscard]] Extension_const_iterator extensionEnd()const noexcept;
-
-    using Layer_const_iterator = std::vector<VkLayerProperties>::const_iterator;
-    [[nodiscard]] Layer_const_iterator layerBegin()const noexcept;
-    [[nodiscard]] Layer_const_iterator layerEnd()const noexcept;
-
-    
-
-    //------------------------------------------------------------------------------------------
-    /*@brief get best presentation modes*/
-	[[nodiscard]] VkPresentModeKHR bestPresentationMode()const;
-	/*@brief get best surface format*/
-	[[nodiscard]] VkSurfaceFormatKHR bestSurfaceFormat()const;
-    void getSwapChainCapabilities(const VkSurfaceKHR a_surface);
-    /*@brief chech features validity*/
+    /*@brief check features validity*/
     [[nodiscard]] bool isFeaturesAvailable(const VulkanDeviceFeatures& a_features)const;
     static [[nodiscard]] VkPhysicalDeviceFeatures toFeatures(const VulkanDeviceFeatures& a_features);
+    /*@brief get best presentation modes*/
+    [[nodiscard]] VkPresentModeKHR bestPresentationMode()const;
+    [[nodiscard]] VkSurfaceFormatKHR bestSurfaceFormat()const;
+    void findQueues(const bool a_presentation, const VkQueueFlags a_flags, std::vector<int>& a_queuesIndex, VkPhysicalDevice a_physicalDevice = VK_NULL_HANDLE, VkSurfaceKHR a_surface = VK_NULL_HANDLE)const;
 };
+
+using VulkanDeviceCapabilitiesPtr = std::shared_ptr<VulkanDeviceCapabilities>;
+using VulkanDeviceCapabilitiesWPtr = std::weak_ptr<VulkanDeviceCapabilities>;
+
+
 #pragma warning(pop)

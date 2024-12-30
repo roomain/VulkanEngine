@@ -11,23 +11,33 @@
 
 struct SwapChainBuffer
 {
-	VkImage image;
-	VkImageView imageView;
+	VkImage image = VK_NULL_HANDLE;
+	VkImageView imageView = VK_NULL_HANDLE;
 };
 
 class VulkanSwapChain : public VulkanObject<VulkanSwapChainContext>
 {
+	friend class VulkanDevice;
 private:
-	VkFormat m_colorFormat;
-	VkColorSpaceKHR m_colorSpace;
-	VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
+	std::vector<SwapChainBuffer> m_buffer;			/*!< image buffer to display*/
 
-	VulkanSwapChain(const VulkanSwapChainContext& a_ctxt, VkSwapchainKHR a_swapChain);
+#pragma region Internal
+	/************************* creation functions*******************************************/
+	[[nodiscard]] static VkExtent2D internal_computeImageExtent(const VkSurfaceCapabilitiesKHR& a_surfCaps, const uint32_t a_width, const uint32_t a_height);
+	[[nodiscard]] static uint32_t internal_swapChainImageCount(const VkSurfaceCapabilitiesKHR& a_surfCaps);
+	[[nodiscard]] static VkCompositeAlphaFlagBitsKHR internal_findCompositeAlpha(const VkSurfaceCapabilitiesKHR& a_surfCaps);
+	[[nodiscard]] static VkSurfaceFormatKHR internal_findSurfaceFormat(const VulkanSwapChainContext& a_ctxt);
+	void internal_releaseSwapchain(VkSwapchainKHR a_oldSwapChain);
+	void internal_createBuffers(const VkFormat a_colorFormat);
+	void internal_createSwapChain(const uint32_t a_width, const uint32_t a_height);
+	/***************************************************************************************/
+#pragma endregion
+
+	VulkanSwapChain(const VulkanSwapChainContext& a_ctxt, const uint32_t a_width, const uint32_t a_height);
 
 public:
 	VulkanSwapChain() = delete;
 	NOT_COPIABLE(VulkanSwapChain)
 	virtual ~VulkanSwapChain();
-	VkResult acquireNextImage(uint32_t& a_imageIndex, VkSemaphore presentCompleteSemaphore = VK_NULL_HANDLE);
-	void reset(const bool a_vSync, const bool a_fullScreen, const uint32_t a_width, const uint32_t a_height);
+	void reset(const uint32_t a_width, const uint32_t a_height);
 };

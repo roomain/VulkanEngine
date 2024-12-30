@@ -18,7 +18,7 @@
 
 struct VulkanParameter;
 struct VulkanDeviceParameter;
-struct VulkanSwapChainContext;
+struct VulkanDeviceContext;
 class VulkanDevice;
 using VulkanDevicePtr = std::shared_ptr<VulkanDevice>;
 class VulkanContext;
@@ -26,7 +26,7 @@ class VulkanContext;
 /*@brief callback to choose device : get index of compatible device, return the chosen device*/
 using DeviceChoice = std::function<int(const std::vector<int>&, const VulkanContext*)>;
 
-class VULKAN_ENGINE_LIB VulkanContext
+class VULKAN_ENGINE_LIB VulkanContext : public std::enable_shared_from_this<VulkanContext>
 {
 private:
 	static constexpr uint32_t m_appVersion = 1;
@@ -34,10 +34,6 @@ private:
 	std::shared_ptr<VulkanCapabilities> m_capabilities;
 	VkInstance m_instance = VK_NULL_HANDLE;		/*!< vulkan instance*/
 	std::vector<VulkanDevicePtr> m_vDevices;	/*!< vulkan devices*/
-
-
-	[[nodiscard]] static VkExtent2D getCorrectedExtent(const VkSurfaceCapabilitiesKHR& surfCaps, uint32_t& a_width, uint32_t& a_height);
-	[[nodiscard]] static uint32_t getSwapChainImageCount(const VkSurfaceCapabilitiesKHR& surfCaps);
 
 public:
 	explicit VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension = nullptr, const int a_numExt = 0);
@@ -50,7 +46,6 @@ public:
 	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
 	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, const DeviceChoice& a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 	[[nodiscard]] std::shared_ptr<VulkanCapabilities> capabilities()const noexcept { return m_capabilities; }
-	[[nodiscard]] VkSwapchainKHR createSwapChain(const VulkanSwapChainContext& a_ctxt, uint32_t& a_width, uint32_t& a_height, const VkSwapchainKHR a_oldSwpaChain = VK_NULL_HANDLE)const;
 };
 
 

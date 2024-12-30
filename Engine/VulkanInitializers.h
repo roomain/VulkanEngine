@@ -71,9 +71,20 @@ namespace Vulkan::Initializers
 		return VkDeviceQueueCreateInfo{ .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO };
 	}
 
-	[[nodiscard]] constexpr VkSwapchainCreateInfoKHR swapChainCreateInfoKHR()
+	[[nodiscard]] constexpr VkSwapchainCreateInfoKHR swapChainCreateInfoKHR(const VkSurfaceKHR a_surface, const VkSurfaceFormatKHR& a_format, const VkExtent2D& a_extent)
 	{
-		return VkSwapchainCreateInfoKHR{ .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
+		return VkSwapchainCreateInfoKHR{ .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR, 
+			.pNext = nullptr, 
+			.flags = 0, 
+			.surface = a_surface, 
+			.imageFormat = a_format.format, 
+			.imageColorSpace = a_format.colorSpace, 
+			.imageExtent = a_extent ,
+			.imageArrayLayers = 1,
+			.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,	// no sharing
+			.queueFamilyIndexCount = 0,						// number of shared queues
+			.pQueueFamilyIndices = nullptr					// shared queues
+		};
 	}
 
 	[[nodiscard]] constexpr VkMemoryAllocateInfo memoryAllocateInfo()

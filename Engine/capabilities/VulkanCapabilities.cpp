@@ -2,7 +2,6 @@
 #include "VulkanCapabilities.h"
 #include "common/enumerate.h"
 #include "VulkanInitializers.h"
-#include "Vulkan_macros.h"
 #include "parameters/VulkanParameter.h"
 #include "common/string_utils.h"
 #include "common/contains.h"
@@ -23,12 +22,11 @@ void VulkanCapabilities::initInstanceLay()noexcept
 
 VulkanCapabilities::VulkanCapabilities(VkInstance a_instance) : m_instance{ a_instance }
 {
-	std::vector<VkPhysicalDevice> vDevices;
-	enumerate(&vkEnumeratePhysicalDevices, vDevices, m_instance);
+	enumerate(&vkEnumeratePhysicalDevices, m_physicalDevices, m_instance);
 	int index = 0;
-	for (const auto& physicalDev : vDevices)
+	for (const auto& physicalDev : m_physicalDevices)
 	{
-		m_devices.emplace_back(VulkanDeviceCapabilities(index ,physicalDev));
+		m_devicesCap.emplace_back(VulkanDeviceCapabilities(index ,physicalDev));
 		++index;
 	}
 }
@@ -63,21 +61,21 @@ VulkanCapabilities::Layer_const_iterator VulkanCapabilities::layerEnd()noexcept
 
 VulkanCapabilities::Device_const_iterator VulkanCapabilities::deviceBegin()const noexcept
 {
-	return m_devices.cbegin();
+	return m_devicesCap.cbegin();
 }
 
 VulkanCapabilities::Device_const_iterator VulkanCapabilities::deviceEnd()const noexcept
 {
-	return m_devices.cend();
+	return m_devicesCap.cend();
 }
 
 void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDeviceParameter& a_parameters, VulkanDeviceConfMap& a_conf, VkSurfaceKHR a_surface)const
 {	
 	int deviceIndex = 0;
-	for (const auto& deviceCap : m_devices)
+	for (const auto& deviceCap : m_devicesCap)
 	{
 		// check layers
-		if (!contains<VkLayerProperties>(deviceCap.layerBegin(), deviceCap.layerEnd(), a_parameters.layers,
+		if (!contains<VkLayerProperties>(deviceCap.m_layersProperties.cbegin(), deviceCap.m_layersProperties.cend(), a_parameters.layers,
 			[](const std::string_view& a_search, const VkLayerProperties& a_layer)
 			{
 				return a_search.compare(a_layer.layerName) == 0;
@@ -85,7 +83,7 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 			continue;
 
 		// check extensions
-		if (!contains<VkExtensionProperties>(deviceCap.extensionBegin(), deviceCap.extensionEnd(), a_parameters.extensions,
+		if (!contains<VkExtensionProperties>(deviceCap.m_extensions.cbegin(), deviceCap.m_extensions.cend(), a_parameters.extensions,
 			[](const std::string_view& a_search, const VkExtensionProperties& a_extension)
 			{
 				return a_search.compare(a_extension.extensionName) == 0;
@@ -96,7 +94,7 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 			continue;
 
 		VulkanDeviceConf devConf{
-			.physicalDev = deviceCap.m_physicalDevice
+			.physicalDev = m_physicalDevices[deviceCap.m_deviceIndex]
 		};
 		// contains number of available queue per family
 		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues;
@@ -108,18 +106,18 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 			uint32_t queueFamilyIndex = 0;
 			bool bPresentableOk = !queueFamilyParam.bPresentationAvailable;
 
-			// search compatiblequeue
-			for (auto iter = deviceCap.queueBegin(); iter != deviceCap.queueEnd() && (queueFamilyParam.count > 0); ++iter)
+			// search compatible queue
+			for (auto iter = deviceCap.m_queueFamilies.cbegin(); iter != deviceCap.m_queueFamilies.cend() && (queueFamilyParam.count > 0); ++iter)
 			{
 				bool isGraphics = false;
 				if ((iter->queueFlags & static_cast<VkQueueFlags>(queueFamilyParam.flags)) == static_cast<VkQueueFlags>(queueFamilyParam.flags))
 				{
-					constexpr VkQueueFlags graphicFlag = static_cast<VkQueueFlags>(VK_QUEUE_GRAPHICS_BIT);
+					static constexpr VkQueueFlags graphicFlag = static_cast<VkQueueFlags>(VK_QUEUE_GRAPHICS_BIT);
 					isGraphics = (static_cast<VkQueueFlags>(queueFamilyParam.flags) & graphicFlag) == graphicFlag;
 					if (a_surface && queueFamilyParam.bPresentationAvailable)
 					{
 						VkBool32 supported = false;
-						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(deviceCap.physicalDevice(), queueFamilyIndex, a_surface, &supported))
+						VK_CHECK_LOG(vkGetPhysicalDeviceSurfaceSupportKHR(devConf.physicalDev, queueFamilyIndex, a_surface, &supported))
 						if (!supported)
 						{
 							queueFamilyIndex++;
