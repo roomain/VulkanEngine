@@ -48,7 +48,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* 
 
 	// create instance
 	auto appInfo = Vulkan::Initializers::applicationInfo();
-	appInfo.apiVersion = VK_API_VERSION_1_0;// VK_VERSION_1_3;
+	appInfo.apiVersion = VK_VERSION_1_3; //VK_API_VERSION_1_0;// VK_VERSION_1_3;
 	appInfo.applicationVersion = VulkanContext::m_appVersion;
 	appInfo.engineVersion = VulkanContext::m_engineVersion;
 	appInfo.pEngineName = "VulkanEngine";
@@ -111,8 +111,11 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 			}
 
 			VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
+			
+			//set used queues
 			devInfo.pQueueCreateInfos = iter->second.baseCreateInfo.data();
 			devInfo.queueCreateInfoCount = static_cast<uint32_t>(iter->second.baseCreateInfo.size());
+
 			devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
 			devInfo.ppEnabledExtensionNames = vExtents.data();
 			devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());

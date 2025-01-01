@@ -32,23 +32,23 @@ void displayCapabilities(const std::shared_ptr<VulkanCapabilities>& a_capabiliti
 		std::cout << "\n\t\t" << info.name << " Driver version: " << toVersion(info.driverVersion);
 
 		std::cout << "\nDevice Extensions:";
-		for (auto ext = dev->extensionBegin(); ext != dev->extensionEnd(); ++ext)
+		for (auto ext : dev->m_extensions)
 		{
-			std::cout << "\n\t\t" << ext->extensionName << " version: " << toVersion(ext->specVersion);
+			std::cout << "\n\t\t" << ext.extensionName << " version: " << toVersion(ext.specVersion);
 		}
 
 		std::cout << "\nDevice layers:";
-		for (auto lay = dev->layerBegin(); lay != dev->layerEnd(); ++lay)
+		for (auto lay : dev->m_layersProperties)
 		{
-			std::cout << "\n\t\t" << lay->layerName << " version: " << toVersion(lay->implementationVersion);
-			std::cout << "\n\t\t\t" << lay->description << " version: " << toVersion(lay->specVersion);
+			std::cout << "\n\t\t" << lay.layerName << " version: " << toVersion(lay.implementationVersion);
+			std::cout << "\n\t\t\t" << lay.description << " version: " << toVersion(lay.specVersion);
 		}
 
 		std::cout << "\n\nDevice queues:";
-		for (auto queue = dev->queueBegin(); queue != dev->queueEnd(); ++queue)
+		for (auto queue : dev->m_queueFamilies)
 		{			
-			std::cout << "\n\t\tFlags: " << Flag<VkQueueFlagBits>::to_string(queue->queueFlags);
-			std::cout << "\n\t\tCount" << queue->queueCount;
+			std::cout << "\n\t\tFlags: " << Flag<VkQueueFlagBits>::to_string(queue.queueFlags);
+			std::cout << "\n\t\tCount" << queue.queueCount;
 			std::cout << "\n";
 		}
 	}

@@ -195,12 +195,22 @@ namespace Vulkan::Initializers
 		.pSetLayouts = a_pSetLayouts };
 	}
 
+
 	[[nodiscard]] constexpr VkDescriptorImageInfo descriptorImageInfo(VkSampler a_sampler, VkImageView a_imageView, VkImageLayout a_imageLayout)
 	{
 		return VkDescriptorImageInfo{
 		.sampler = a_sampler,
 		.imageView = a_imageView,
 		.imageLayout = a_imageLayout };
+	}
+
+	[[nodiscard]] inline VkShaderModuleCreateInfo shaderModuleCreateInfo(std::vector<char>& a_shaderCode)
+	{
+		return VkShaderModuleCreateInfo{
+		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		.pNext = nullptr,
+		.codeSize = a_shaderCode.size(),
+		.pCode = reinterpret_cast<uint32_t*>(a_shaderCode.data()) };
 	}
 
 	[[nodiscard]] constexpr VkWriteDescriptorSet writeDescriptorSet(

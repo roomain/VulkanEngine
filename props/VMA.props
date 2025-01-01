@@ -2,28 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <VULKAN_INC>$(VK_SDK_PATH)\include</VULKAN_INC>
-    <VULKAN_LIB>$(VK_SDK_PATH)\Lib</VULKAN_LIB>
+    <VK_MEMORY_DIR Condition="exists('D:\Libraries\VulkanMemoryAllocator')">D:\Libraries\VulkanMemoryAllocator</VK_MEMORY_DIR>
+    <VK_MEMORY_DIR Condition="exists('C:\Libraries\VulkanMemoryAllocator')">C:\Libraries\VulkanMemoryAllocator</VK_MEMORY_DIR>
+    <VK_MEMORY_DIR_INC>$(VK_MEMORY_DIR)\include</VK_MEMORY_DIR_INC>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VULKAN_INC);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VK_MEMORY_DIR_INC);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(VULKAN_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <PostBuildEvent>
-      <Command></Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <BuildMacro Include="VULKAN_INC">
-      <Value>$(VULKAN_INC)</Value>
+    <BuildMacro Include="VK_MEMORY_DIR">
+      <Value>$(VK_MEMORY_DIR)</Value>
     </BuildMacro>
-    <BuildMacro Include="VULKAN_LIB">
-      <Value>$(VULKAN_LIB)</Value>
+    <BuildMacro Include="VK_MEMORY_DIR_INC">
+      <Value>$(VK_MEMORY_DIR_INC)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

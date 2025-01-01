@@ -12,6 +12,6 @@
 #include "Vulkan_macros.h"
 #include "LoggingSystem/Exception.h"
 #include "VulkanInitializers.h"
-#include "Vulkan_macros.h"
+#define VMA_VULKAN_VERSION 1003000
 
 #endif //PCH_H
