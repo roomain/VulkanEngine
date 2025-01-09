@@ -25,6 +25,7 @@ class VulkanContext;
 
 /*@brief callback to choose device : get index of compatible device, return the chosen device*/
 using DeviceChoice = std::function<int(const std::vector<int>&, const VulkanContext*)>;
+using DebugLog = std::function<void(const char*)>;
 
 class VULKAN_ENGINE_LIB VulkanContext : public std::enable_shared_from_this<VulkanContext>
 {
@@ -32,13 +33,19 @@ private:
 	static constexpr uint32_t m_appVersion = 1;
 	static constexpr uint32_t m_engineVersion = 1;
 	std::shared_ptr<VulkanCapabilities> m_capabilities;
-	VkInstance m_instance = VK_NULL_HANDLE;		/*!< vulkan instance*/
-	std::vector<VulkanDevicePtr> m_vDevices;	/*!< vulkan devices*/
+	VkInstance m_instance = VK_NULL_HANDLE;				/*!< vulkan instance*/
+	std::vector<VulkanDevicePtr> m_vDevices;			/*!< vulkan devices*/
+
+#pragma region Debug
+	VkDebugUtilsMessengerEXT  m_debugMessenger = VK_NULL_HANDLE;
+	DebugLog m_debugCallback;
+#pragma endregion
 
 public:
-	explicit VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension = nullptr, const int a_numExt = 0);
+	explicit VulkanContext(const VulkanParameter& a_param, DebugLog a_debugCallback, const char* const* a_extraExtension = nullptr, const int a_numExt = 0);
 	VulkanContext(VulkanContext&&) noexcept = default;
 	VulkanContext& operator = (VulkanContext&&) noexcept = default;
+	virtual ~VulkanContext();
 	NOT_COPIABLE(VulkanContext)
 	VulkanContext() = delete;
 	[[nodiscard]] bool isValid()const noexcept;
@@ -46,6 +53,13 @@ public:
 	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
 	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, const DeviceChoice& a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 	[[nodiscard]] std::shared_ptr<VulkanCapabilities> capabilities()const noexcept { return m_capabilities; }
+
+#pragma region Debug
+	static VkBool32 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT a_messageSeverity,
+		[[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT a_messageTypes,
+		const VkDebugUtilsMessengerCallbackDataEXT* a_pCallbackData,
+		void* a_pUserData);
+#pragma endregion
 };
 
 

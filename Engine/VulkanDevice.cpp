@@ -5,21 +5,21 @@
 
 void VulkanDevice::createMemoryAllocator()
 {
-	VmaAllocatorCreateInfo vmaInfo
+	/*VmaAllocatorCreateInfo vmaInfo
 	{
 		.flags,
-		.physicalDevice,
-		.device,
+		.physicalDevice = a_context.physicalDevice,
+		.device = a_context.logicalDevice,
 		.preferredLargeHeapBlockSize,
 		.pAllocationCallbacks,
 		.pDeviceMemoryCallbacks,
 		.pHeapSizeLimit,
 		.pVulkanFunctions,
-		.instance,
-		.vulkanApiVersion
+		.instance = a_context.instanceHandle,
+		.vulkanApiVersion = VK_VERSION_1_3
 	};
 	////todo
-	//vmaCreateAllocator(&vmaInfo, &m_memAllocator);
+	vmaCreateAllocator(&vmaInfo, &m_memAllocator);*/
 }
 
 VulkanDevice::VulkanDevice(const VulkanDeviceContext& a_context) : VulkanObject<VulkanDeviceContext>{ a_context }, 
@@ -32,6 +32,20 @@ VulkanDevice::VulkanDevice(VulkanDeviceContext&& a_context) noexcept : VulkanObj
 m_deviceCapabilities{ static_cast<uint32_t>(a_context.deviceIndex), a_context.physicalDevice }
 {
 	createMemoryAllocator();
+}
+
+VulkanDevice::~VulkanDevice()
+{
+	for (auto& [queueFlag, queueFamily] : m_deviceQueues)
+	{
+		if(!queueFamily.commandBuffers.empty())
+			vkFreeCommandBuffers(m_ctxt.logicalDevice, queueFamily.m_commandPool, static_cast<uint32_t>(queueFamily.commandBuffers.size()), queueFamily.commandBuffers.data());
+
+		if (queueFamily.m_commandPool)
+			vkDestroyCommandPool(m_ctxt.logicalDevice, queueFamily.m_commandPool, nullptr);
+	}
+	// todo
+	vkDestroyDevice(m_ctxt.logicalDevice, nullptr);
 }
 
 VulkanSwapChainPtr VulkanDevice::createNewSwapChain(const VulkanDeviceContext& a_devCtxt, VkSurfaceKHR a_surface, const uint32_t a_width, const uint32_t a_height)

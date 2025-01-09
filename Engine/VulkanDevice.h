@@ -57,7 +57,7 @@ private:
 
 public:
 	VulkanDevice() = delete;
-	virtual ~VulkanDevice() = default;
+	virtual ~VulkanDevice();
 	[[nodiscard]] VulkanSwapChainPtr createNewSwapChain(const VulkanDeviceContext& a_devCtxt, VkSurfaceKHR a_surface, const uint32_t a_width, const uint32_t a_height);
 	[[nodiscard]] VulkanSwapChainPtr swapChain()const;
 

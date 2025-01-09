@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <vector>
+#include <format>
 #include "VulkanContext.h"
 #include "VulkanParameter.h"
 #include "common/string_utils.h"
@@ -14,7 +15,23 @@
 #endif
 
 
-VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* a_extraExtension, const int a_numExt)
+
+VkBool32 VulkanContext::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT a_messageSeverity,
+	VkDebugUtilsMessageTypeFlagsEXT /*a_messageTypes*/,
+	const VkDebugUtilsMessengerCallbackDataEXT* a_pCallbackData,
+	void* a_pUserData)
+{
+	const VulkanContext* vulkanCtxt = static_cast<VulkanContext*>(a_pUserData);
+	if (vulkanCtxt->m_debugCallback)
+	{
+		const std::string message = std::format("[{}] - {}", to_string(a_messageSeverity), a_pCallbackData->pMessage);
+		vulkanCtxt->m_debugCallback(message.c_str());
+		return true;
+	}
+	return false;
+}
+
+VulkanContext::VulkanContext(const VulkanParameter& a_param, DebugLog a_debugCallback, const char* const* a_extraExtension, const int a_numExt) : m_debugCallback{a_debugCallback}
 {
 	std::vector<std::string> usedExtension = a_param.extensions;
 	if (a_extraExtension != nullptr && a_numExt > 0)
@@ -65,6 +82,34 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, const char* const* 
 
 	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
 	m_capabilities = std::make_shared<VulkanCapabilities>(m_instance);
+
+	if (a_param.bIsDebug)
+	{
+		auto vkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
+		if (vkCreateDebugUtilsMessengerEXT)
+		{
+			VkDebugUtilsMessengerCreateInfoEXT messCI = Vulkan::Initializers::messageCallbackCreateInfo();
+			messCI.pUserData = this;
+			messCI.pfnUserCallback = &VulkanContext::debugCallback;
+			VK_CHECK_EXCEPT(vkCreateDebugUtilsMessengerEXT(m_instance, &messCI, nullptr, &m_debugMessenger));
+		}
+	}
+}
+
+VulkanContext::~VulkanContext()
+{
+	m_vDevices.clear();
+
+	if (m_debugMessenger)
+	{
+		auto vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
+		vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
+	}
+
+	if (m_instance)
+	{
+		vkDestroyInstance(m_instance, nullptr);
+	}
 }
 
 bool VulkanContext::isValid()const noexcept

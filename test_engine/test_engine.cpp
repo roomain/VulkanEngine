@@ -177,6 +177,10 @@ public:
     using ILogDisplayer::ILogDisplayer;
 };
 
+void logVulkan(const char* a_message)
+{
+    std::cerr << a_message << "\n";
+}
 
 int main()
 {
@@ -208,7 +212,7 @@ int main()
 
     // Get GLFW extensions
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-    VulkanContext engineCtxt(engineParam, glfwExtensions, glfwExtensionCount);
+    VulkanContext engineCtxt(engineParam, &logVulkan, glfwExtensions, glfwExtensionCount);
     //glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
 
     VkSurfaceKHR surface = engineCtxt.createSurface(window);
