@@ -138,17 +138,6 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 	// Determine the number of images in swapchain
 	const uint32_t desiredNumberOfSwapchainImages = internal_swapChainImageCount(surfCaps);
 
-	// Find the transformation of the surface
-	VkSurfaceTransformFlagsKHR preTransform;
-	if (surfCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
-	{
-		// We prefer a non-rotated transform
-		preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-	}
-	else
-	{
-		preTransform = surfCaps.currentTransform;
-	}
 
 	// The VK_PRESENT_MODE_FIFO_KHR mode must always be present as per spec
 	// This mode waits for the vertical blank ("v-sync")
@@ -157,7 +146,7 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 	VkSwapchainCreateInfoKHR swapchainCI = Vulkan::Initializers::swapChainCreateInfoKHR(m_ctxt.surface, imageFormat, swapchainExtent);
 	swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
 	swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	swapchainCI.preTransform = (VkSurfaceTransformFlagBitsKHR)preTransform;
+	swapchainCI.preTransform = surfCaps.currentTransform;
 	swapchainCI.presentMode = swapchainPresentMode;
 	// Setting oldSwapChain to the saved handle of the previous swapchain aids in resource reuse and makes sure that we can still present already acquired images
 	swapchainCI.oldSwapchain = m_ctxt.m_swapChain;
@@ -175,7 +164,11 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 		swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}
 
-	VK_CHECK_EXCEPT(vkCreateSwapchainKHR(m_ctxt.logicalDevice, &swapchainCI, nullptr, &m_ctxt.m_swapChain));
+	swapchainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	swapchainCI.queueFamilyIndexCount = 0;		// because VK_SHARING_MODE_EXCLUSIVE
+	swapchainCI.pQueueFamilyIndices = nullptr;	// because VK_SHARING_MODE_EXCLUSIVE
+
+	VK_CHECK_EXCEPT(vkCreateSwapchainKHR(m_ctxt.logicalDevice, &swapchainCI, nullptr, &m_ctxt.m_swapChain))
 
 	if (swapchainCI.oldSwapchain != VK_NULL_HANDLE)
 	{

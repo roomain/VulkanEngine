@@ -1,14 +1,11 @@
 #include "pch.h"
 #include <vector>
 #include <format>
+#include <memory>
 #include "VulkanContext.h"
 #include "VulkanParameter.h"
-#include "common/string_utils.h"
-#include "common/contains.h"
-#include "common/enumerate.h"
 #include "VulkanDevice.h"
-#include "VulkanSwapChain.h"
-#include "VulkanInitializers.h"
+#include "VulkanDeviceCapabilities.h"
 
 #if defined(WIN32)
 #include "vulkan/vulkan_win32.h"
@@ -65,7 +62,7 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, DebugLog a_debugCal
 
 	// create instance
 	auto appInfo = Vulkan::Initializers::applicationInfo();
-	appInfo.apiVersion = VK_VERSION_1_3; //VK_API_VERSION_1_0;// VK_VERSION_1_3;
+	appInfo.apiVersion = VK_VERSION_1_3;
 	appInfo.applicationVersion = VulkanContext::m_appVersion;
 	appInfo.engineVersion = VulkanContext::m_engineVersion;
 	appInfo.pEngineName = "VulkanEngine";
@@ -139,7 +136,7 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		m_capabilities->findDeviceCompatibleConfiguration(a_param, devMap, a_surface);
 		if (!devMap.empty())
 		{
-			VkDevice logical;
+			//VkDevice logical;
 			auto iter = devMap.begin();
 			auto vExtents = vStringToChar(a_param.extensions);
 			auto vLayers = vStringToChar(a_param.layers);
@@ -155,27 +152,13 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 				iter = devMap.find(a_choose(vDeviceIndex, this));
 			}
 
-			VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
-			
-			//set used queues
-			devInfo.pQueueCreateInfos = iter->second.baseCreateInfo.data();
-			devInfo.queueCreateInfoCount = static_cast<uint32_t>(iter->second.baseCreateInfo.size());
-
-			devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
-			devInfo.ppEnabledExtensionNames = vExtents.data();
-			devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
-			devInfo.ppEnabledLayerNames = vLayers.data();
-			devInfo.pEnabledFeatures = &features;
-			
-			
-			VK_CHECK_EXCEPT(vkCreateDevice(iter->second.physicalDev, &devInfo, nullptr, &logical))
 			// because ctor is private
-			vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(VulkanDeviceContext{
-				m_instance,
+			vulkanDev = m_vDevices.emplace_back(std::shared_ptr<VulkanDevice>(new VulkanDevice(
+				VulkanInstanceContext{.instanceHandle = m_instance},
 				iter->first,
-				iter->second.physicalDev, 
-				logical 
-				})));
+				iter->second,
+				a_param
+				)));
 		}
 	}
 	return vulkanDev;

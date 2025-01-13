@@ -96,8 +96,9 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 		VulkanDeviceConf devConf{
 			.physicalDev = m_physicalDevices[deviceCap.m_deviceIndex]
 		};
+
 		// contains number of available queue per family
-		std::unordered_map<int, uint32_t> QueuesFamilyRemainQueues;
+		std::unordered_map<uint32_t, uint32_t> QueuesFamilyRemainQueues;
 		int currentMissingQueueCount = 0;
 
 		
@@ -147,6 +148,7 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 					if (bPresentableOk)
 						devConf.presentationQueueIndex = static_cast<int>(devConf.baseCreateInfo.size()) + 1;
 
+					devConf.queueFlags.emplace_back(iter->queueFlags);
 					devConf.baseCreateInfo.emplace_back(
 						VkDeviceQueueCreateInfo{
 							.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,

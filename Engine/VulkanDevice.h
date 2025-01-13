@@ -17,11 +17,15 @@
 #include "VulkanParameter.h"
 #include "vulkan/vulkan.hpp"
 #include "VulkanObject.h"
-#include "Engine_globals.h"
+#include "VulkanCapabilities.h"
 #include "VulkanDeviceCapabilities.h"
+#include "Engine_globals.h"
 
 #pragma warning(push)
 #pragma warning( disable : 4251 )
+
+struct VulkanDeviceParameter;
+
 
 class VulkanSwapChain;
 using VulkanSwapChainPtr = std::shared_ptr<VulkanSwapChain>;
@@ -40,20 +44,25 @@ private:
 	VulkanSwapChainPtr m_deviceSwapChain;							/*!< device swapchain*/
 	VmaAllocator m_memAllocator = VK_NULL_HANDLE;
 
-	struct AvailableQueues
+	struct QueueFamilyManager
 	{
-		uint32_t familyIndex;							/*!< queue family index*/
-		int available;									/*!< available queues*/
-		std::vector<VkQueue> queues;					/*!< used queues*/
-		VkCommandPool m_commandPool = VK_NULL_HANDLE;	/*!< command pool associated to queue family*/
+		VkQueueFlags familyFlag = 0;							/*!< queue family flag*/
+		uint32_t familyIndex = 0;								/*!< queue family index*/
+		uint32_t available = 0;									/*!< available queues*/
+		std::vector<VkQueue> queues;							/*!< used queues*/
+		VkCommandPool commandPool = VK_NULL_HANDLE;				/*!< command pool associated to queue family*/
 		std::array<VkCommandBuffer, MAX_FRAME> commandBuffers;
 		std::array<VkFence, MAX_FRAME> waitFences;
 	};
-	std::unordered_map<QueueFlag, AvailableQueues> m_deviceQueues;	/*!< queues availables/used by device*/
+
+	std::vector<QueueFamilyManager> m_deviceQueues;	/*!< queues availables/used by device*/
+
+	std::vector<QueueFamilyManager>::iterator findQueueMng(const QueueFlag a_flag);
+	std::vector<QueueFamilyManager>::const_iterator findQueueMng(const QueueFlag a_flag)const;
+
 	void createMemoryAllocator();
 
-	explicit VulkanDevice(const VulkanDeviceContext& a_context);
-	explicit VulkanDevice(VulkanDeviceContext&& a_context) noexcept;
+	explicit VulkanDevice(const VulkanInstanceContext& a_ctxt, const int a_devIndex, const VulkanCapabilities::VulkanDeviceConf& a_devConf, const VulkanDeviceParameter& a_param);
 
 public:
 	VulkanDevice() = delete;

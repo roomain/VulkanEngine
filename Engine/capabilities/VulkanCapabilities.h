@@ -48,6 +48,7 @@ public:
     [[nodiscard]] Device_const_iterator deviceEnd()const noexcept;
 
 #pragma region compatible_devices
+
     /*@brief compatible  device*/
     struct VulkanDeviceConf
     {
@@ -55,6 +56,7 @@ public:
         int graphicQueueIndex = -1;                             /*!< index of graphic queue in baseCreateInfo*/
         int presentationQueueIndex = -1;                        /*!< index of presentation queue in baseCreateInfo*/
         std::vector<VkDeviceQueueCreateInfo> baseCreateInfo;    /*!< queues configurations*/
+        std::vector<VkQueueFlags> queueFlags;                   /*!< queues flags*/
         std::vector<float> priorities;                          /*!< queues priorities*/
     };
 

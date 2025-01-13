@@ -22,28 +22,54 @@ void VulkanDevice::createMemoryAllocator()
 	vmaCreateAllocator(&vmaInfo, &m_memAllocator);*/
 }
 
-VulkanDevice::VulkanDevice(const VulkanDeviceContext& a_context) : VulkanObject<VulkanDeviceContext>{ a_context }, 
-m_deviceCapabilities{ static_cast<uint32_t>(a_context.deviceIndex), a_context.physicalDevice }
+VulkanDevice::VulkanDevice(const VulkanInstanceContext& a_ctxt, const int a_devIndex, const VulkanCapabilities::VulkanDeviceConf& a_devConf, const VulkanDeviceParameter& a_param) : VulkanObject<VulkanDeviceContext>{ VulkanDeviceContext{a_ctxt} },
+m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 {
-	createMemoryAllocator();
+	auto vExtents = vStringToChar(a_param.extensions);
+	auto vLayers = vStringToChar(a_param.layers);
+	auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
+
+	VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
+
+	//set used queues
+	devInfo.pQueueCreateInfos = a_devConf.baseCreateInfo.data();
+	devInfo.queueCreateInfoCount = static_cast<uint32_t>(a_devConf.baseCreateInfo.size());
+
+	devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
+	devInfo.ppEnabledExtensionNames = vExtents.data();
+	devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
+	devInfo.ppEnabledLayerNames = vLayers.data();
+	devInfo.pEnabledFeatures = &features;
+
+	int queueIndex = 0;
+	for (const auto &familyParam : a_devConf.baseCreateInfo)
+	{
+		m_deviceQueues.emplace_back(QueueFamilyManager
+			{
+				.familyFlag = a_devConf.queueFlags[queueIndex],
+				.familyIndex = familyParam.queueFamilyIndex,
+				.available = familyParam.queueCount
+			});
+		++queueIndex;
+	}
+
+	VK_CHECK_EXCEPT(vkCreateDevice(a_devConf.physicalDev, &devInfo, nullptr, &m_ctxt.logicalDevice))
+	createMemoryAllocator();	
 }
 
-VulkanDevice::VulkanDevice(VulkanDeviceContext&& a_context) noexcept : VulkanObject<VulkanDeviceContext>{ a_context },
-m_deviceCapabilities{ static_cast<uint32_t>(a_context.deviceIndex), a_context.physicalDevice }
-{
-	createMemoryAllocator();
-}
+
 
 VulkanDevice::~VulkanDevice()
 {
-	for (auto& [queueFlag, queueFamily] : m_deviceQueues)
+	for (const auto& queueMng : m_deviceQueues)
 	{
-		if(!queueFamily.commandBuffers.empty())
-			vkFreeCommandBuffers(m_ctxt.logicalDevice, queueFamily.m_commandPool, static_cast<uint32_t>(queueFamily.commandBuffers.size()), queueFamily.commandBuffers.data());
+		if (!queueMng.commandBuffers.empty())
+			vkFreeCommandBuffers(m_ctxt.logicalDevice, queueMng.commandPool, static_cast<uint32_t>(queueMng.commandBuffers.size()), queueMng.commandBuffers.data());
 
-		if (queueFamily.m_commandPool)
-			vkDestroyCommandPool(m_ctxt.logicalDevice, queueFamily.m_commandPool, nullptr);
+		if (queueMng.commandPool != VK_NULL_HANDLE)
+			vkDestroyCommandPool(m_ctxt.logicalDevice, queueMng.commandPool, nullptr);
 	}
+
 	// todo
 	vkDestroyDevice(m_ctxt.logicalDevice, nullptr);
 }
@@ -61,28 +87,44 @@ VulkanSwapChainPtr VulkanDevice::swapChain()const
 	return m_deviceSwapChain;
 }
 
+std::vector<VulkanDevice::QueueFamilyManager>::iterator VulkanDevice::findQueueMng(const QueueFlag a_flag)
+{
+	return std::ranges::find_if(m_deviceQueues, [a_flag](const auto& mng)
+		{
+			return (mng.familyFlag & static_cast<VkQueueFlags>(a_flag)) == static_cast<VkQueueFlags>(a_flag);
+		});
+}
+
+std::vector<VulkanDevice::QueueFamilyManager>::const_iterator VulkanDevice::findQueueMng(const QueueFlag a_flag)const
+{
+	return std::ranges::find_if(m_deviceQueues, [a_flag](const auto& mng) 
+		{
+			return (mng.familyFlag & static_cast<VkQueueFlags>(a_flag)) == static_cast<VkQueueFlags>(a_flag); 
+		});
+}
+
 #pragma region command
 void VulkanDevice::createCommandBuffers(const QueueFlag a_flag)
 {
-	if (auto iter = m_deviceQueues.find(a_flag); iter != m_deviceQueues.cend() && iter->second.m_commandPool == VK_NULL_HANDLE)
+	if (auto iter = findQueueMng(a_flag); iter != m_deviceQueues.cend() && iter->commandPool == VK_NULL_HANDLE)
 	{
 		// All command buffers are allocated from a command pool
-		VkCommandPoolCreateInfo commandPoolCI = Vulkan::Initializers::commandPoolCreateInfo(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, iter->second.familyIndex);
-		VK_CHECK_EXCEPT(vkCreateCommandPool(m_ctxt.logicalDevice, &commandPoolCI, nullptr, &iter->second.m_commandPool))
+		VkCommandPoolCreateInfo commandPoolCI = Vulkan::Initializers::commandPoolCreateInfo(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, iter->familyIndex);
+		VK_CHECK_EXCEPT(vkCreateCommandPool(m_ctxt.logicalDevice, &commandPoolCI, nullptr, &iter->commandPool))
 
 		// Allocate one command buffer per max. concurrent frame from above pool
-		VkCommandBufferAllocateInfo cmdBufAllocateInfo = Vulkan::Initializers::commandBufferCreateInfo(iter->second.m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, VulkanDevice::MAX_FRAME);
-		VK_CHECK_EXCEPT(vkAllocateCommandBuffers(m_ctxt.logicalDevice, &cmdBufAllocateInfo, iter->second.commandBuffers.data()))
+		VkCommandBufferAllocateInfo cmdBufAllocateInfo = Vulkan::Initializers::commandBufferCreateInfo(iter->commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, VulkanDevice::MAX_FRAME);
+		VK_CHECK_EXCEPT(vkAllocateCommandBuffers(m_ctxt.logicalDevice, &cmdBufAllocateInfo, iter->commandBuffers.data()))
 	}
 }
 
 VkQueue VulkanDevice::createQueue(const QueueFlag a_flag)
 {
-	if (auto iter = m_deviceQueues.find(a_flag); iter != m_deviceQueues.cend())
+	if (auto iter = findQueueMng(a_flag); iter != m_deviceQueues.cend())
 	{
 		VkQueue queue;
-		vkGetDeviceQueue(m_ctxt.logicalDevice, iter->second.familyIndex, static_cast<uint32_t>(iter->second.queues.size()), &queue);
-		iter->second.queues.emplace_back(queue);
+		vkGetDeviceQueue(m_ctxt.logicalDevice, iter->familyIndex, static_cast<uint32_t>(iter->queues.size()), &queue);
+		iter->queues.emplace_back(queue);
 		return queue;
 	}
 	throw Exception("Can't get queue");
