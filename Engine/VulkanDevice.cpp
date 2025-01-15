@@ -41,6 +41,7 @@ m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 	devInfo.ppEnabledLayerNames = vLayers.data();
 	devInfo.pEnabledFeatures = &features;
 
+	m_presentationQueueIndex = a_devConf.presentationQueueIndex;
 	int queueIndex = 0;
 	for (const auto &familyParam : a_devConf.baseCreateInfo)
 	{
@@ -120,14 +121,31 @@ void VulkanDevice::createCommandBuffers(const QueueFlag a_flag)
 
 VkQueue VulkanDevice::createQueue(const QueueFlag a_flag)
 {
-	if (auto iter = findQueueMng(a_flag); iter != m_deviceQueues.cend())
+	if (auto iter = findQueueMng(a_flag); iter != m_deviceQueues.cend() && iter->available > 0)
 	{
 		VkQueue queue;
 		vkGetDeviceQueue(m_ctxt.logicalDevice, iter->familyIndex, static_cast<uint32_t>(iter->queues.size()), &queue);
 		iter->queues.emplace_back(queue);
+		iter->available--;
 		return queue;
 	}
 	throw Exception("Can't get queue");
+}
+
+VkQueue VulkanDevice::createPresentationQueue()
+{
+	if(m_presentationQueueIndex < 0)
+		throw Exception("No presentation queue");
+
+	if(m_deviceQueues[m_presentationQueueIndex].available <= 0)
+		throw Exception("Can't get queue");
+
+	VkQueue queue;
+	vkGetDeviceQueue(m_ctxt.logicalDevice, m_deviceQueues[m_presentationQueueIndex].familyIndex, static_cast<uint32_t>(m_deviceQueues[m_presentationQueueIndex].queues.size()), &queue);
+	m_deviceQueues[m_presentationQueueIndex].queues.emplace_back(queue);
+	m_deviceQueues[m_presentationQueueIndex].available--;
+	return queue;
+
 }
 #pragma endregion
 

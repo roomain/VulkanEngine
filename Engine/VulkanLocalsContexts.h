@@ -22,5 +22,5 @@ struct VulkanDeviceContext : VulkanInstanceContext
 struct VulkanSwapChainContext : VulkanDeviceContext
 {
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
-	VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
+	VkSwapchainKHR swapChain = VK_NULL_HANDLE;
 };

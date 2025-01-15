@@ -86,11 +86,11 @@ void VulkanSwapChain::internal_createBuffers(const VkFormat a_colorFormat)
 {
 	uint32_t imageCount;
 	std::vector<VkImage> images;
-	VK_CHECK_EXCEPT(vkGetSwapchainImagesKHR(m_ctxt.logicalDevice, m_ctxt.m_swapChain, &imageCount, NULL));
+	VK_CHECK_EXCEPT(vkGetSwapchainImagesKHR(m_ctxt.logicalDevice, m_ctxt.swapChain, &imageCount, NULL));
 
 	// Get the swap chain images
 	images.resize(imageCount);
-	VK_CHECK_EXCEPT(vkGetSwapchainImagesKHR(m_ctxt.logicalDevice, m_ctxt.m_swapChain, &imageCount, images.data()));
+	VK_CHECK_EXCEPT(vkGetSwapchainImagesKHR(m_ctxt.logicalDevice, m_ctxt.swapChain, &imageCount, images.data()));
 
 	for (const VkImage img : images)
 	{
@@ -149,7 +149,7 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 	swapchainCI.preTransform = surfCaps.currentTransform;
 	swapchainCI.presentMode = swapchainPresentMode;
 	// Setting oldSwapChain to the saved handle of the previous swapchain aids in resource reuse and makes sure that we can still present already acquired images
-	swapchainCI.oldSwapchain = m_ctxt.m_swapChain;
+	swapchainCI.oldSwapchain = m_ctxt.swapChain;
 	// Setting clipped to VK_TRUE allows the implementation to discard rendering outside of the surface area
 	swapchainCI.clipped = VK_TRUE;
 	swapchainCI.compositeAlpha = VulkanSwapChain::internal_findCompositeAlpha(surfCaps);
@@ -168,7 +168,7 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 	swapchainCI.queueFamilyIndexCount = 0;		// because VK_SHARING_MODE_EXCLUSIVE
 	swapchainCI.pQueueFamilyIndices = nullptr;	// because VK_SHARING_MODE_EXCLUSIVE
 
-	VK_CHECK_EXCEPT(vkCreateSwapchainKHR(m_ctxt.logicalDevice, &swapchainCI, nullptr, &m_ctxt.m_swapChain))
+	VK_CHECK_EXCEPT(vkCreateSwapchainKHR(m_ctxt.logicalDevice, &swapchainCI, nullptr, &m_ctxt.swapChain))
 
 	if (swapchainCI.oldSwapchain != VK_NULL_HANDLE)
 	{
@@ -188,10 +188,16 @@ VulkanSwapChain::VulkanSwapChain(const VulkanSwapChainContext& a_ctxt, const uin
 
 VulkanSwapChain::~VulkanSwapChain()
 {
-	internal_releaseSwapchain(m_ctxt.m_swapChain);
+	internal_releaseSwapchain(m_ctxt.swapChain);
 }
 
 void VulkanSwapChain::reset(const uint32_t a_width, const uint32_t a_height)
 {
 	internal_createSwapChain(a_width, a_height);
+}
+
+void VulkanSwapChain::acquireNextImage(VkSemaphore presentCompleteSemaphore, VkFence a_fence, uint32_t& a_imageIndex, SwapChainBuffer& a_image)const
+{
+	VK_CHECK_LOG(vkAcquireNextImageKHR(m_ctxt.logicalDevice, m_ctxt.swapChain, UINT64_MAX, presentCompleteSemaphore, a_fence, &a_imageIndex))
+	a_image = m_buffer[a_imageIndex];
 }

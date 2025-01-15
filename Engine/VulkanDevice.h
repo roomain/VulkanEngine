@@ -55,6 +55,7 @@ private:
 		std::array<VkFence, MAX_FRAME> waitFences;
 	};
 
+	int32_t m_presentationQueueIndex = -1;
 	std::vector<QueueFamilyManager> m_deviceQueues;	/*!< queues availables/used by device*/
 
 	std::vector<QueueFamilyManager>::iterator findQueueMng(const QueueFlag a_flag);
@@ -73,6 +74,7 @@ public:
 #pragma region command
 	void createCommandBuffers(const QueueFlag a_flag);
 	VkQueue createQueue(const QueueFlag a_flag);
+	VkQueue createPresentationQueue();
 #pragma endregion
 
 #pragma region shader

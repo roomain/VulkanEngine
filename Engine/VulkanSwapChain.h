@@ -40,4 +40,5 @@ public:
 	NOT_COPIABLE(VulkanSwapChain)
 	virtual ~VulkanSwapChain();
 	void reset(const uint32_t a_width, const uint32_t a_height);
+	void acquireNextImage(VkSemaphore presentCompleteSemaphore, VkFence a_fence, uint32_t& a_imageIndex, SwapChainBuffer& a_image)const;
 };
