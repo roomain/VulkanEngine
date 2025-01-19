@@ -41,4 +41,7 @@ public:
 	virtual ~VulkanSwapChain();
 	void reset(const uint32_t a_width, const uint32_t a_height);
 	void acquireNextImage(VkSemaphore presentCompleteSemaphore, VkFence a_fence, uint32_t& a_imageIndex, SwapChainBuffer& a_image)const;
+	void present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, VkSemaphore a_waitSemaphore)const;
+	void present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, std::vector<VkSemaphore>& a_waitSemaphore)const;
+	void present(VkQueue a_presentationQueue, const std::vector<uint32_t>& a_imageIndices, std::vector<VkSemaphore>& a_waitSemaphore)const;
 };

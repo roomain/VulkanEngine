@@ -541,7 +541,7 @@ namespace Vulkan::Initializers
 		.pNext = nullptr };
 	}
 
-	[[nodiscard]] constexpr VkPresentInfoKHR presentationKHR(const uint32_t& a_semaphoreCount, VkSemaphore* a_pSemaphore, const uint32_t& a_swapChainCount, VkSwapchainKHR* a_pSwapChain, uint32_t* a_pImgIndices)
+	[[nodiscard]] constexpr VkPresentInfoKHR presentationKHR(const uint32_t& a_semaphoreCount, VkSemaphore* a_pSemaphore, const uint32_t& a_swapChainCount, const VkSwapchainKHR* a_pSwapChain, const uint32_t* a_pImgIndices)
 	{
 		return VkPresentInfoKHR{
 		.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,

@@ -201,3 +201,16 @@ void VulkanSwapChain::acquireNextImage(VkSemaphore presentCompleteSemaphore, VkF
 	VK_CHECK_LOG(vkAcquireNextImageKHR(m_ctxt.logicalDevice, m_ctxt.swapChain, UINT64_MAX, presentCompleteSemaphore, a_fence, &a_imageIndex))
 	a_image = m_buffer[a_imageIndex];
 }
+
+void VulkanSwapChain::present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, VkSemaphore a_waitSemaphore)const
+{
+	auto presentCI = Vulkan::Initializers::presentationKHR(1, &a_waitSemaphore, 1, &m_ctxt.swapChain, &a_imageIndex);
+	VK_CHECK_LOG(vkQueuePresentKHR(a_presentationQueue, &presentCI))
+}
+
+void VulkanSwapChain::present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, std::vector<VkSemaphore>& a_waitSemaphore)const
+{
+	auto presentCI  = Vulkan::Initializers::presentationKHR(static_cast<uint32_t>(a_waitSemaphore.size()), 
+		a_waitSemaphore.data(), 1, &m_ctxt.swapChain, &a_imageIndex);
+	VK_CHECK_LOG(vkQueuePresentKHR(a_presentationQueue, &presentCI))
+}
