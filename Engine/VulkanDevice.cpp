@@ -132,6 +132,17 @@ VkQueue VulkanDevice::createQueue(const QueueFlag a_flag)
 	throw Exception("Can't get queue");
 }
 
+VkQueue VulkanDevice::presentationQueue(const int a_queueIndex)const
+{
+	VkQueue queue = VK_NULL_HANDLE;
+	
+	if ((m_presentationQueueIndex >= 0) && (m_deviceQueues[m_presentationQueueIndex].queues.size() > a_queueIndex))
+	{
+		queue = m_deviceQueues[m_presentationQueueIndex].queues[a_queueIndex];
+	}
+	return queue;
+}
+
 VkQueue VulkanDevice::createPresentationQueue()
 {
 	if(m_presentationQueueIndex < 0)

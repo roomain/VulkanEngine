@@ -75,6 +75,7 @@ public:
 	void createCommandBuffers(const QueueFlag a_flag);
 	VkQueue createQueue(const QueueFlag a_flag);
 	VkQueue createPresentationQueue();
+	VkQueue presentationQueue(const int a_queueIndex = 0)const;
 #pragma endregion
 
 #pragma region shader
