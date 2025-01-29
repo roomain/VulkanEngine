@@ -31,6 +31,9 @@
     <Filter Include="Fichiers d%27en-tête\Events">
       <UniqueIdentifier>{268967ad-1aac-45a8-9260-63e1413f1af9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\math">
+      <UniqueIdentifier>{7f459e07-27e8-4e59-913e-278ff6639b82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -93,8 +96,8 @@
     <ClInclude Include="VulkanLocalsContexts.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="transformation.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+    <ClInclude Include="math\transformation.h">
+      <Filter>Fichiers d%27en-tête\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
