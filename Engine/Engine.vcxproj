@@ -170,7 +170,6 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="EngineEvents.h" />
     <ClInclude Include="EngineEventStatus.h" />
     <ClInclude Include="EngineResizable.h" />
-    <ClInclude Include="EngineWindow.h" />
     <ClInclude Include="Engine_globals.h" />
     <ClInclude Include="EngineObject.h" />
     <ClInclude Include="math\transformation.h" />

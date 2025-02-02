@@ -75,9 +75,6 @@
     <ClInclude Include="EngineResizable.h">
       <Filter>Fichiers d%27en-tête\EngineObjects</Filter>
     </ClInclude>
-    <ClInclude Include="EngineWindow.h">
-      <Filter>Fichiers d%27en-tête\EngineObjects</Filter>
-    </ClInclude>
     <ClInclude Include="EngineEvents.h">
       <Filter>Fichiers d%27en-tête\Events</Filter>
     </ClInclude>
