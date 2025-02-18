@@ -14,6 +14,7 @@ private:
 	glm::dmat4 m_transformMatrix;
 
 public:
+	Transformation() : m_transformMatrix{glm::identity<glm::dmat4>()}{}
 	explicit Transformation(const glm::dmat4& a_transform) : m_transformMatrix{ a_transform } {}
 	explicit Transformation(const glm::dmat4&& a_transform)noexcept : m_transformMatrix{ a_transform } {}
 	inline const glm::dmat4& matrix()const { return m_transformMatrix; }

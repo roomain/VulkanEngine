@@ -18,8 +18,10 @@ using CallbackResize = std::function<void(const EngineResizable*, const unsigned
 /*@base resizable object*/
 class VULKAN_ENGINE_LIB EngineResizable : public EngineObject
 {
-protected:
+private:
     std::vector<CallbackResize> m_vResizeCallback;  /*!< callback resize*/
+
+protected:
     virtual void internalResize(const unsigned int a_width, const unsigned int a_height) = 0;
 
 public:

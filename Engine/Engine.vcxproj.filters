@@ -96,6 +96,9 @@
     <ClInclude Include="math\transformation.h">
       <Filter>Fichiers d%27en-tête\math</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanShader.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

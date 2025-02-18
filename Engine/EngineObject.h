@@ -12,13 +12,12 @@
 #pragma warning( disable : 4251 )
 class EngineObject;
 
-using CallbackDelete = std::function<void(const EngineObject*)>;// operator == n'existe pas
+using CallbackDelete = std::function<void(const EngineObject*)>;
 
 /*@brief base engine object*/
 class VULKAN_ENGINE_LIB EngineObject
 {
-
-protected:
+private:
     std::vector<CallbackDelete> m_vDeleteCallback;  /*!< callback delete object*/
 
 public:
