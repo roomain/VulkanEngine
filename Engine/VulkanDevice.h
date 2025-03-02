@@ -78,9 +78,6 @@ public:
 	VkQueue presentationQueue(const int a_queueIndex = 0)const;
 #pragma endregion
 
-#pragma region shader
-	VkShaderModule loadSPIRVShader(const std::string& a_filename)const;
-#pragma endregion
 
 #pragma region image
 #pragma endregion

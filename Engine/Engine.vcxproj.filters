@@ -96,7 +96,7 @@
     <ClInclude Include="math\transformation.h">
       <Filter>Fichiers d%27en-tête\math</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanShader.h">
+    <ClInclude Include="VulkanPipeline.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -129,6 +129,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="vmaAllocator.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanPipeline.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

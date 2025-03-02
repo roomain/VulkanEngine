@@ -178,6 +178,19 @@ namespace Vulkan::Initializers
 		.pSetLayouts = a_pSetLayouts };
 	}
 
+	[[nodiscard]] constexpr VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo(
+		const VkShaderStageFlagBits a_stage, const VkShaderModule a_shaderModule)
+	{
+		return VkPipelineShaderStageCreateInfo{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0,
+		.stage = a_stage,
+		.module = a_shaderModule,
+		.pName = "main"
+		};
+	}
+
 	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
 		uint32_t a_setLayoutCount = 1)
 	{

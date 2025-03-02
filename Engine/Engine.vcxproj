@@ -179,7 +179,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="VulkanInitializers.h" />
     <ClInclude Include="VulkanLocalsContexts.h" />
     <ClInclude Include="VulkanObject.h" />
-    <ClInclude Include="VulkanShader.h" />
+    <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="vulkan_enum_to_string.h" />
     <ClInclude Include="framework.h" />
@@ -202,6 +202,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClCompile Include="vmaAllocator.cpp" />
     <ClCompile Include="VulkanContext.cpp" />
     <ClCompile Include="VulkanDevice.cpp" />
+    <ClCompile Include="VulkanPipeline.cpp" />
     <ClCompile Include="VulkanSwapChain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

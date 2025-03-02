@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <fstream>
 #include "VulkanDevice.h"
 #include "VulkanSwapChain.h"
 
@@ -160,31 +159,7 @@ VkQueue VulkanDevice::createPresentationQueue()
 }
 #pragma endregion
 
-#pragma region shader
-VkShaderModule VulkanDevice::loadSPIRVShader(const std::string& a_filename)const
-{
-	VkShaderModule shaderModule = VK_NULL_HANDLE;	
-	if (std::ifstream fileStream(a_filename, std::ios::binary | std::ios::in | std::ios::ate); fileStream.is_open())
-	{
-		const size_t fileSize = fileStream.tellg();
-		fileStream.seekg(0, std::ios::beg);
 
-		if (fileSize > 0)
-		{
-			std::vector<char> fileData(fileSize);
-			fileStream.read(fileData.data(), fileSize);
-			fileStream.close();
-
-			// Create a new shader module that will be used for pipeline creation
-			VkShaderModuleCreateInfo shaderModuleCI = Vulkan::Initializers::shaderModuleCreateInfo(fileData);
-			VK_CHECK_EXCEPT(vkCreateShaderModule(m_ctxt.logicalDevice, &shaderModuleCI, nullptr, &shaderModule))
-
-		}
-
-	}
-	return shaderModule;
-}
-#pragma endregion
 
 #pragma region image
 #pragma endregion
