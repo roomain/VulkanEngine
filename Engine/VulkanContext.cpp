@@ -61,21 +61,12 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, DebugLog a_debugCal
 	}
 
 	// create instance
-	auto appInfo = Vulkan::Initializers::applicationInfo();
-	appInfo.apiVersion = VK_VERSION_1_3;
-	appInfo.applicationVersion = VulkanContext::m_appVersion;
-	appInfo.engineVersion = VulkanContext::m_engineVersion;
-	appInfo.pEngineName = "VulkanEngine";
+	auto appInfo = Vulkan::Initializers::applicationInfo("VulkanApp",
+		VulkanContext::m_appVersion, "VulkanEngine", VulkanContext::m_appVersion,
+		VK_VERSION_1_3);
 
-	auto createInfo = Vulkan::Initializers::instanceCreateInfo();
-	std::vector<const char*> extensions = vStringToChar(usedExtension);
-	std::vector<const char*> layers = vStringToChar(a_param.layers);
-
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(usedExtension.size());
-	createInfo.ppEnabledExtensionNames = extensions.data();
-	createInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
-	createInfo.ppEnabledLayerNames = layers.data();
-	createInfo.pApplicationInfo = &appInfo;
+	auto createInfo = Vulkan::Initializers::instanceCreateInfo(&appInfo,
+		usedExtension, a_param.layers);
 
 	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
 	m_capabilities = std::make_shared<VulkanCapabilities>(m_instance);

@@ -7,10 +7,12 @@
 #include "vulkan/vulkan.h"
 #include <utility>
 #include <vector>
+#include "common/string_utils.h"
 
 /*@brief functions for structure initialisation*/
 namespace Vulkan::Initializers
 {
+
 	[[nodiscard]] constexpr VkViewport viewport(const float a_x, const float a_y, const float a_width, const float a_height, const float a_near, const float a_far)
 	{
 		return VkViewport{ a_x, a_y, a_width, a_height, a_near, a_far };
@@ -40,17 +42,7 @@ namespace Vulkan::Initializers
 	{
 		return VkRect2D{ offset2D(a_x, a_y), extent2D(a_width, a_height) };
 	}
-
-	[[nodiscard]] constexpr VkApplicationInfo applicationInfo()
-	{
-		return VkApplicationInfo{ .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO, .pNext = nullptr };
-	}
-
-	[[nodiscard]] constexpr VkInstanceCreateInfo instanceCreateInfo()
-	{
-		return VkInstanceCreateInfo{ .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, .pNext = nullptr, .flags = 0 };
-	}
-
+	
 	[[nodiscard]] constexpr VkDebugReportCallbackCreateInfoEXT debugCallbackCreateInfo()
 	{
 		return VkDebugReportCallbackCreateInfoEXT{ .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT };
@@ -66,17 +58,101 @@ namespace Vulkan::Initializers
 		};
 	}
 
-	[[nodiscard]] constexpr VkDeviceCreateInfo deviceCreateInfo()
+	[[nodiscard]] constexpr VkApplicationInfo applicationInfo(const char* a_appName, const uint32_t a_appVersion, 
+		const char* a_engineName, const uint32_t a_engineVersion, const uint32_t a_apiVersion)
 	{
-		return VkDeviceCreateInfo{ .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, .pNext = nullptr };
+		return VkApplicationInfo{ 
+			.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO, 
+			.pNext = nullptr,
+			.pApplicationName = a_appName,
+			.applicationVersion = a_appVersion,
+			.pEngineName = a_engineName,
+			.engineVersion = a_engineVersion,
+			.apiVersion = a_apiVersion
+		};
 	}
 
-	[[nodiscard]] constexpr VkDeviceQueueCreateInfo queueCreateInfo()
+	[[nodiscard]] constexpr VkInstanceCreateInfo instanceCreateInfo(
+		const VkApplicationInfo* a_appInfo,
+		const std::vector<std::string>& a_extensions,
+		const std::vector<std::string>& a_layers)
 	{
-		return VkDeviceQueueCreateInfo{ .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO };
+		return VkInstanceCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, 
+			.pNext = nullptr, 
+			.flags = 0,
+			.pApplicationInfo = a_appInfo,
+			.enabledLayerCount = static_cast<uint32_t>(a_extensions.size()),
+			.ppEnabledLayerNames =  vStringToChar(a_extensions).data(),
+			.enabledExtensionCount = static_cast<uint32_t>(a_layers.size()),
+			.ppEnabledExtensionNames =  vStringToChar(a_layers).data()
+		 };
 	}
 
-	[[nodiscard]] constexpr VkSwapchainCreateInfoKHR swapChainCreateInfoKHR(const VkSurfaceKHR a_surface, const VkSurfaceFormatKHR& a_format, const VkExtent2D& a_extent)
+	[[nodiscard]] inline VkDeviceCreateInfo deviceCreateInfo(const std::vector<VkDeviceQueueCreateInfo>& a_queueInfo,
+		const std::vector<std::string>& a_extensions,
+		const std::vector<std::string>& a_layers,
+		const VkPhysicalDeviceFeatures* a_features,
+		const VkDeviceCreateFlags a_flags)
+	{
+		return VkDeviceCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, 
+			.pNext = nullptr,
+			.flags = a_flags,
+			.queueCreateInfoCount = static_cast<uint32_t>(a_queueInfo.size()),
+			.pQueueCreateInfos = a_queueInfo.data(),
+			.enabledLayerCount = static_cast<uint32_t>(a_layers.size()),
+			.ppEnabledLayerNames = vStringToChar(a_layers).data(),
+			.enabledExtensionCount = static_cast<uint32_t>(a_extensions.size()),
+			.ppEnabledExtensionNames = vStringToChar(a_extensions).data(),
+			.pEnabledFeatures = a_features
+		};
+	}
+
+	[[nodiscard]] constexpr VkDeviceQueueCreateInfo queueCreateInfo(const uint32_t a_familyIndex,
+		const uint32_t a_queueCount,
+		const std::vector<float>& a_priorities,
+		const VkDeviceQueueCreateFlags a_flag = 0)
+	{
+		return VkDeviceQueueCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+    		.pNext = nullptr,
+    		.flags = a_flag,
+    		.queueFamilyIndex = a_familyIndex,
+    		.queueCount = a_queueCount,
+    		.pQueuePriorities = a_priorities.data()
+			};
+	}
+
+	[[nodiscard]] constexpr VkFramebufferCreateInfo frameBufferCreateInfo(const VkRenderPass a_renderPass, 
+	const std::vector<VkImageView>& a_attachment, const uint32_t a_Width, const uint32_t a_Height)
+	{
+		return VkFramebufferCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, 
+			.pNext = nullptr, 
+			.renderPass = a_renderPass,
+			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
+			.pAttachments = a_attachment.data(),
+			.width = a_Width,
+			.height = a_Height,
+			.layers = 1
+		 };
+	}
+
+	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo graphicPipelineCreateInfo(
+		const std::vector<VkPipelineShaderStageCreateInfo>& a_shaderStages)
+	{
+		return VkGraphicsPipelineCreateInfo{
+			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+			.pNext = nullptr,
+			.stageCount = static_cast<uint32_t>(a_shaderStages.size()),
+			.pStages = a_shaderStages.data()
+		};
+	}
+
+	[[nodiscard]] constexpr VkSwapchainCreateInfoKHR swapChainCreateInfoKHR(const VkSurfaceKHR a_surface, 
+		const VkSurfaceFormatKHR& a_format, 
+		const VkExtent2D& a_extent)
 	{
 		return VkSwapchainCreateInfoKHR{ .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR, 
 			.pNext = nullptr, 
@@ -92,49 +168,176 @@ namespace Vulkan::Initializers
 		};
 	}
 
-	[[nodiscard]] constexpr VkMemoryAllocateInfo memoryAllocateInfo()
+	
+	[[nodiscard]] constexpr VkMemoryAllocateInfo memoryAllocateInfo(const VkDeviceSize& a_allocSize, const uint32_t a_memType)
 	{
-		return VkMemoryAllocateInfo{ .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, .pNext = nullptr, .allocationSize = 0 };
+		return VkMemoryAllocateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 
+			.pNext = nullptr, 
+			.allocationSize = a_allocSize,
+			.memoryTypeIndex =  a_memType
+		};
 	}
 
-	[[nodiscard]] constexpr VkCommandBufferAllocateInfo commandBufferCreateInfo(VkCommandPool a_cmdPool, VkCommandBufferLevel a_level, uint32_t a_bufferCount)
+	[[nodiscard]] constexpr VkCommandBufferAllocateInfo commandBufferCreateInfo(const VkCommandPool a_cmdPool, 
+	const VkCommandBufferLevel a_level, uint32_t a_bufferCount)
 	{
-		return VkCommandBufferAllocateInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, .pNext = nullptr, .commandPool = a_cmdPool, .level = a_level, .commandBufferCount = a_bufferCount };
+		return VkCommandBufferAllocateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, 
+			.pNext = nullptr, 
+			.commandPool = a_cmdPool, 
+			.level = a_level, 
+			.commandBufferCount = a_bufferCount 
+		};
 	}
 
-	[[nodiscard]] constexpr VkCommandBufferBeginInfo commandBufferBeginInfo(VkCommandBufferUsageFlags a_flags, VkCommandBufferInheritanceInfo* a_pBuffInheritInfo)
+	[[nodiscard]] constexpr VkCommandPoolCreateInfo commandPoolCreateInfo(const VkCommandPoolCreateFlags a_flags, 
+	const uint32_t a_familyIndex)
 	{
-		return VkCommandBufferBeginInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, .pNext = nullptr, .flags = a_flags, .pInheritanceInfo = a_pBuffInheritInfo };
+		return VkCommandPoolCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, 
+			.pNext = nullptr, 
+			.flags = a_flags, .
+			queueFamilyIndex = a_familyIndex 
+		};
 	}
 
-	[[nodiscard]] constexpr VkCommandPoolCreateInfo commandPoolCreateInfo(const VkCommandPoolCreateFlags a_flags, const uint32_t a_familyIndex)
+	[[nodiscard]] constexpr VkCommandBufferBeginInfo commandBufferBeginInfo(const VkCommandBufferUsageFlags a_flags, 
+	const VkCommandBufferInheritanceInfo* a_pBuffInheritInfo)
 	{
-		return VkCommandPoolCreateInfo{ .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, .pNext = nullptr, .flags = a_flags, .queueFamilyIndex = a_familyIndex };
+		return VkCommandBufferBeginInfo{ 
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, 
+			.pNext = nullptr, 
+			.flags = a_flags, 
+			.pInheritanceInfo = a_pBuffInheritInfo 
+		};
 	}
 
-	[[nodiscard]] constexpr VkSubmitInfo submitInfo()
+	[[nodiscard]] inline VkImageViewCreateInfo imageViewCreateInfo(const VkFormat a_colorFormat,
+		const VkImage a_image, 
+		const VkImageViewType a_viewType,
+		const VkImageViewCreateFlags a_flag,
+		const VkImageSubresourceRange& a_subResource
+		)
 	{
-		return VkSubmitInfo{ .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO, .pNext = nullptr };
+		return VkImageViewCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, 
+			.pNext = nullptr,
+			.flags = a_flag,
+    		.image = a_image,
+    		.viewType = a_viewType,
+    		.format = a_colorFormat,
+    		.components = {
+				VK_COMPONENT_SWIZZLE_R,
+				VK_COMPONENT_SWIZZLE_G,
+				VK_COMPONENT_SWIZZLE_B,
+				VK_COMPONENT_SWIZZLE_A
+			},
+    		.subresourceRange = a_subResource
+		};
 	}
 
-	[[nodiscard]] constexpr VkImageViewCreateInfo imageViewCreateInfo()
+	[[nodiscard]] constexpr VkBufferViewCreateInfo bufferViewCreateInfo(const VkBufferViewCreateFlags a_flag, 
+		const VkBuffer a_bufferHandle, 
+		const VkFormat a_format, 
+		const VkDeviceSize& a_offset, 
+		const VkDeviceSize& a_range)
 	{
-		return VkImageViewCreateInfo{ .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, .pNext = nullptr };
-	}
-
-	[[nodiscard]] constexpr VkBufferViewCreateInfo bufferViewCreateInfo(const VkBufferViewCreateFlags a_flag, const VkBuffer a_bufferHandle, const VkFormat a_format, const VkDeviceSize& a_offset, const VkDeviceSize& a_range)
-	{
-		return VkBufferViewCreateInfo{ .sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO, .pNext = nullptr, .flags = a_flag, .buffer = a_bufferHandle, .format = a_format, .offset = a_offset, .range = a_range };
+		return VkBufferViewCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO, 
+			.pNext = nullptr, 
+			.flags = a_flag, 
+			.buffer = a_bufferHandle, 
+			.format = a_format, 
+			.offset = a_offset, 
+			.range = a_range 
+		};
 	}
 
 	[[nodiscard]] constexpr VkImageCreateInfo imageCreateInfo()
 	{
-		return VkImageCreateInfo{ .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, .pNext = nullptr, .imageType = VK_IMAGE_TYPE_2D };
+		return VkImageCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, 
+			.pNext = nullptr, 
+			.imageType = VK_IMAGE_TYPE_2D 
+		};
 	}
 
-	[[nodiscard]] constexpr VkBufferCreateInfo bufferCreateInfo()
+	[[nodiscard]] constexpr VkSubmitInfo submitInfo(const std::vector<VkSemaphore>& a_waitSemaphore,
+		const std::vector<VkPipelineStageFlags>& a_pipelineStages,
+		const std::vector<VkCommandBuffer>& a_cmdBuffers,
+		const std::vector<VkSemaphore>& a_signalSemaphore
+	)
 	{
-		return VkBufferCreateInfo{ .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, .pNext = nullptr, .size = 0, .queueFamilyIndexCount = 0, .pQueueFamilyIndices = nullptr };
+		return VkSubmitInfo{ 
+			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO, 
+			.pNext = nullptr,
+    		.waitSemaphoreCount = static_cast<uint32_t>(a_waitSemaphore.size()),
+    		.pWaitSemaphores = a_waitSemaphore.data(),
+    		.pWaitDstStageMask = a_pipelineStages.data(),
+    		.commandBufferCount = static_cast<uint32_t>(a_cmdBuffers.size()),
+    		.pCommandBuffers = a_cmdBuffers.data(),
+    		.signalSemaphoreCount = static_cast<uint32_t>(a_signalSemaphore.size()),
+    		.pSignalSemaphores = a_signalSemaphore.data(),
+		};
+	}
+
+	[[nodiscard]] constexpr VkSubmitInfo submitInfo(const VkSemaphore* a_waitSemaphore,
+		const std::vector<VkPipelineStageFlags>& a_pipelineStages,
+		const VkCommandBuffer* a_cmdBuffers,
+		const VkSemaphore* a_signalSemaphore,
+		const uint32_t a_waitCount = 1,
+		const uint32_t a_bufferCount = 1,
+		const uint32_t a_signalCount = 1
+	)
+	{
+		return VkSubmitInfo{ 
+			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO, 
+			.pNext = nullptr,
+    		.waitSemaphoreCount = a_waitCount,
+    		.pWaitSemaphores = a_waitSemaphore,
+    		.pWaitDstStageMask = a_pipelineStages.data(),
+    		.commandBufferCount = a_bufferCount,
+    		.pCommandBuffers = a_cmdBuffers,
+    		.signalSemaphoreCount = a_signalCount,
+    		.pSignalSemaphores = a_signalSemaphore,
+		};
+	}
+
+	[[nodiscard]] constexpr VkBufferCreateInfo bufferCreateInfo(const VkBufferCreateFlags a_flag,
+	const VkDeviceSize& a_size,
+	const VkBufferUsageFlags a_usage,
+	const VkSharingMode& a_shareMode,
+	const std::vector<uint32_t>& a_familyIndicies)
+	{
+		return VkBufferCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, 
+			.pNext = nullptr, 
+			.flags = a_flag,
+			.size = a_size,
+			.usage = a_usage,
+			.sharingMode = a_shareMode,
+			.queueFamilyIndexCount = static_cast<uint32_t>(a_familyIndicies.size()), 
+			.pQueueFamilyIndices = a_familyIndicies.data() 
+			};
+	}
+
+	[[nodiscard]] constexpr VkBufferCreateInfo bufferCreateInfo(const VkBufferCreateFlags a_flag,
+	const VkDeviceSize& a_size,
+	const VkBufferUsageFlags a_usage,
+	const VkSharingMode& a_shareMode,
+	const uint32_t* a_familyIndex)
+	{
+		return VkBufferCreateInfo{ 
+			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, 
+			.pNext = nullptr, 
+			.flags = a_flag,
+			.size = a_size,
+			.usage = a_usage,
+			.sharingMode = a_shareMode,
+			.queueFamilyIndexCount = 1, 
+			.pQueueFamilyIndices = a_familyIndex
+			};
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetLayoutBinding descriptorSetLayoutBinding(

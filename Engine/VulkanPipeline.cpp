@@ -38,7 +38,12 @@ void VulkanPipeline::loadShaderSpirV(const std::string& a_filename, const VkShad
 
 void VulkanPipeline::cleanup()
 {
-	//
+	if(m_pipeline != VK_NULL_HANDLE)
+		vkDestroyPipeline(m_ctxt.logicalDevice, m_pipeline, nullptr);
+
+	// release shader modules
+	for(const auto& shaderInfo : m_shaderStageCreateInfo)
+		vkDestroyShaderModule(m_ctxt.logicalDevice, shaderInfo.module, nullptr);
 }
 
 void VulkanPipeline::create()
