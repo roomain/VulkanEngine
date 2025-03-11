@@ -28,16 +28,8 @@ m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 	auto vLayers = vStringToChar(a_param.layers);
 	auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 
-	VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo();
+	VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo(a_devConf.baseCreateInfo, a_param.extensions, a_param.layers, &features, VK_QUEUE_GRAPHICS_BIT);
 
-	//set used queues
-	devInfo.pQueueCreateInfos = a_devConf.baseCreateInfo.data();
-	devInfo.queueCreateInfoCount = static_cast<uint32_t>(a_devConf.baseCreateInfo.size());
-
-	devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
-	devInfo.ppEnabledExtensionNames = vExtents.data();
-	devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
-	devInfo.ppEnabledLayerNames = vLayers.data();
 	devInfo.pEnabledFeatures = &features;
 
 	m_presentationQueueIndex = a_devConf.presentationQueueIndex;

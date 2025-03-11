@@ -139,32 +139,37 @@ namespace Vulkan::Initializers
 		 };
 	}
 
-	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo graphicPipelineCreateInfo(
-		const std::vector<VkPipelineShaderStageCreateInfo>& a_shaderStages)
-	{
-		return VkGraphicsPipelineCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-			.pNext = nullptr,
-			.stageCount = static_cast<uint32_t>(a_shaderStages.size()),
-			.pStages = a_shaderStages.data()
-		};
-	}
 
 	[[nodiscard]] constexpr VkSwapchainCreateInfoKHR swapChainCreateInfoKHR(const VkSurfaceKHR a_surface, 
 		const VkSurfaceFormatKHR& a_format, 
-		const VkExtent2D& a_extent)
+		const uint32_t a_imageCount,
+		const VkExtent2D& a_extent,
+		const VkImageUsageFlags a_usage,
+		const VkSurfaceTransformFlagBitsKHR a_transform,
+		const VkCompositeAlphaFlagBitsKHR a_compositeFlag,
+		const VkPresentModeKHR a_presentMode,
+		const VkBool32 a_clipped,
+		VkSwapchainKHR a_oldSwapChain = VK_NULL_HANDLE
+		)
 	{
 		return VkSwapchainCreateInfoKHR{ .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR, 
 			.pNext = nullptr, 
 			.flags = 0, 
 			.surface = a_surface, 
+			.minImageCount = a_imageCount,
 			.imageFormat = a_format.format, 
 			.imageColorSpace = a_format.colorSpace, 
-			.imageExtent = a_extent ,
+			.imageExtent = a_extent,
 			.imageArrayLayers = 1,
+			.imageUsage = a_usage,
 			.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,	// no sharing
 			.queueFamilyIndexCount = 0,						// number of shared queues
-			.pQueueFamilyIndices = nullptr					// shared queues
+			.pQueueFamilyIndices = nullptr,					// shared queues
+			.preTransform = a_transform,
+			.compositeAlpha = a_compositeFlag,
+			.presentMode = a_presentMode,
+			.clipped = a_clipped,
+			.oldSwapchain = a_oldSwapChain
 		};
 	}
 
@@ -632,28 +637,47 @@ namespace Vulkan::Initializers
 		.patchControlPoints = a_patchControlPoints };
 	}
 
-	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo pipelineCreateInfo(
-		VkPipelineLayout a_layout,
-		VkRenderPass a_renderPass,
-		VkPipelineCreateFlags a_flags = 0)
-	{
-		return VkGraphicsPipelineCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-		.pNext = nullptr,
-		.flags = a_flags,
-		.layout = a_layout,
-		.renderPass = a_renderPass,
-		.basePipelineHandle = VK_NULL_HANDLE,
-		.basePipelineIndex = -1 };
-	}
 
-	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo pipelineCreateInfo()
+	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo graphicPipelineCreateInfo(
+		const VkPipelineCreateFlags a_flags,
+		const std::vector<VkPipelineShaderStageCreateInfo>& a_shaderStages,
+		const VkPipelineVertexInputStateCreateInfo* a_pVertexInputState,
+		const VkPipelineInputAssemblyStateCreateInfo* a_pInputAssemblyState,
+		const VkPipelineTessellationStateCreateInfo* a_pTessellationState,
+		const VkPipelineViewportStateCreateInfo* a_pViewportState,
+		const VkPipelineRasterizationStateCreateInfo* a_pRasterizationState,
+		const VkPipelineMultisampleStateCreateInfo* a_pMultisampleState,
+		const VkPipelineDepthStencilStateCreateInfo* a_pDepthStencilState,
+		const VkPipelineColorBlendStateCreateInfo* a_pColorBlendState,
+		const VkPipelineDynamicStateCreateInfo* a_pDynamicState,
+		VkPipelineLayout a_layout,
+		VkRenderPass     a_renderPass,
+		uint32_t         a_subpass,
+		VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
+		int32_t          a_basePipelineIndex = -1)
 	{
 		return VkGraphicsPipelineCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-		.pNext = nullptr,
-		.basePipelineHandle = VK_NULL_HANDLE,
-		.basePipelineIndex = -1 };
+			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = a_flags,
+			.stageCount = static_cast<uint32_t>(a_shaderStages.size()),
+			.pStages = a_shaderStages.data(),
+			.pVertexInputState = a_pVertexInputState,
+			.pInputAssemblyState = a_pInputAssemblyState,
+			.pTessellationState = a_pTessellationState,
+			.pViewportState = a_pViewportState,
+			.pRasterizationState = a_pRasterizationState,
+			.pMultisampleState = a_pMultisampleState,
+			.pDepthStencilState = a_pDepthStencilState,
+			.pColorBlendState = a_pColorBlendState,
+			.pDynamicState = a_pDynamicState,
+			.layout = a_layout,
+			.renderPass = a_renderPass,
+			.subpass = a_subpass,
+			.basePipelineHandle = a_basePipelineHandle,
+			.basePipelineIndex = a_basePipelineIndex
+
+		};
 	}
 
 	[[nodiscard]] constexpr VkComputePipelineCreateInfo computePipelineCreateInfo(

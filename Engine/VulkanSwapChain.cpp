@@ -6,7 +6,7 @@
 
 
 #pragma region Internal
-VkExtent2D VulkanSwapChain::internal_computeImageExtent(const VkSurfaceCapabilitiesKHR& a_surfCaps,const uint32_t a_width, const uint32_t a_height)
+VkExtent2D VulkanSwapChain::internal_computeImageExtent(const VkSurfaceCapabilitiesKHR& a_surfCaps, const uint32_t a_width, const uint32_t a_height)
 {
 	VkExtent2D extent = a_surfCaps.currentExtent;
 	if (a_surfCaps.currentExtent.width == (uint32_t)-1)
@@ -96,24 +96,16 @@ void VulkanSwapChain::internal_createBuffers(const VkFormat a_colorFormat)
 	{
 		VkImageView imageView = VK_NULL_HANDLE;
 
-		VkImageViewCreateInfo colorAttachmentView = {};
-		colorAttachmentView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		colorAttachmentView.pNext = NULL;
-		colorAttachmentView.format = a_colorFormat;
-		colorAttachmentView.components = {
-			VK_COMPONENT_SWIZZLE_R,
-			VK_COMPONENT_SWIZZLE_G,
-			VK_COMPONENT_SWIZZLE_B,
-			VK_COMPONENT_SWIZZLE_A
-		};
-		colorAttachmentView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		colorAttachmentView.subresourceRange.baseMipLevel = 0;
-		colorAttachmentView.subresourceRange.levelCount = 1;
-		colorAttachmentView.subresourceRange.baseArrayLayer = 0;
-		colorAttachmentView.subresourceRange.layerCount = 1;
-		colorAttachmentView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		colorAttachmentView.flags = 0;
-		colorAttachmentView.image = img;
+
+		VkImageViewCreateInfo colorAttachmentView = Vulkan::Initializers::imageViewCreateInfo(a_colorFormat, img, VK_IMAGE_VIEW_TYPE_2D, a_colorFormat,
+			VkImageSubresourceRange{
+				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+				.baseMipLevel = 0,
+				.levelCount = 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			});
+
 
 		VK_CHECK_EXCEPT(vkCreateImageView(m_ctxt.logicalDevice, &colorAttachmentView, nullptr, &imageView));
 
@@ -143,37 +135,18 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 	// This mode waits for the vertical blank ("v-sync")
 	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 	VkSurfaceFormatKHR imageFormat = VulkanSwapChain::internal_findSurfaceFormat(m_ctxt);
-	VkSwapchainCreateInfoKHR swapchainCI = Vulkan::Initializers::swapChainCreateInfoKHR(m_ctxt.surface, imageFormat, swapchainExtent);
-	swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
-	swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	swapchainCI.preTransform = surfCaps.currentTransform;
-	swapchainCI.presentMode = swapchainPresentMode;
-	// Setting oldSwapChain to the saved handle of the previous swapchain aids in resource reuse and makes sure that we can still present already acquired images
-	swapchainCI.oldSwapchain = m_ctxt.swapChain;
-	// Setting clipped to VK_TRUE allows the implementation to discard rendering outside of the surface area
-	swapchainCI.clipped = VK_TRUE;
-	swapchainCI.compositeAlpha = VulkanSwapChain::internal_findCompositeAlpha(surfCaps);
 
-	// Enable transfer source on swap chain images if supported
-	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
-		swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-	}
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | surfCaps.supportedUsageFlags;
+	VkSwapchainCreateInfoKHR swapchainCI = Vulkan::Initializers::swapChainCreateInfoKHR(m_ctxt.surface, imageFormat,
+		desiredNumberOfSwapchainImages, swapchainExtent, usage, surfCaps.currentTransform, VulkanSwapChain::internal_findCompositeAlpha(surfCaps), swapchainPresentMode, VK_TRUE, m_ctxt.swapChain);
 
-	// Enable transfer destination on swap chain images if supported
-	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) {
-		swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-	}
-
-	swapchainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	swapchainCI.queueFamilyIndexCount = 0;		// because VK_SHARING_MODE_EXCLUSIVE
-	swapchainCI.pQueueFamilyIndices = nullptr;	// because VK_SHARING_MODE_EXCLUSIVE
 
 	VK_CHECK_EXCEPT(vkCreateSwapchainKHR(m_ctxt.logicalDevice, &swapchainCI, nullptr, &m_ctxt.swapChain))
 
-	if (swapchainCI.oldSwapchain != VK_NULL_HANDLE)
-	{
-		internal_releaseSwapchain(swapchainCI.oldSwapchain);
-	}
+		if (swapchainCI.oldSwapchain != VK_NULL_HANDLE)
+		{
+			internal_releaseSwapchain(swapchainCI.oldSwapchain);
+		}
 
 	internal_createBuffers(imageFormat.format);
 }
@@ -199,7 +172,7 @@ void VulkanSwapChain::reset(const uint32_t a_width, const uint32_t a_height)
 void VulkanSwapChain::acquireNextImage(VkSemaphore presentCompleteSemaphore, VkFence a_fence, uint32_t& a_imageIndex, SwapChainBuffer& a_image)const
 {
 	VK_CHECK_LOG(vkAcquireNextImageKHR(m_ctxt.logicalDevice, m_ctxt.swapChain, UINT64_MAX, presentCompleteSemaphore, a_fence, &a_imageIndex))
-	a_image = m_buffer[a_imageIndex];
+		a_image = m_buffer[a_imageIndex];
 }
 
 void VulkanSwapChain::present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, VkSemaphore a_waitSemaphore)const
@@ -210,7 +183,7 @@ void VulkanSwapChain::present(VkQueue a_presentationQueue, const uint32_t a_imag
 
 void VulkanSwapChain::present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, std::vector<VkSemaphore>& a_waitSemaphore)const
 {
-	auto presentCI  = Vulkan::Initializers::presentationKHR(static_cast<uint32_t>(a_waitSemaphore.size()), 
+	auto presentCI = Vulkan::Initializers::presentationKHR(static_cast<uint32_t>(a_waitSemaphore.size()),
 		a_waitSemaphore.data(), 1, &m_ctxt.swapChain, &a_imageIndex);
 	VK_CHECK_LOG(vkQueuePresentKHR(a_presentationQueue, &presentCI))
 }
