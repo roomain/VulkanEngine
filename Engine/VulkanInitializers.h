@@ -817,4 +817,22 @@ namespace Vulkan::Initializers
 			.layers = a_layers
 		};
 	}
+
+	[[nodiscard]] constexpr VkRenderPassCreateInfo createRenderPass(
+		const VkRenderPassCreateFlags a_flag, 
+		const std::vector<VkAttachmentDescription>& a_attachment,
+		const std::vector<VkSubpassDescription>& a_subpass,
+		const std::vector<VkSubpassDependency>& a_subpassesDepends)
+	{
+		return VkRenderPassCreateInfo{
+			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+			.pNext = nullptr,
+			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
+			.pAttachments = a_attachment.data(),
+			.subpassCount = static_cast<uint32_t>(a_subpass.size()),
+			.pSubpasses = a_subpass.data(),
+			.dependencyCount = static_cast<uint32_t>(a_subpassesDepends.size()),
+			.pDependencies = a_subpassesDepends.data(),
+		};
+	}
 }
