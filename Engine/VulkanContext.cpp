@@ -62,12 +62,17 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, DebugLog a_debugCal
 
 	// create instance
 	auto appInfo = Vulkan::Initializers::applicationInfo("VulkanApp",
-		VulkanContext::m_appVersion, "VulkanEngine", VulkanContext::m_appVersion,
-		VK_VERSION_1_3);
+		VulkanContext::m_appVersion, "VulkanEngine", VulkanContext::m_engineVersion,
+		VK_API_VERSION_1_3);
 
-	auto createInfo = Vulkan::Initializers::instanceCreateInfo(&appInfo,
-		usedExtension, a_param.layers);
+	auto createInfo = Vulkan::Initializers::instanceCreateInfo(&appInfo);
 
+	createInfo.enabledLayerCount = static_cast<uint32_t>(usedExtension.size());
+	const auto vCharExt = vStringToChar(usedExtension);
+	createInfo.ppEnabledExtensionNames = vCharExt.data();
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.layers.size());
+	const auto vCharLayer = vStringToChar(a_param.layers);
+	createInfo.ppEnabledLayerNames = vCharLayer.data();
 	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
 	m_capabilities = std::make_shared<VulkanCapabilities>(m_instance);
 
@@ -127,12 +132,8 @@ VulkanDevicePtr VulkanContext::createNewDevice(const VulkanDeviceParameter& a_pa
 		m_capabilities->findDeviceCompatibleConfiguration(a_param, devMap, a_surface);
 		if (!devMap.empty())
 		{
-			//VkDevice logical;
 			auto iter = devMap.begin();
-			auto vExtents = vStringToChar(a_param.extensions);
-			auto vLayers = vStringToChar(a_param.layers);
-			auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
-
+			
 			if (devMap.size() > 1)
 			{
 				std::vector<int> vDeviceIndex;

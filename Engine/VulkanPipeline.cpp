@@ -48,10 +48,10 @@ void VulkanPipeline::cleanup()
 
 void VulkanPipeline::create()
 {
-	VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(
+	/*VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(
 		VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,
 		m_shaderStageCreateInfo,
-	);
+	);*/
 	//pipelineLibraryCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	//pipelineLibraryCI.pNext = &libraryInfo;
 	//pipelineLibraryCI.renderPass = renderPass;

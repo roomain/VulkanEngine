@@ -4,33 +4,42 @@
 
 void VulkanDevice::createMemoryAllocator()
 {
-	/*VmaAllocatorCreateInfo vmaInfo
+	static VmaVulkanFunctions vulkanFunctions = {};
+	vulkanFunctions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+	vulkanFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+
+	VmaAllocatorCreateInfo vmaInfo
 	{
-		.flags,
-		.physicalDevice = a_context.physicalDevice,
-		.device = a_context.logicalDevice,
-		.preferredLargeHeapBlockSize,
-		.pAllocationCallbacks,
-		.pDeviceMemoryCallbacks,
-		.pHeapSizeLimit,
-		.pVulkanFunctions,
-		.instance = a_context.instanceHandle,
+		.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT | VMA_ALLOCATOR_CREATE_AMD_DEVICE_COHERENT_MEMORY_BIT |
+		VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT | VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT |
+		VMA_ALLOCATOR_CREATE_KHR_EXTERNAL_MEMORY_WIN32_BIT ,
+		.physicalDevice = m_ctxt.physicalDevice,
+		.device = m_ctxt.logicalDevice,
+		.preferredLargeHeapBlockSize = 0,
+		.pAllocationCallbacks = nullptr,// todo
+		.pDeviceMemoryCallbacks = nullptr,
+		.pHeapSizeLimit = 0,
+		.pVulkanFunctions = &vulkanFunctions,
+		.instance = m_ctxt.instanceHandle,
 		.vulkanApiVersion = VK_VERSION_1_3
 	};
-	////todo
-	vmaCreateAllocator(&vmaInfo, &m_memAllocator);*/
+
+	VK_CHECK_EXCEPT(vmaCreateAllocator(&vmaInfo, &m_memAllocator))
 }
 
 VulkanDevice::VulkanDevice(const VulkanInstanceContext& a_ctxt, const int a_devIndex, const VulkanCapabilities::VulkanDeviceConf& a_devConf, const VulkanDeviceParameter& a_param) : VulkanObject<VulkanDeviceContext>{ VulkanDeviceContext{a_ctxt} },
 m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 {
-	auto vExtents = vStringToChar(a_param.extensions);
-	auto vLayers = vStringToChar(a_param.layers);
 	auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 
-	VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo(a_devConf.baseCreateInfo, a_param.extensions, a_param.layers, &features, VK_QUEUE_GRAPHICS_BIT);
+	VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo(a_devConf.baseCreateInfo, &features, VK_QUEUE_GRAPHICS_BIT);
 
-	devInfo.pEnabledFeatures = &features;
+	devInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
+	const auto vCharLayer = vStringToChar(a_param.layers);
+	devInfo.ppEnabledLayerNames = vCharLayer.data();
+	devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
+	const auto vCharExt = vStringToChar(a_param.extensions);
+	devInfo.ppEnabledExtensionNames = vCharExt.data();
 
 	m_presentationQueueIndex = a_devConf.presentationQueueIndex;
 	int queueIndex = 0;

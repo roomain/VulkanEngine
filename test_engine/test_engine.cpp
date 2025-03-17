@@ -6,7 +6,7 @@
 #include <filesystem>
 
 #include "ReflectionManager.h"
-#include "EngineWindow.h"
+//#include "EngineWindow.h"
 #include "common/string_utils.h"
 #include "Capabilities.h"
 #include "logger.h"
@@ -210,19 +210,27 @@ int main()
     uint32_t glfwExtensionCount = 0;				// GLFW may require multiple extensions
     const char** glfwExtensions;					// Extensions passed as array of cstrings, so need pointer (the array) to pointer (the cstring)
 
-    // Get GLFW extensions
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-    VulkanContext engineCtxt(engineParam, &logVulkan, glfwExtensions, glfwExtensionCount);
-    //glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
+    try
+    {
+        // Get GLFW extensions
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        VulkanContext engineCtxt(engineParam, &logVulkan, glfwExtensions, glfwExtensionCount);
+        //glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
 
-    VkSurfaceKHR surface = engineCtxt.createSurface(window);
-    displayCapabilities(engineCtxt.capabilities());
- 
-    auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
+        VkSurfaceKHR surface = engineCtxt.createSurface(window);
+        displayCapabilities(engineCtxt.capabilities());
+
+        auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
+    }
+    catch (const std::exception& except)
+    {
+        std::cerr << except.what();
+    }
     //
     int eventRet = eventLoop(window);
     glfwDestroyWindow(window);
     glfwTerminate();
+
     return eventRet;
 }
 #endif

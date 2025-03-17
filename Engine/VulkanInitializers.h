@@ -73,25 +73,17 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkInstanceCreateInfo instanceCreateInfo(
-		const VkApplicationInfo* a_appInfo,
-		const std::vector<std::string>& a_extensions,
-		const std::vector<std::string>& a_layers)
+		const VkApplicationInfo* a_appInfo)
 	{
 		return VkInstanceCreateInfo{ 
 			.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, 
 			.pNext = nullptr, 
 			.flags = 0,
-			.pApplicationInfo = a_appInfo,
-			.enabledLayerCount = static_cast<uint32_t>(a_extensions.size()),
-			.ppEnabledLayerNames =  vStringToChar(a_extensions).data(),
-			.enabledExtensionCount = static_cast<uint32_t>(a_layers.size()),
-			.ppEnabledExtensionNames =  vStringToChar(a_layers).data()
+			.pApplicationInfo = a_appInfo
 		 };
 	}
 
 	[[nodiscard]] inline VkDeviceCreateInfo deviceCreateInfo(const std::vector<VkDeviceQueueCreateInfo>& a_queueInfo,
-		const std::vector<std::string>& a_extensions,
-		const std::vector<std::string>& a_layers,
 		const VkPhysicalDeviceFeatures* a_features,
 		const VkDeviceCreateFlags a_flags)
 	{
@@ -101,10 +93,6 @@ namespace Vulkan::Initializers
 			.flags = a_flags,
 			.queueCreateInfoCount = static_cast<uint32_t>(a_queueInfo.size()),
 			.pQueueCreateInfos = a_queueInfo.data(),
-			.enabledLayerCount = static_cast<uint32_t>(a_layers.size()),
-			.ppEnabledLayerNames = vStringToChar(a_layers).data(),
-			.enabledExtensionCount = static_cast<uint32_t>(a_extensions.size()),
-			.ppEnabledExtensionNames = vStringToChar(a_extensions).data(),
 			.pEnabledFeatures = a_features
 		};
 	}
@@ -827,6 +815,7 @@ namespace Vulkan::Initializers
 		return VkRenderPassCreateInfo{
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 			.pNext = nullptr,
+			.flags = a_flag,
 			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
 			.pAttachments = a_attachment.data(),
 			.subpassCount = static_cast<uint32_t>(a_subpass.size()),
