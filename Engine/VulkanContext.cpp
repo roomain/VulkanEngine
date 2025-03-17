@@ -67,12 +67,12 @@ VulkanContext::VulkanContext(const VulkanParameter& a_param, DebugLog a_debugCal
 
 	auto createInfo = Vulkan::Initializers::instanceCreateInfo(&appInfo);
 
-	createInfo.enabledLayerCount = static_cast<uint32_t>(usedExtension.size());
 	const auto vCharExt = vStringToChar(usedExtension);
 	createInfo.ppEnabledExtensionNames = vCharExt.data();
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.layers.size());
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(usedExtension.size());
 	const auto vCharLayer = vStringToChar(a_param.layers);
 	createInfo.ppEnabledLayerNames = vCharLayer.data();
+	createInfo.enabledLayerCount = static_cast<uint32_t>(a_param.layers.size());
 	VK_CHECK_EXCEPT(vkCreateInstance(&createInfo, nullptr, &m_instance));
 	m_capabilities = std::make_shared<VulkanCapabilities>(m_instance);
 
