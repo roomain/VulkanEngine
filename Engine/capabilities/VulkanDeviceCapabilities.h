@@ -57,6 +57,7 @@ struct VULKAN_ENGINE_LIB VulkanDeviceCapabilities
     /*@brief get best presentation modes*/
     [[nodiscard]] VkPresentModeKHR bestPresentationMode()const;
     [[nodiscard]] VkSurfaceFormatKHR bestSurfaceFormat()const;
+    [[nodiscard]] static bool isValid(const VkFormatProperties& a_prop);
     void findQueues(const bool a_presentation, const VkQueueFlags a_flags, std::vector<int>& a_queuesIndex, VkPhysicalDevice a_physicalDevice = VK_NULL_HANDLE, VkSurfaceKHR a_surface = VK_NULL_HANDLE)const;
 };
 

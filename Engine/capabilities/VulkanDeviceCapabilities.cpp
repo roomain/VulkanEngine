@@ -23,42 +23,48 @@ VulkanDeviceCapabilities::VulkanDeviceCapabilities(const uint32_t a_deviceIndex,
 	{
 		VkFormatProperties prop;
 		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
+		if (VulkanDeviceCapabilities::isValid(prop))
+			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
 
 	for (int format = VK_FORMAT_G8B8G8R8_422_UNORM; format <= VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; ++format)
 	{
 		VkFormatProperties prop;
 		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
+		if (VulkanDeviceCapabilities::isValid(prop))
+			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
 
 	for (int format = VK_FORMAT_G8_B8R8_2PLANE_444_UNORM; format <= VK_FORMAT_G16_B16R16_2PLANE_444_UNORM; ++format)
 	{
 		VkFormatProperties prop;
 		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
+		if (VulkanDeviceCapabilities::isValid(prop))
+			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
 
 	for (int format = VK_FORMAT_A4R4G4B4_UNORM_PACK16; format <= VK_FORMAT_A4B4G4R4_UNORM_PACK16; ++format)
 	{
 		VkFormatProperties prop;
 		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
+		if (VulkanDeviceCapabilities::isValid(prop))
+			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
 
 	for (int format = VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK; format <= VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK; ++format)
 	{
 		VkFormatProperties prop;
 		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
+		if (VulkanDeviceCapabilities::isValid(prop))
+			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
 
 	for (int format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format <= VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; ++format)
 	{
 		VkFormatProperties prop;
 		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
+		if(VulkanDeviceCapabilities::isValid(prop))
+			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
 }
 
@@ -82,6 +88,12 @@ VkPresentModeKHR VulkanDeviceCapabilities::bestPresentationMode()const
 	if (std::find(m_swapChainCapabilities.value().supportedModes.cbegin(), m_swapChainCapabilities.value().supportedModes.cend(), VK_PRESENT_MODE_MAILBOX_KHR) != m_swapChainCapabilities.value().supportedModes.cend())
 		return VK_PRESENT_MODE_MAILBOX_KHR;
 	return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+bool VulkanDeviceCapabilities::isValid(const VkFormatProperties& a_prop)
+{
+	return (a_prop.bufferFeatures != 0) || (a_prop.linearTilingFeatures != 0) ||
+		(a_prop.optimalTilingFeatures != 0);
 }
 
 VkSurfaceFormatKHR VulkanDeviceCapabilities::bestSurfaceFormat()const
