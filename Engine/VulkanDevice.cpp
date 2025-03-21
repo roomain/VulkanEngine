@@ -30,6 +30,7 @@ void VulkanDevice::createMemoryAllocator()
 VulkanDevice::VulkanDevice(const VulkanInstanceContext& a_ctxt, const int a_devIndex, const VulkanCapabilities::VulkanDeviceConf& a_devConf, const VulkanDeviceParameter& a_param) : VulkanObject<VulkanDeviceContext>{ VulkanDeviceContext{a_ctxt} },
 m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 {
+	m_ctxt.physicalDevice = a_devConf.physicalDev;
 	auto features = VulkanDeviceCapabilities::toFeatures(a_param.features);
 
 	VkDeviceCreateInfo devInfo = Vulkan::Initializers::deviceCreateInfo(a_devConf.baseCreateInfo, &features, 0/*VK_QUEUE_GRAPHICS_BIT*/);

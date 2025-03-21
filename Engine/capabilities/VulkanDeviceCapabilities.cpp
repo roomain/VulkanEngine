@@ -42,30 +42,6 @@ VulkanDeviceCapabilities::VulkanDeviceCapabilities(const uint32_t a_deviceIndex,
 		if (VulkanDeviceCapabilities::isValid(prop))
 			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
 	}
-
-	for (int format = VK_FORMAT_A4R4G4B4_UNORM_PACK16; format <= VK_FORMAT_A4B4G4R4_UNORM_PACK16; ++format)
-	{
-		VkFormatProperties prop;
-		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		if (VulkanDeviceCapabilities::isValid(prop))
-			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
-	}
-
-	for (int format = VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK; format <= VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK; ++format)
-	{
-		VkFormatProperties prop;
-		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		if (VulkanDeviceCapabilities::isValid(prop))
-			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
-	}
-
-	for (int format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format <= VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; ++format)
-	{
-		VkFormatProperties prop;
-		vkGetPhysicalDeviceFormatProperties(a_device, static_cast<VkFormat>(format), &prop);
-		if(VulkanDeviceCapabilities::isValid(prop))
-			m_formatsCapabilities.emplace(static_cast<VkFormat>(format), prop);
-	}
 }
 
 VulkanDeviceInfo VulkanDeviceCapabilities::deviceInfo()const
