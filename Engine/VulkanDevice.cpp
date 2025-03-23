@@ -27,7 +27,7 @@ void VulkanDevice::createMemoryAllocator()
 		.physicalDevice = m_ctxt.physicalDevice,
 		.device = m_ctxt.logicalDevice,
 		.preferredLargeHeapBlockSize = 0,
-		.pAllocationCallbacks = &cpuAllocationCallbacks,// todo
+		.pAllocationCallbacks = &cpuAllocationCallbacks,
 		.pDeviceMemoryCallbacks = nullptr,
 		.pHeapSizeLimit = 0,
 		.pVulkanFunctions = &vulkanFunctions,
@@ -51,11 +51,12 @@ m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 	devInfo.ppEnabledLayerNames = vCharLayer.data();
 	devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
 
+	//enable layers for VMA
 	auto extended = a_param.extensions;
 	extended.emplace_back(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
 	//extended.emplace_back(VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME);
 	extended.emplace_back(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
-	//const auto vCharExt = vStringToChar(a_param.extensions);
+
 	const auto vCharExt = vStringToChar(extended);
 	devInfo.ppEnabledExtensionNames = vCharExt.data();
 
@@ -89,7 +90,7 @@ VulkanDevice::~VulkanDevice()
 			vkDestroyCommandPool(m_ctxt.logicalDevice, queueMng.commandPool, nullptr);
 	}
 
-	// todo
+	vmaDestroyAllocator(m_memAllocator);
 	vkDestroyDevice(m_ctxt.logicalDevice, nullptr);
 }
 
