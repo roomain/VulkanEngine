@@ -1,27 +1,38 @@
 #include "pch.h"
 #include "VulkanDevice.h"
 #include "VulkanSwapChain.h"
+#include "VulkanMemoryCallbacks.h"
+
 
 void VulkanDevice::createMemoryAllocator()
 {
-	static VmaVulkanFunctions vulkanFunctions = {};
-	vulkanFunctions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
-	vulkanFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+	static const VkAllocationCallbacks cpuAllocationCallbacks = {
+		nullptr, // pUserData
+		&vulkanCustom_CpuAllocation, // pfnAllocation
+		&vulkanCustom_CpuReallocation, // pfnReallocation
+		&vulkanCustom_CpuFree // pfnFree
+	};
+
+	static VmaVulkanFunctions vulkanFunctions
+	{
+		.vkGetInstanceProcAddr = vkGetInstanceProcAddr,
+		.vkGetDeviceProcAddr = vkGetDeviceProcAddr
+	};
 
 	VmaAllocatorCreateInfo vmaInfo
 	{
 		.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT | VMA_ALLOCATOR_CREATE_AMD_DEVICE_COHERENT_MEMORY_BIT |
-		VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT | VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT |
-		VMA_ALLOCATOR_CREATE_KHR_EXTERNAL_MEMORY_WIN32_BIT ,
+		VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT | VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT /* |
+		VMA_ALLOCATOR_CREATE_KHR_EXTERNAL_MEMORY_WIN32_BIT*/,
 		.physicalDevice = m_ctxt.physicalDevice,
 		.device = m_ctxt.logicalDevice,
 		.preferredLargeHeapBlockSize = 0,
-		.pAllocationCallbacks = nullptr,// todo
+		.pAllocationCallbacks = &cpuAllocationCallbacks,// todo
 		.pDeviceMemoryCallbacks = nullptr,
 		.pHeapSizeLimit = 0,
 		.pVulkanFunctions = &vulkanFunctions,
 		.instance = m_ctxt.instanceHandle,
-		.vulkanApiVersion = VK_VERSION_1_3
+		.vulkanApiVersion = VK_API_VERSION_1_3
 	};
 
 	VK_CHECK_EXCEPT(vmaCreateAllocator(&vmaInfo, &m_memAllocator))
@@ -39,7 +50,13 @@ m_deviceCapabilities{ static_cast<uint32_t>(a_devIndex), a_devConf.physicalDev }
 	const auto vCharLayer = vStringToChar(a_param.layers);
 	devInfo.ppEnabledLayerNames = vCharLayer.data();
 	devInfo.enabledExtensionCount = static_cast<uint32_t>(a_param.extensions.size());
-	const auto vCharExt = vStringToChar(a_param.extensions);
+
+	auto extended = a_param.extensions;
+	extended.emplace_back(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
+	//extended.emplace_back(VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME);
+	extended.emplace_back(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+	//const auto vCharExt = vStringToChar(a_param.extensions);
+	const auto vCharExt = vStringToChar(extended);
 	devInfo.ppEnabledExtensionNames = vCharExt.data();
 
 	m_presentationQueueIndex = a_devConf.presentationQueueIndex;
