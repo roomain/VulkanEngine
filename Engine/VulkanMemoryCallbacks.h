@@ -16,7 +16,7 @@ public:
 	virtual size_t allocationSize(const uint32_t a_allocIndex)const = 0;
 	virtual size_t allocationMemorysize()const = 0;
 	virtual void allocateMemory(const size_t& a_size, const void* a_mem) = 0;
-	virtual void freeMemory(const void* a_mem);
+	virtual void freeMemory(const void* a_mem) = 0;
 	virtual void reallocMemory(const size_t& a_size, const void* a_oldMem, const void* a_newMem) = 0;
 };
 
