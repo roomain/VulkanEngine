@@ -34,6 +34,12 @@
     <Filter Include="Fichiers d%27en-tête\math">
       <UniqueIdentifier>{7f459e07-27e8-4e59-913e-278ff6639b82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\component">
+      <UniqueIdentifier>{0ccd27e5-4c12-407d-803c-c7cc285675d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\component">
+      <UniqueIdentifier>{b20a3016-f107-43dd-87a4-55c99c537b12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
