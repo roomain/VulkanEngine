@@ -52,7 +52,9 @@ public:
     bool contains(const SceneComponentPtr& a_child)const;
     void addChild(const SceneComponentPtr& a_child);
     void foreach(const std::function<void(const SceneComponentPtr&)>& a_operator)const;
-    void writeCommand(VkCommandBuffer a_commandBufferHandle)const;
+
+    virtual void tick();
+    virtual void writeCommand(VkCommandBuffer a_commandBufferHandle)const = 0;
 
     inline SceneComponentWPtr parent()const { return m_parent; }
     inline SceneComponentIterator begin(){ return m_children.begin(); }
