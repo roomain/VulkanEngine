@@ -10,6 +10,7 @@
 #include <functional>
 #include "vulkan/vulkan.hpp"
 #include "common/notCopiable.h"
+#include "Rtti_macros.h"
 
 class SceneComponent;
 using SceneComponentWPtr = std::weak_ptr<SceneComponent>;
@@ -17,6 +18,7 @@ using SceneComponentPtr = std::shared_ptr<SceneComponent>;
 
 class SceneComponent : public std::enable_shared_from_this<SceneComponent>
 {
+    DECLARE_RTTI(1, SceneComponent)
 public:    
     using SceneComponentIterator = std::vector<SceneComponentPtr>::iterator;
     using SceneComponentConst_Iterator = std::vector<SceneComponentPtr>::const_iterator;
