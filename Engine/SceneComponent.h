@@ -8,6 +8,7 @@
 #include <memory>
 #include <ranges>
 #include <functional>
+#include <type_traits>
 #include "vulkan/vulkan.hpp"
 #include "common/notCopiable.h"
 #include "Rtti_macros.h"
@@ -55,7 +56,20 @@ public:
     void addChild(const SceneComponentPtr& a_child);
     void foreach(const std::function<void(const SceneComponentPtr&)>& a_operator)const;
 
-    virtual void tick();
+    template<typename Component> requires std::is_base_of_v<SceneComponent, Component>
+    std::vector<std::shared_ptr<Component>> find()const
+    {
+        std::vector<std::shared_ptr<Component>> nodeFound;
+        for (const auto& node : m_children)
+        {
+            if (node->isKindOf<Component>())
+                nodeFound.emplace_back(node->cast<Component>());
+            nodeFound.emplace_back(node->find<Component>());
+        }
+        return nodeFound;
+    }
+
+    virtual void tick(const float a_deltaSec) = 0;
     virtual void writeCommand(VkCommandBuffer a_commandBufferHandle)const = 0;
 
     inline SceneComponentWPtr parent()const { return m_parent; }
