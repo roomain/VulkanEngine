@@ -55,7 +55,19 @@ public:
     void addChild(const SceneComponentPtr& a_child);
     void foreach(const std::function<void(const SceneComponentPtr&)>& a_operator)const;
 
-    virtual void tick();
+    template<typename Type> requires std::is_base_of_v<SceneComponent,Type>
+    void foreach(const std::function<void(const std::share_ptr<Type>&)>& a_operator)const
+    {
+        for (const auto& node : m_children)
+        {
+            if (auto typeNode = node->cast<Type>(); typeNode.isValid())
+                a_operator(typeNode);
+                
+            node->foreach<Type>(a_operator);
+        }
+    }
+
+    virtual void tick() = 0;
     virtual void writeCommand(VkCommandBuffer a_commandBufferHandle)const = 0;
 
     inline SceneComponentWPtr parent()const { return m_parent; }

@@ -40,6 +40,12 @@
     <Filter Include="Fichiers sources\component">
       <UniqueIdentifier>{b20a3016-f107-43dd-87a4-55c99c537b12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\Scene">
+      <UniqueIdentifier>{68c758dd-6bfe-4dc0-949b-f23371a8936e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Scene">
+      <UniqueIdentifier>{8ce6161b-2eb3-4210-acf6-b547695b42ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -99,7 +105,7 @@
     <ClInclude Include="VulkanLocalsContexts.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="math\transformation.h">
+    <ClInclude Include="math\glmEx.h">
       <Filter>Fichiers d%27en-tête\math</Filter>
     </ClInclude>
     <ClInclude Include="VulkanPipeline.h">
@@ -111,8 +117,8 @@
     <ClInclude Include="EngineTreeNode.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="SceneComponent.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+    <ClInclude Include="component\SceneComponent.h">
+      <Filter>Fichiers d%27en-tête\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,8 +158,8 @@
     <ClCompile Include="VulkanMemoryCallbacks.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="SceneComponent.cpp">
-      <Filter>Fichiers sources</Filter>
+    <ClCompile Include="component\SceneComponent.cpp">
+      <Filter>Fichiers sources\component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
