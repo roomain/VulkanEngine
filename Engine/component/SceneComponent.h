@@ -70,7 +70,7 @@ public:
     }
 
 	template<typename Type> requires std::is_base_of_v<SceneComponent,Type>
-    void foreach(const std::function<void(const std::share_ptr<Type>&)>& a_operator)const
+    void foreach(const std::function<void(const std::shared_ptr<Type>&)>& a_operator)const
     {
         for (const auto& node : m_children)
         {
