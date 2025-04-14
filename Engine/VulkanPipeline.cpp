@@ -46,6 +46,60 @@ void VulkanPipeline::cleanup()
 		vkDestroyShaderModule(m_ctxt.logicalDevice, shaderInfo.module, nullptr);
 }
 
+void VulkanPipeline::addAttachment(const VkAttachmentDescription& a_attachement)
+{
+	m_attachement.emplace_back(a_attachement);
+}
+
+void VulkanPipeline::setDepthAttachment(const VkAttachmentDescription& a_attachement)
+{
+	m_depthAttachmentIndex = static_cast<int>(m_attachement.size());
+	m_attachement.emplace_back(a_attachement);
+}
+
+void VulkanPipeline::setupRenderPass()
+{
+	std::vector<VkSubpassDescription> subpass;
+	std::vector<VkSubpassDependency> subpassesDepends;
+
+	int curIndex = 0;
+	for (const VkAttachmentDescription& attachment : m_attachement)
+	{
+		VkSubpassDependency depends;
+		VkAttachmentReference ref{ .attachment = 0 };
+		if (curIndex == m_depthAttachmentIndex)
+		{
+			depends.srcSubpass = VK_SUBPASS_EXTERNAL;
+			depends.dstSubpass = 0;
+			depends.srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+			depends.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+			depends.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			depends.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			depends.dependencyFlags = 0;
+
+			ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		}
+		else
+		{
+			depends.srcSubpass = VK_SUBPASS_EXTERNAL;
+			depends.dstSubpass = 0;
+			depends.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			depends.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			depends.srcAccessMask = 0;
+			depends.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+			depends.dependencyFlags = 0;
+
+			ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
+		subpassesDepends.emplace_back(depends);
+		subpassesDepends.emplace_back(ref);
+		++curIndex;
+	}
+
+	VkRenderPassCreateInfo renderPassCI = Vulkan::Initializers::createRenderPass(0, m_attachement, subpass, subpassesDepends);
+	VK_CHECK_EXCEPT(vkCreateRenderPass(m_ctxt.logicalDevice, &renderPassCI, nullptr, &renderPass))
+}
+
 void VulkanPipeline::create()
 {
 	//VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(

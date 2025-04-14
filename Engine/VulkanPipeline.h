@@ -10,14 +10,20 @@
 #include "common/notCopiable.h"
 #include "VulkanLocalsContexts.h"
 
+
 /*@brief represents a vulkan pipeline*/
 class VulkanPipeline : public VulkanObject<VulkanDeviceContext>
 {
 private:
+	int m_depthAttachmentIndex = -1;										/*!< index of depth attachment in m_attachment*/
+	std::vector<VkAttachmentDescription> m_attachement;						/*!< list of attachment*/
 	std::vector<VkPipelineShaderStageCreateInfo> m_shaderStageCreateInfo;
 	VkPipeline m_pipeline = VK_NULL_HANDLE;
 	// todo shaders modules
 	//
+
+protected:
+	virtual void setupRenderPass();
 
 public:
 	VulkanPipeline(const VulkanDeviceContext& a_ctxt);
@@ -27,6 +33,9 @@ public:
 
 	void cleanup();
 	void create();
+
+	void addAttachment(const VkAttachmentDescription& a_attachement);
+	void setDepthAttachment(const VkAttachmentDescription& a_attachement);
 
 	// todo
 };
