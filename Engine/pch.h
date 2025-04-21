@@ -15,7 +15,7 @@
 #include "common/string_utils.h"
 #include "common/contains.h"
 #include "common/enumerate.h"
-
+#include "VulkanRenderingContext.h"
 #define VMA_VULKAN_VERSION 1003000
 
 #endif //PCH_H

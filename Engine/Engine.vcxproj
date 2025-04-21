@@ -183,6 +183,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="VulkanMemoryCallbacks.h" />
     <ClInclude Include="VulkanObject.h" />
     <ClInclude Include="VulkanPipeline.h" />
+    <ClInclude Include="VulkanRenderingContext.h" />
     <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="vulkan_enum_to_string.h" />
     <ClInclude Include="framework.h" />

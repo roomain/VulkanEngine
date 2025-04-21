@@ -626,7 +626,7 @@ namespace Vulkan::Initializers
 	}
 
 
-	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo graphicPipelineCreateInfo(
+	[[nodiscard]] constexpr VkGraphicsPipelineCreateInfo createGraphicPipeline(
 		const VkPipelineCreateFlags a_flags,
 		const std::vector<VkPipelineShaderStageCreateInfo>& a_shaderStages,
 		const VkPipelineVertexInputStateCreateInfo* a_pVertexInputState,
@@ -824,4 +824,5 @@ namespace Vulkan::Initializers
 			.pDependencies = a_subpassesDepends.data(),
 		};
 	}
+
 }

@@ -23,7 +23,7 @@ private:
 	//
 
 protected:
-	virtual void setupRenderPass();
+	virtual void setupRenderPass(VkRenderPass& a_renderPass);
 
 public:
 	VulkanPipeline(const VulkanDeviceContext& a_ctxt);

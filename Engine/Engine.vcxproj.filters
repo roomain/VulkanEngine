@@ -120,6 +120,9 @@
     <ClInclude Include="component\SceneComponent.h">
       <Filter>Fichiers d%27en-tête\component</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanRenderingContext.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

@@ -57,7 +57,7 @@ void VulkanPipeline::setDepthAttachment(const VkAttachmentDescription& a_attache
 	m_attachement.emplace_back(a_attachement);
 }
 
-void VulkanPipeline::setupRenderPass()
+void VulkanPipeline::setupRenderPass(VkRenderPass& a_renderPass)
 {
 	std::vector<VkSubpassDescription> subpass;
 	std::vector<VkSubpassDependency> subpassesDepends;
@@ -88,7 +88,7 @@ void VulkanPipeline::setupRenderPass()
 			depends.srcAccessMask = 0;
 			depends.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
 			depends.dependencyFlags = 0;
-
+			
 			ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
 		subpassesDepends.emplace_back(depends);
@@ -97,11 +97,32 @@ void VulkanPipeline::setupRenderPass()
 	}
 
 	VkRenderPassCreateInfo renderPassCI = Vulkan::Initializers::createRenderPass(0, m_attachement, subpass, subpassesDepends);
-	VK_CHECK_EXCEPT(vkCreateRenderPass(m_ctxt.logicalDevice, &renderPassCI, nullptr, &renderPass))
+	VK_CHECK_EXCEPT(vkCreateRenderPass(m_ctxt.logicalDevice, &renderPassCI, nullptr, &a_renderPass))
 }
 
 void VulkanPipeline::create()
 {
+	VkRenderPass renderPass;
+	setupRenderPass(renderPass);
+	/*VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
+		const VkPipelineCreateFlags a_flags,
+		const std::vector<VkPipelineShaderStageCreateInfo>&a_shaderStages,
+		const VkPipelineVertexInputStateCreateInfo * a_pVertexInputState,
+		const VkPipelineInputAssemblyStateCreateInfo * a_pInputAssemblyState,
+		const VkPipelineTessellationStateCreateInfo * a_pTessellationState,
+		const VkPipelineViewportStateCreateInfo * a_pViewportState,
+		const VkPipelineRasterizationStateCreateInfo * a_pRasterizationState,
+		const VkPipelineMultisampleStateCreateInfo * a_pMultisampleState,
+		const VkPipelineDepthStencilStateCreateInfo * a_pDepthStencilState,
+		const VkPipelineColorBlendStateCreateInfo * a_pColorBlendState,
+		const VkPipelineDynamicStateCreateInfo * a_pDynamicState,
+		VkPipelineLayout a_layout,
+		renderPass,
+		uint32_t         a_subpass,
+		VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
+		int32_t          a_basePipelineIndex = -1
+	);*/
+	//
 	//VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(
 	//	VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,
 	//	m_shaderStageCreateInfo,
