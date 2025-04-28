@@ -26,6 +26,7 @@ protected:
 	virtual void setupRenderPass(VkRenderPass& a_renderPass);
 
 public:
+	NOT_COPIABLE(VulkanPipeline)
 	VulkanPipeline(const VulkanDeviceContext& a_ctxt);
 	virtual ~VulkanPipeline();
 

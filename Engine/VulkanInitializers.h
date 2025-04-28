@@ -339,7 +339,12 @@ namespace Vulkan::Initializers
 		uint32_t a_binding,
 		uint32_t a_descriptorCount = 1)
 	{
-		return VkDescriptorSetLayoutBinding{ .binding = a_binding, .descriptorType = a_type,  .descriptorCount = a_descriptorCount, .stageFlags = a_stageFlags };
+		return VkDescriptorSetLayoutBinding{ 
+			.binding = a_binding, 
+			.descriptorType = a_type,  
+			.descriptorCount = a_descriptorCount, 
+			.stageFlags = a_stageFlags 
+		};
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo(
@@ -364,14 +369,24 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
-		const VkDescriptorSetLayout* a_pSetLayouts,
-		uint32_t a_setLayoutCount = 1)
+		const std::vector<VkDescriptorSetLayout> a_pSetLayouts)
 	{
 		return VkPipelineLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		.pNext = nullptr,
-		.setLayoutCount = a_setLayoutCount,
-		.pSetLayouts = a_pSetLayouts };
+		.setLayoutCount = static_cast<uint32_t>(a_pSetLayouts.size()),
+		.pSetLayouts = a_pSetLayouts.data()};
+	}
+
+	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
+		const VkDescriptorSetLayout& a_pSetLayouts)
+	{
+		return VkPipelineLayoutCreateInfo{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+		.pNext = nullptr,
+		.setLayoutCount = 1,
+		.pSetLayouts = &a_pSetLayouts 
+		};
 	}
 
 	[[nodiscard]] constexpr VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo(
@@ -385,15 +400,6 @@ namespace Vulkan::Initializers
 		.module = a_shaderModule,
 		.pName = "main"
 		};
-	}
-
-	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
-		uint32_t a_setLayoutCount = 1)
-	{
-		return VkPipelineLayoutCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-		.pNext = nullptr,
-		.setLayoutCount = a_setLayoutCount };
 	}
 
 	[[nodiscard]] constexpr VkDescriptorSetAllocateInfo descriptorSetAllocateInfo(

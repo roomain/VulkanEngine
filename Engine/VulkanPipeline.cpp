@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "VulkanPipeline.h"
-#include <fstream>
 
 
 VulkanPipeline::VulkanPipeline(const VulkanDeviceContext& a_ctxt) : VulkanObject<VulkanDeviceContext>{ a_ctxt }
@@ -13,37 +12,12 @@ VulkanPipeline::~VulkanPipeline()
 	cleanup();
 }
 
-void VulkanPipeline::loadShaderSpirV(const std::string& a_filename, const VkShaderStageFlagBits a_stage)
-{
-	if (std::ifstream fileStream(a_filename, std::ios::binary | std::ios::in | std::ios::ate); fileStream.is_open())
-	{
-		const size_t fileSize = fileStream.tellg();
-		fileStream.seekg(0, std::ios::beg);
-
-		if (fileSize > 0)
-		{
-			std::vector<char> fileData(fileSize);
-			fileStream.read(fileData.data(), fileSize);
-			fileStream.close();
-
-			// Create a new shader module that will be used for pipeline creation
-			VkShaderModuleCreateInfo shaderModuleCI = Vulkan::Initializers::shaderModuleCreateInfo(fileData);
-			VkShaderModule shaderModule = VK_NULL_HANDLE;
-			VK_CHECK_EXCEPT(vkCreateShaderModule(m_ctxt.logicalDevice, &shaderModuleCI, nullptr, &shaderModule))
-			m_shaderStageCreateInfo.emplace_back(Vulkan::Initializers::pipelineShaderStageCreateInfo(a_stage, shaderModule));
-		}
-
-	}
-}
 
 void VulkanPipeline::cleanup()
 {
 	if(m_pipeline != VK_NULL_HANDLE)
 		vkDestroyPipeline(m_ctxt.logicalDevice, m_pipeline, nullptr);
 
-	// release shader modules
-	for(const auto& shaderInfo : m_shaderStageCreateInfo)
-		vkDestroyShaderModule(m_ctxt.logicalDevice, shaderInfo.module, nullptr);
 }
 
 void VulkanPipeline::addAttachment(const VkAttachmentDescription& a_attachement)
@@ -104,7 +78,11 @@ void VulkanPipeline::create()
 {
 	VkRenderPass renderPass;
 	setupRenderPass(renderPass);
-	/*VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
+	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = Vulkan::Initializers::descriptorSetLayoutCreateInfo();
+
+	VkPipelineLayoutCreateInfo pipelinLayoutCi = Vulkan::Initializers::pipelineLayoutCreateInfo();
+
+	VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
 		const VkPipelineCreateFlags a_flags,
 		const std::vector<VkPipelineShaderStageCreateInfo>&a_shaderStages,
 		const VkPipelineVertexInputStateCreateInfo * a_pVertexInputState,
@@ -121,7 +99,7 @@ void VulkanPipeline::create()
 		uint32_t         a_subpass,
 		VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
 		int32_t          a_basePipelineIndex = -1
-	);*/
+	);
 	//
 	//VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(
 	//	VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,

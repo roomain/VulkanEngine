@@ -123,6 +123,9 @@
     <ClInclude Include="VulkanRenderingContext.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanShader.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="component\SceneComponent.cpp">
       <Filter>Fichiers sources\component</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanShader.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
