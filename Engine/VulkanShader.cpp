@@ -44,44 +44,92 @@ void VulkanShader::loadShaderSpirV(const std::string& a_filename, const VkShader
 	}
 }
 
-void VulkanShader::createDescriptorUniformTexelBufferBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorUniformTexelBufferBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorStorageTexelBufferBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorStorageTexelBufferBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorUniformBufferBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorUniformBufferBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorStorageBufferBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorStorageBufferBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorUniformBufferDynBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorUniformBufferDynBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorStorageBufferDynBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorStorageBufferDynBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorSampledImageBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorSampledImageBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
-void VulkanShader::createDescriptorStorageImageBindings(const VkShaderStageFlagBits a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
+void VulkanShader::createDescriptorStorageImageBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount)
 {
-    //
+	m_layoutBindings.emplace_back(VkDescriptorSetLayoutBinding{
+		.binding = a_bind,
+		.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+		.descriptorCount = _descriptorCount,
+		.stageFlags = a_shaderFlag,
+		.pImmutableSamplers = nullptr
+	});
 }
 
 void VulkanShader::createDescriptorLayouts()
