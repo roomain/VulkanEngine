@@ -21,6 +21,8 @@ private:
 	std::vector<VkPipelineShaderStageCreateInfo> m_shaderStageCreateInfo;
 	VkPipeline m_pipeline = VK_NULL_HANDLE;
 	std::shared_ptr<VulkanShader> m_shader;
+	VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
+	VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
 	// todo shaders modules
 	//
 
@@ -35,7 +37,7 @@ public:
 	void setShader(const std::shared_ptr<VulkanShader>& a_shader);
 
 	void cleanup();
-	bool create();
+	virtual bool create();
 
 	void addAttachment(const VkAttachmentDescription& a_attachement);
 	void setDepthAttachment(const VkAttachmentDescription& a_attachement);
