@@ -5,6 +5,7 @@
 * @author Roomain
 ************************************************/
 #include <vector>
+#include <memory>
 #include <unordered_map>
 #include <vulkan/vulkan.hpp>
 #include "VulkanObject.h"
@@ -43,3 +44,5 @@ public:
     void createDescriptorStorageImageBindings(const VkShaderStageFlags a_shaderFlag, const uint32_t a_bind, const uint32_t _descriptorCount = 1);
     void createDescriptorLayouts();
 };
+
+using VulkanShaderPtr = std::shared_ptr<VulkanShader>;

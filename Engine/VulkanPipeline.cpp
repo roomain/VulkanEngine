@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "VulkanPipeline.h"
-
+#include "VulkanShader.h"
 
 VulkanPipeline::VulkanPipeline(const VulkanDeviceContext& a_ctxt) : VulkanObject<VulkanDeviceContext>{ a_ctxt }
 {
@@ -12,12 +12,15 @@ VulkanPipeline::~VulkanPipeline()
 	cleanup();
 }
 
+void VulkanPipeline::setShader(const std::shared_ptr<VulkanShader>& a_shader)
+{
+	m_shader = a_shader;
+}
 
 void VulkanPipeline::cleanup()
 {
 	if(m_pipeline != VK_NULL_HANDLE)
 		vkDestroyPipeline(m_ctxt.logicalDevice, m_pipeline, nullptr);
-
 }
 
 void VulkanPipeline::addAttachment(const VkAttachmentDescription& a_attachement)
@@ -74,46 +77,52 @@ void VulkanPipeline::setupRenderPass(VkRenderPass& a_renderPass)
 	VK_CHECK_EXCEPT(vkCreateRenderPass(m_ctxt.logicalDevice, &renderPassCI, nullptr, &a_renderPass))
 }
 
-void VulkanPipeline::create()
+bool VulkanPipeline::create()
 {
-	VkRenderPass renderPass;
-	setupRenderPass(renderPass);
-	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = Vulkan::Initializers::descriptorSetLayoutCreateInfo();
+	if (m_shader)
+	{
+		VkRenderPass renderPass;
+		setupRenderPass(renderPass);
+		VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = Vulkan::Initializers::descriptorSetLayoutCreateInfo(
+			m_shader->m_layoutBindings.data(), static_cast<uint32_t>(m_shader->m_layoutBindings.size()));
 
-	VkPipelineLayoutCreateInfo pipelinLayoutCi = Vulkan::Initializers::pipelineLayoutCreateInfo();
+		VkPipelineLayoutCreateInfo pipelinLayoutCi = Vulkan::Initializers::pipelineLayoutCreateInfo();
 
-	VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
-		const VkPipelineCreateFlags a_flags,
-		const std::vector<VkPipelineShaderStageCreateInfo>&a_shaderStages,
-		const VkPipelineVertexInputStateCreateInfo * a_pVertexInputState,
-		const VkPipelineInputAssemblyStateCreateInfo * a_pInputAssemblyState,
-		const VkPipelineTessellationStateCreateInfo * a_pTessellationState,
-		const VkPipelineViewportStateCreateInfo * a_pViewportState,
-		const VkPipelineRasterizationStateCreateInfo * a_pRasterizationState,
-		const VkPipelineMultisampleStateCreateInfo * a_pMultisampleState,
-		const VkPipelineDepthStencilStateCreateInfo * a_pDepthStencilState,
-		const VkPipelineColorBlendStateCreateInfo * a_pColorBlendState,
-		const VkPipelineDynamicStateCreateInfo * a_pDynamicState,
-		VkPipelineLayout a_layout,
-		renderPass,
-		uint32_t         a_subpass,
-		VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
-		int32_t          a_basePipelineIndex = -1
-	);
-	//
-	//VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(
-	//	VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,
-	//	m_shaderStageCreateInfo,
-	//);
-	//pipelineLibraryCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	//pipelineLibraryCI.pNext = &libraryInfo;
-	//pipelineLibraryCI.renderPass = renderPass;
-	//pipelineLibraryCI.flags = VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT;
-	//pipelineLibraryCI.stageCount = static_cast<uint32_t>(m_shaderStageCreateInfo.size());
-	//pipelineLibraryCI.pStages = m_shaderStageCreateInfo.data();
-	//pipelineLibraryCI.layout = pipelineLayout;
-	//pipelineLibraryCI.pDynamicState = &dynamicInfo;
-	//pipelineLibraryCI.pViewportState = &viewportState;
-	//pipelineLibraryCI.pRasterizationState = &rasterizationState;
-	//VK_CHECK_RESULT(vkCreateGraphicsPipelines(m_ctxt.logicalDevice, m_pipeline, 1, &pipelineLibraryCI, nullptr, &pipelineLibrary.preRasterizationShaders));
+		VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
+			const VkPipelineCreateFlags a_flags,
+			const std::vector<VkPipelineShaderStageCreateInfo>&a_shaderStages,
+			const VkPipelineVertexInputStateCreateInfo * a_pVertexInputState,
+			const VkPipelineInputAssemblyStateCreateInfo * a_pInputAssemblyState,
+			const VkPipelineTessellationStateCreateInfo * a_pTessellationState,
+			const VkPipelineViewportStateCreateInfo * a_pViewportState,
+			const VkPipelineRasterizationStateCreateInfo * a_pRasterizationState,
+			const VkPipelineMultisampleStateCreateInfo * a_pMultisampleState,
+			const VkPipelineDepthStencilStateCreateInfo * a_pDepthStencilState,
+			const VkPipelineColorBlendStateCreateInfo * a_pColorBlendState,
+			const VkPipelineDynamicStateCreateInfo * a_pDynamicState,
+			VkPipelineLayout a_layout,
+			renderPass,
+			uint32_t         a_subpass,
+			VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
+			int32_t          a_basePipelineIndex = -1
+		);
+		//
+		//VkGraphicsPipelineCreateInfo pipelineLibraryCI = Vulkan::Initializers::graphicPipelineCreateInfo(
+		//	VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,
+		//	m_shaderStageCreateInfo,
+		//);
+		//pipelineLibraryCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		//pipelineLibraryCI.pNext = &libraryInfo;
+		//pipelineLibraryCI.renderPass = renderPass;
+		//pipelineLibraryCI.flags = VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT;
+		//pipelineLibraryCI.stageCount = static_cast<uint32_t>(m_shaderStageCreateInfo.size());
+		//pipelineLibraryCI.pStages = m_shaderStageCreateInfo.data();
+		//pipelineLibraryCI.layout = pipelineLayout;
+		//pipelineLibraryCI.pDynamicState = &dynamicInfo;
+		//pipelineLibraryCI.pViewportState = &viewportState;
+		//pipelineLibraryCI.pRasterizationState = &rasterizationState;
+		//VK_CHECK_RESULT(vkCreateGraphicsPipelines(m_ctxt.logicalDevice, m_pipeline, 1, &pipelineLibraryCI, nullptr, &pipelineLibrary.preRasterizationShaders));
+		return true;
+	}
+	return false;
 }
