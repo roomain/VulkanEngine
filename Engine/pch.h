@@ -12,6 +12,7 @@
 #include "Vulkan_macros.h"
 #include "LoggingSystem/Exception.h"
 #include "VulkanInitializers.h"
+#include "VulkanPipelineInitializers.h"
 #include "common/string_utils.h"
 #include "common/contains.h"
 #include "common/enumerate.h"
