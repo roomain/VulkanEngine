@@ -126,6 +126,9 @@
     <ClInclude Include="VulkanShader.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanPipelineCache.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -168,6 +171,9 @@
       <Filter>Fichiers sources\component</Filter>
     </ClCompile>
     <ClCompile Include="VulkanShader.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanPipelineCache.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -183,6 +183,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="VulkanMemoryCallbacks.h" />
     <ClInclude Include="VulkanObject.h" />
     <ClInclude Include="VulkanPipeline.h" />
+    <ClInclude Include="VulkanPipelineCache.h" />
     <ClInclude Include="VulkanRenderingContext.h" />
     <ClInclude Include="VulkanShader.h" />
     <ClInclude Include="VulkanSwapChain.h" />
@@ -210,6 +211,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClCompile Include="VulkanDevice.cpp" />
     <ClCompile Include="VulkanMemoryCallbacks.cpp" />
     <ClCompile Include="VulkanPipeline.cpp" />
+    <ClCompile Include="VulkanPipelineCache.cpp" />
     <ClCompile Include="VulkanShader.cpp" />
     <ClCompile Include="VulkanSwapChain.cpp" />
   </ItemGroup>
