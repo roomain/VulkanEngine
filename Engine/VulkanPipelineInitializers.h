@@ -68,11 +68,16 @@ namespace Vulkan::Initializers
 		.offset = a_offset };
 	}
 
-	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo()
+	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo(const std::vector<VkVertexInputBindingDescription>& a_vertexInput,
+		const std::vector<VkVertexInputAttributeDescription>& a_vertexAttributes)
 	{
 		return VkPipelineVertexInputStateCreateInfo{ .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 			.pNext = nullptr,
-			.flags = 0
+			.flags = 0,
+			.vertexBindingDescriptionCount = static_cast<uint32_t>(a_vertexInput.size()),
+			.pVertexBindingDescriptions = a_vertexInput.data(),
+			.vertexAttributeDescriptionCount = static_cast<uint32_t>(a_vertexAttributes.size()),
+			.pVertexAttributeDescriptions = a_vertexAttributes.data()
 		};
 	}
 
@@ -209,6 +214,28 @@ namespace Vulkan::Initializers
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
 		.pNext = nullptr,
 		.patchControlPoints = a_patchControlPoints };
+	}
+
+	[[nodiscard]] constexpr VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo(
+		VkPolygonMode a_polygonMode,
+		VkCullModeFlags a_cullMode,
+		VkFrontFace a_frontFace,
+		VkPipelineRasterizationStateCreateFlags a_flags = 0,
+		VkBool32 a_depthClamp = VK_FALSE)
+	{
+		return VkPipelineRasterizationStateCreateInfo{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = a_flags,
+			.depthClampEnable = a_depthClamp,
+			.polygonMode = a_polygonMode,
+			.cullMode = a_cullMode,
+			.frontFace = a_frontFace,
+			.depthBiasEnable = VK_FALSE,
+			.depthBiasConstantFactor = 0,
+			.depthBiasClamp = 0,
+			.depthBiasSlopeFactor = 0,
+			.lineWidth = 1.0f };
 	}
 
 

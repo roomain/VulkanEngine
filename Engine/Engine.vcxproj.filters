@@ -46,6 +46,9 @@
     <Filter Include="Fichiers sources\Scene">
       <UniqueIdentifier>{8ce6161b-2eb3-4210-acf6-b547695b42ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\ResourcesTypes">
+      <UniqueIdentifier>{38e5330a-22eb-4233-baff-93f9acc743f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -131,6 +134,9 @@
     </ClInclude>
     <ClInclude Include="VulkanPipelineInitializers.h">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcesTypes\VulkanVertex.h">
+      <Filter>Fichiers d%27en-tête\ResourcesTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

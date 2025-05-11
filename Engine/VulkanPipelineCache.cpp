@@ -2,6 +2,7 @@
 #include "VulkanPipelineCache.h"
 #include <fstream>
 #include <vector>
+#include <vulkan/vulkan.hpp>
 #include "VulkanCapabilities.h"
 
 VulkanPipelineCache::VulkanPipelineCache(const VulkanDeviceContext& a_ctxt) : VulkanObject<VulkanDeviceContext>(a_ctxt)

@@ -86,7 +86,7 @@ void VulkanPipeline::setupRenderPass(VkRenderPass& a_renderPass)
 	VK_CHECK_EXCEPT(vkCreateRenderPass(m_ctxt.logicalDevice, &renderPassCI, nullptr, &a_renderPass))
 }
 
-bool VulkanPipeline::create()
+bool VulkanPipeline::create(const VkPipelineVertexInputStateCreateInfo& a_vertexInput, const VkPipelineInputAssemblyStateCreateInfo& a_inputAssemblyState)
 {
 	if (m_shader)
 	{
@@ -100,9 +100,6 @@ bool VulkanPipeline::create()
 		VkPipelineLayoutCreateInfo pipelineLayoutCi = Vulkan::Initializers::pipelineLayoutCreateInfo(m_descriptorSetLayout);
 		VK_CHECK_EXCEPT(vkCreatePipelineLayout(m_ctxt.logicalDevice, &pipelineLayoutCi, nullptr, &m_pipelineLayout));
 
-
-		VkPipelineVertexInputStateCreateInfo vertexInputState = Vulkan::Initializers::pipelineVertexInputStateCreateInfo();
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = Vulkan::Initializers::pipelineInputAssemblyStateCreateInfo();
 		VkPipelineTessellationStateCreateInfo tessellationState;
 		VkPipelineViewportStateCreateInfo viewportState;
 		VkPipelineRasterizationStateCreateInfo rasterizationState;
@@ -114,8 +111,8 @@ bool VulkanPipeline::create()
 		VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
 			0,
 			m_shader->m_shaderStageCreateInfo,
-			&vertexInputState,
-			&inputAssemblyState,
+			&a_vertexInput,
+			&a_inputAssemblyState,
 			&tessellationState,
 			&viewportState,
 			&rasterizationState,
