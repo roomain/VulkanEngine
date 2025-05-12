@@ -2,6 +2,16 @@
 #include "VulkanPipeline.h"
 #include "VulkanShader.h"
 
+void VulkanPipeline::setupCurvePipeline(/*todo*/)
+{
+	// todo
+}
+
+void VulkanPipeline::setupStaticMeshPipeline(/*todo*/)
+{
+	// todo
+}
+
 VulkanPipeline::VulkanPipeline(const VulkanDeviceContext& a_ctxt) : VulkanObject<VulkanDeviceContext>{ a_ctxt }
 {
 	// todo
