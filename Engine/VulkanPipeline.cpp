@@ -4,6 +4,19 @@
 
 void VulkanPipeline::setupCurvePipeline(/*todo*/)
 {
+	std::vector<VkVertexInputBindingDescription> vertexInput = 
+	{
+		{
+			.binding = 1,
+			.stride = ,
+			.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX,
+		}
+	}
+	std::vector<VkVertexInputAttributeDescription> vertexAttributes;
+	VkPipelineVertexInputStateCreateInfo vertexInput = Vulkan::Initializers::pipelineVertexInputStateCreateInfo(
+		vertexInput, vertexAttributes
+	);
+	VkPipelineInputAssemblyStateCreateInfo inputAssemblyState;
 	// todo
 }
 
