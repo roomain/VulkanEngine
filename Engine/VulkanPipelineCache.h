@@ -28,7 +28,7 @@ private:
     void cleanup();
 
 public:
-    VulkanPipelineCache(const VulkanDeviceContext& a_ctxt);
+    explicit VulkanPipelineCache(const VulkanDeviceContext& a_ctxt);
     ~VulkanPipelineCache();
     bool loadCache(const std::string& a_filename);
     bool saveCache(const std::string& a_filename);

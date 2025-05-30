@@ -34,13 +34,13 @@ public:
 	static void setupStaticMeshPipeline(/*todo*/);
 
 	NOT_COPIABLE(VulkanPipeline)
-	VulkanPipeline(const VulkanDeviceContext& a_ctxt);
+	explicit VulkanPipeline(const VulkanDeviceContext& a_ctxt);
 	virtual ~VulkanPipeline();
 	inline std::shared_ptr<VulkanShader> shader()const { return m_shader; }
 	void setShader(const std::shared_ptr<VulkanShader>& a_shader);
 
 	void cleanup();
-	virtual bool create();
+	virtual bool create(const VkPipelineVertexInputStateCreateInfo& a_vertexInput, const VkPipelineInputAssemblyStateCreateInfo& a_inputAssemblyState);
 
 	void addAttachment(const VkAttachmentDescription& a_attachement);
 	void setDepthAttachment(const VkAttachmentDescription& a_attachement);

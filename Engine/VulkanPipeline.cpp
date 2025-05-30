@@ -8,7 +8,7 @@ void VulkanPipeline::setupCurvePipeline(/*todo*/)
 	{
 		{
 			.binding = 1,
-			.stride = ,
+			.stride = sizeof(),
 			.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX,
 		}
 	}
