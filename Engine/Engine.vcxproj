@@ -178,6 +178,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="parameters\VulkanParameter.h" />
     <ClInclude Include="ResourcesTypes\VulkanVertex.h" />
     <ClInclude Include="VulkanContext.h" />
+    <ClInclude Include="VulkanDefines.h" />
     <ClInclude Include="VulkanDevice.h" />
     <ClInclude Include="VulkanInitializers.h" />
     <ClInclude Include="VulkanLocalsContexts.h" />

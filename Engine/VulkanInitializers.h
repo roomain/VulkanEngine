@@ -4,9 +4,10 @@
 * @date 24 / 08 / 2024
 * @author Roomain
 ************************************************/
-#include "vulkan/vulkan.h"
 #include <utility>
 #include <vector>
+#include "vulkan/vulkan.h"
+#include "VulkanDefines.h"
 #include "common/string_utils.h"
 
 /*@brief functions for structure initialisation*/
@@ -256,10 +257,10 @@ namespace Vulkan::Initializers
 		};
 	}
 
-	[[nodiscard]] constexpr VkSubmitInfo submitInfo(const std::vector<VkSemaphore>& a_waitSemaphore,
-		const std::vector<VkPipelineStageFlags>& a_pipelineStages,
-		const std::vector<VkCommandBuffer>& a_cmdBuffers,
-		const std::vector<VkSemaphore>& a_signalSemaphore
+	[[nodiscard]] constexpr VkSubmitInfo submitInfo(const SemaphoreVector& a_waitSemaphore,
+		const VkPipelineStageFlagsVector& a_pipelineStages,
+		const VkCommandBufferVector& a_cmdBuffers,
+		const SemaphoreVector& a_signalSemaphore
 	)
 	{
 		return VkSubmitInfo{ 
@@ -276,7 +277,7 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkSubmitInfo submitInfo(const VkSemaphore* a_waitSemaphore,
-		const std::vector<VkPipelineStageFlags>& a_pipelineStages,
+		const VkPipelineStageFlagsVector& a_pipelineStages,
 		const VkCommandBuffer* a_cmdBuffers,
 		const VkSemaphore* a_signalSemaphore,
 		const uint32_t a_waitCount = 1,

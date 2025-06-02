@@ -138,6 +138,9 @@
     <ClInclude Include="ResourcesTypes\VulkanVertex.h">
       <Filter>Fichiers d%27en-tête\ResourcesTypes</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanDefines.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
