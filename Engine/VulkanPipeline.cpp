@@ -3,28 +3,6 @@
 #include "VulkanShader.h"
 
 
-void VulkanPipeline::setupCurvePipeline(/*todo*/)
-{
-	VertexInputBindingDescVector vertexInput =
-	{
-		{
-			.binding = 1,
-			.stride = sizeof(),
-			.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX,
-		}
-	};
-	VertexInputAttribDescVector vertexAttributes;
-	VkPipelineVertexInputStateCreateInfo vertexInput = Vulkan::Initializers::pipelineVertexInputStateCreateInfo(
-		vertexInput, vertexAttributes
-	);
-	VkPipelineInputAssemblyStateCreateInfo inputAssemblyState;
-	// todo
-}
-
-void VulkanPipeline::setupStaticMeshPipeline(/*todo*/)
-{
-	// todo
-}
 
 VulkanPipeline::VulkanPipeline(const VulkanDeviceContext& a_ctxt) : VulkanObject<VulkanDeviceContext>{ a_ctxt }
 {

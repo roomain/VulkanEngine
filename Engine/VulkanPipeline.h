@@ -30,8 +30,29 @@ protected:
 	virtual void setupRenderPass(VkRenderPass& a_renderPass);
 
 public:
-	static void setupCurvePipeline(/*todo*/);
-	static void setupStaticMeshPipeline(/*todo*/);
+	template<typename VertexType>
+	static void setupCurvePipeline(/*todo*/)
+	{
+		VertexInputBindingDescVector vertexInput =
+		{
+			{
+				.binding = 1,
+				.stride = sizeof(VertexType),
+				.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX,
+			}
+		};
+		VertexInputAttribDescVector vertexAttributes;
+		VkPipelineVertexInputStateCreateInfo vertexInput = Vulkan::Initializers::pipelineVertexInputStateCreateInfo(
+			vertexInput, vertexAttributes
+		);
+		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState;
+	}
+
+	template<typename VertexType>
+	static void setupStaticMeshPipeline(/*todo*/)
+	{
+		//
+	}
 
 	NOT_COPIABLE(VulkanPipeline)
 	explicit VulkanPipeline(const VulkanDeviceContext& a_ctxt);
