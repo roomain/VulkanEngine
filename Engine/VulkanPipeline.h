@@ -31,7 +31,7 @@ protected:
 
 public:
 	template<typename VertexType>
-	static void setupCurvePipeline(/*todo*/)
+	static void setupPipeline(/*todo*/)
 	{
 		VertexInputBindingDescVector vertexInput =
 		{
@@ -41,18 +41,16 @@ public:
 				.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX,
 			}
 		};
-		VertexInputAttribDescVector vertexAttributes;
+
+		VertexType vertexInstance;
+		VertexInputAttribDescVector vertexAttributes = inputDescription(vertexInstance);
+
 		VkPipelineVertexInputStateCreateInfo vertexInput = Vulkan::Initializers::pipelineVertexInputStateCreateInfo(
 			vertexInput, vertexAttributes
 		);
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState;
 	}
 
-	template<typename VertexType>
-	static void setupStaticMeshPipeline(/*todo*/)
-	{
-		//
-	}
 
 	NOT_COPIABLE(VulkanPipeline)
 	explicit VulkanPipeline(const VulkanDeviceContext& a_ctxt);

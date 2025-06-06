@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.hpp>
+#include "VulkanDefines.h"
 
 
 
@@ -51,9 +52,9 @@ constexpr VkVertexInputBindingDescription bindingDescription(const uint32_t a_bi
 }
 
 
-inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uint32_t a_binding, const uint32_t a_location, const BasicVertex& a_vertex)
+inline VertexInputAttribDescVector inputDescription(const uint32_t a_binding, const uint32_t a_location, const BasicVertex& a_vertex)
 {
-	std::vector<VkVertexInputAttributeDescription> description;
+	VertexInputAttribDescVector description;
 	description.emplace_back(
 		VkVertexInputAttributeDescription{
 			.location = a_location,
@@ -71,9 +72,9 @@ inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uin
 	return description;
 }
 
-inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uint32_t a_binding, const uint32_t a_location, const TexturedVertex& a_vertex)
+inline VertexInputAttribDescVector inputDescription(const uint32_t a_binding, const uint32_t a_location, const TexturedVertex& a_vertex)
 {
-	std::vector<VkVertexInputAttributeDescription> description;
+	VertexInputAttribDescVector description;
 	description.emplace_back(
 		VkVertexInputAttributeDescription{
 			.location = a_location,
@@ -98,9 +99,9 @@ inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uin
 	return description;
 }
 
-inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uint32_t a_binding, const uint32_t a_location, const ColoredVertex& a_vertex)
+inline VertexInputAttribDescVector inputDescription(const uint32_t a_binding, const uint32_t a_location, const ColoredVertex& a_vertex)
 {
-	std::vector<VkVertexInputAttributeDescription> description;
+	VertexInputAttribDescVector description;
 	description.emplace_back(
 		VkVertexInputAttributeDescription{
 			.location = a_location,
@@ -125,9 +126,9 @@ inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uin
 	return description;
 }
 
-inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uint32_t a_binding, const uint32_t a_location, const SplineVertex& a_vertex)
+inline VertexInputAttribDescVector inputDescription(const uint32_t a_binding, const uint32_t a_location, const SplineVertex& a_vertex)
 {
-	std::vector<VkVertexInputAttributeDescription> description;
+	VertexInputAttribDescVector description;
 	description.emplace_back(
 		VkVertexInputAttributeDescription{
 			.location = a_location,
@@ -152,9 +153,9 @@ inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uin
 	return description;
 }
 
-inline std::vector<VkVertexInputAttributeDescription> inputDescription(const uint32_t a_binding, const uint32_t a_location, const AnimationVertex& a_vertex)
+inline VertexInputAttribDescVector inputDescription(const uint32_t a_binding, const uint32_t a_location, const AnimationVertex& a_vertex)
 {
-	std::vector<VkVertexInputAttributeDescription> description;
+	VertexInputAttribDescVector description;
 	description.emplace_back(
 		VkVertexInputAttributeDescription{
 			.location = a_location,
