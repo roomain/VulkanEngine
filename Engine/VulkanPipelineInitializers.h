@@ -108,9 +108,7 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo(
-		VkPolygonMode a_polygonMode,
-		VkCullModeFlags a_cullMode,
-		VkFrontFace a_frontFace,
+		const RasterizationSettings& a_rasterSettings,
 		VkPipelineRasterizationStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineRasterizationStateCreateInfo{
@@ -118,9 +116,9 @@ namespace Vulkan::Initializers
 		.pNext = nullptr,
 		.flags = a_flags,
 		.depthClampEnable = VK_FALSE,
-		.polygonMode = a_polygonMode,
-		.cullMode = a_cullMode,
-		.frontFace = a_frontFace,
+		.polygonMode = a_rasterSettings.polygonMode,
+		.cullMode = a_rasterSettings.cullFlags,
+		.frontFace = a_rasterSettings.frontFace,
 		.lineWidth = 1.0f };
 	}
 
@@ -146,16 +144,14 @@ namespace Vulkan::Initializers
 	}
 
 	[[nodiscard]] constexpr VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo(
-		VkBool32 a_depthTestEnable,
-		VkBool32 a_depthWriteEnable,
-		VkCompareOp a_depthCompareOp)
+		const DepthStencilSettings& a_depthSettings)
 	{
 		return VkPipelineDepthStencilStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
 		.pNext = nullptr,
-		.depthTestEnable = a_depthTestEnable,
-		.depthWriteEnable = a_depthWriteEnable,
-		.depthCompareOp = a_depthCompareOp,
+		.depthTestEnable = a_depthSettings.depthTestEnable,
+		.depthWriteEnable = a_depthSettings.depthWriteEnable,
+		.depthCompareOp = a_depthSettings.depthCompareOp,
 		.back{.compareOp = VK_COMPARE_OP_ALWAYS} };
 	}
 

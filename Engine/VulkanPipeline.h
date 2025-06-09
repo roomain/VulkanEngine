@@ -12,6 +12,8 @@
 
 class VulkanShader;
 
+
+
 /*@brief represents a vulkan pipeline*/
 class VulkanPipeline : public VulkanObject<VulkanDeviceContext>
 {
@@ -23,15 +25,32 @@ private:
 	std::shared_ptr<VulkanShader> m_shader;
 	VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
 	VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
-	// todo shaders modules
-	//
+
+	// vulkan graphics pipeline parameters
+	VkPrimitiveTopology m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;	/*!< primitive topology*/
+	DepthStencilSettings m_depthSettings;									/*!< depth settings*/
+	RasterizationSettings m_rasterSettings;									/*!< raster settings*/
+	std::vector<VkDynamicState> m_dynamicStateEnables;						/*!< pipeline dynamic states*/
+	int m_pathCtrlPoints = 0;												/*!< number of control point useles if m_topology != VK_PRIMITIVE_TOPOLOGY_PATCH_LIST*/
+
+
 
 protected:
 	virtual void setupRenderPass(VkRenderPass& a_renderPass);
 
+
 public:
+
+	NOT_COPIABLE(VulkanPipeline)
+	explicit VulkanPipeline(const VulkanDeviceContext& a_ctxt);
+	virtual ~VulkanPipeline();
+	inline std::shared_ptr<VulkanShader> shader()const { return m_shader; }
+	void setShader(const std::shared_ptr<VulkanShader>& a_shader);
+
+	void cleanup();
+
 	template<typename VertexType>
-	static void setupPipeline(/*todo*/)
+	static VkPipelineVertexInputStateCreateInfo setupPipelineVertexInput()
 	{
 		VertexInputBindingDescVector vertexInput =
 		{
@@ -48,18 +67,68 @@ public:
 		VkPipelineVertexInputStateCreateInfo vertexInput = Vulkan::Initializers::pipelineVertexInputStateCreateInfo(
 			vertexInput, vertexAttributes
 		);
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState;
+		return vertexInput;
 	}
 
 
-	NOT_COPIABLE(VulkanPipeline)
-	explicit VulkanPipeline(const VulkanDeviceContext& a_ctxt);
-	virtual ~VulkanPipeline();
-	inline std::shared_ptr<VulkanShader> shader()const { return m_shader; }
-	void setShader(const std::shared_ptr<VulkanShader>& a_shader);
+	template<typename VertexType>
+	bool create(const VkPipelineVertexInputStateCreateInfo& a_vertexInput)
+	{
+		if (m_shader)
+		{
+			VkRenderPass renderPass;
+			setupRenderPass(renderPass);
+			// bingings
+			VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = Vulkan::Initializers::descriptorSetLayoutCreateInfo(
+				m_shader->m_layoutBindings.data(), static_cast<uint32_t>(m_shader->m_layoutBindings.size()));
+			VK_CHECK_EXCEPT(vkCreateDescriptorSetLayout(m_ctxt.logicalDevice, &descriptorSetLayoutCI, nullptr,
+				&m_descriptorSetLayout));
 
-	void cleanup();
-	virtual bool create(const VkPipelineVertexInputStateCreateInfo& a_vertexInput, const VkPipelineInputAssemblyStateCreateInfo& a_inputAssemblyState);
+			VkPipelineLayoutCreateInfo pipelineLayoutCi = Vulkan::Initializers::pipelineLayoutCreateInfo(m_descriptorSetLayout);
+			VK_CHECK_EXCEPT(vkCreatePipelineLayout(m_ctxt.logicalDevice, &pipelineLayoutCi, nullptr, &m_pipelineLayout));
+
+			// assembly
+			VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = Vulkan::Initializers::pipelineInputAssemblyStateCreateInfo(m_topology, 0, VK_TRUE);
+
+			// tesselation type
+			VkPipelineTessellationStateCreateInfo* tessellationStateRef = nullptr;
+			VkPipelineTessellationStateCreateInfo tessellationState;
+			if (m_topology == VK_PRIMITIVE_TOPOLOGY_PATCH_LIST)
+			{
+				tessellationState = Vulkan::Initializers::Initializers(m_pathCtrlPoints);
+				tessellationStateRef = &tessellationState;
+			}
+
+			VkPipelineViewportStateCreateInfo viewportState = Vulkan::Initializers::pipelineViewportStateCreateInfo(/*todo*/);
+			VkPipelineRasterizationStateCreateInfo rasterizationState = Vulkan::Initializers::pipelineRasterizationStateCreateInfo(m_rasterSettings);
+			VkPipelineMultisampleStateCreateInfo multisampleState = Vulkan::Initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
+			VkPipelineDepthStencilStateCreateInfo depthStencilState = Vulkan::Initializers::pipelineDepthStencilStateCreateInfo(m_stencilSettings);
+			VkPipelineColorBlendStateCreateInfo colorBlendState;
+			VkPipelineDynamicStateCreateInfo dynamicState = Vulkan::Initializers::pipelineDynamicStateCreateInfo(m_dynamicStateEnables);
+
+			VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
+				0,
+				m_shader->m_shaderStageCreateInfo,
+				&a_vertexInput,
+				&inputAssemblyState,
+				tessellationStateRef,
+				&viewportState,
+				&rasterizationState,
+				&multisampleState,
+				&depthStencilState,
+				&colorBlendState,
+				&dynamicState,
+				m_pipelineLayout,
+				renderPass,
+				uint32_t         a_subpass,
+				VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
+				int32_t          a_basePipelineIndex = -1
+			);
+
+			return true;
+		}
+		return false;
+	}
 
 	void addAttachment(const VkAttachmentDescription& a_attachement);
 	void setDepthAttachment(const VkAttachmentDescription& a_attachement);

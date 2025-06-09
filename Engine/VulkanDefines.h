@@ -23,3 +23,17 @@ using VertexInputAttribDescVector = std::vector<VkVertexInputAttributeDescriptio
 template<std::size_t Count>
 using VertexInputAttribDescArray = std::array<VkVertexInputAttributeDescription, Count>;
 
+
+struct DepthStencilSettings
+{
+	VkBool32 depthTestEnable = VK_TRUE;
+	VkBool32 depthWriteEnable = VK_TRUE;
+	VkCompareOp depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+};
+
+struct RasterizationSettings
+{
+	VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
+	VkCullModeFlags cullFlags = VK_CULL_MODE_FRONT_BIT;
+	VkFrontFace frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+};
