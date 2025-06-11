@@ -31,8 +31,9 @@ private:
 	DepthStencilSettings m_depthSettings;									/*!< depth settings*/
 	RasterizationSettings m_rasterSettings;									/*!< raster settings*/
 	std::vector<VkDynamicState> m_dynamicStateEnables;						/*!< pipeline dynamic states*/
-	int m_pathCtrlPoints = 0;												/*!< number of control point useles if m_topology != VK_PRIMITIVE_TOPOLOGY_PATCH_LIST*/
-
+	uint32_t m_pathCtrlPoints = 0;											/*!< number of control point useles if m_topology != VK_PRIMITIVE_TOPOLOGY_PATCH_LIST*/
+	uint32_t m_viewportCount = 1;
+	uint32_t m_scissorCount = 1;
 	
 
 protected:
@@ -68,9 +69,19 @@ public:
 		m_dynamicStateEnables = a_states;
 	}
 
-	void setNumTopologyCtrlPoint(const int a_count)
+	void setNumTopologyCtrlPoint(const uint32_t a_count)
 	{
 		m_pathCtrlPoints = a_count;
+	}
+
+	void setViewportCount(const uint32_t a_count)
+	{
+		m_viewportCount = a_count;
+	}
+
+	void setScissorCount(const uint32_t a_count)
+	{
+		m_scissorCount = a_count;
 	}
 
 	template<typename VertexType>
@@ -123,11 +134,15 @@ public:
 				tessellationStateRef = &tessellationState;
 			}
 
-			VkPipelineViewportStateCreateInfo viewportState = Vulkan::Initializers::pipelineViewportStateCreateInfo(/*todo*/);
+			VkPipelineViewportStateCreateInfo viewportState = Vulkan::Initializers::pipelineViewportStateCreateInfo(m_viewportCount, m_scissorCount);
 			VkPipelineRasterizationStateCreateInfo rasterizationState = Vulkan::Initializers::pipelineRasterizationStateCreateInfo(m_rasterSettings);
 			VkPipelineMultisampleStateCreateInfo multisampleState = Vulkan::Initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
 			VkPipelineDepthStencilStateCreateInfo depthStencilState = Vulkan::Initializers::pipelineDepthStencilStateCreateInfo(m_stencilSettings);
-			VkPipelineColorBlendStateCreateInfo colorBlendState;
+
+			// todo
+			VkPipelineColorBlendAttachmentState blendAttachmentState = Vulkan::Initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
+			VkPipelineColorBlendStateCreateInfo colorBlendState = Vulkan::Initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
+
 			VkPipelineDynamicStateCreateInfo dynamicState = Vulkan::Initializers::pipelineDynamicStateCreateInfo(m_dynamicStateEnables);
 
 			VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(

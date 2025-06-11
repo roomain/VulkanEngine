@@ -143,6 +143,16 @@ namespace Vulkan::Initializers
 		.pAttachments = a_pAttachments };
 	}
 
+	[[nodiscard]] constexpr VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo(
+		const std::vector<VkPipelineColorBlendAttachmentState>& a_pAttachments)
+	{
+		return VkPipelineColorBlendStateCreateInfo{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+		.pNext = nullptr,
+		.attachmentCount = static_cast<uint32_t>(a_pAttachments.size()),
+		.pAttachments = a_pAttachments.data() };
+	}
+
 	[[nodiscard]] constexpr VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo(
 		const DepthStencilSettings& a_depthSettings)
 	{
