@@ -33,7 +33,7 @@ private:
 	std::vector<VkDynamicState> m_dynamicStateEnables;						/*!< pipeline dynamic states*/
 	int m_pathCtrlPoints = 0;												/*!< number of control point useles if m_topology != VK_PRIMITIVE_TOPOLOGY_PATCH_LIST*/
 
-
+	
 
 protected:
 	virtual void setupRenderPass(VkRenderPass& a_renderPass);
@@ -48,6 +48,30 @@ public:
 	void setShader(const std::shared_ptr<VulkanShader>& a_shader);
 
 	void cleanup();
+	void setPrimitiveTopology(const VkPrimitiveTopology a_topology)
+	{
+		m_topology = a_topology;
+	}
+
+	void setDepthSettings(const DepthStencilSettings& a_settings)
+	{
+		m_depthSettings = a_settings;
+	}
+
+	void setRasterSettings(const RasterizationSettings& a_settings)
+	{
+		m_rasterSettings = a_settings;
+	}
+
+	void setDynamicStates(const std::vector<VkDynamicState>& a_states)
+	{
+		m_dynamicStateEnables = a_states;
+	}
+
+	void setNumTopologyCtrlPoint(const int a_count)
+	{
+		m_pathCtrlPoints = a_count;
+	}
 
 	template<typename VertexType>
 	static VkPipelineVertexInputStateCreateInfo setupPipelineVertexInput()
