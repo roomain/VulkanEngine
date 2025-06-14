@@ -51,7 +51,7 @@ bool VulkanPipelineCache::loadCache(const std::string& a_filename)
                 pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
                 pipelineCacheCreateInfo.initialDataSize = cacheData.size();
                 pipelineCacheCreateInfo.pInitialData = cacheData.data();
-                VK_CHECK_EXCEPT(vkCreatePipelineCache(m_ctxt.logicalDevice, pipelineCacheCreateInfo, nullptr, m_cache))
+                VK_CHECK_EXCEPT(vkCreatePipelineCache(m_ctxt.logicalDevice, &pipelineCacheCreateInfo, nullptr, &m_cache))
                 return true;
             }
         }
@@ -65,9 +65,9 @@ bool VulkanPipelineCache::saveCache(const std::string& a_filename)
     if (m_cache != VK_NULL_HANDLE)
     {
         size_t cacheSize;
-        VK_CHECK_EXCEPT(vkGetPipelineCache(m_ctxt.logicalDevice, m_cache, &cacheSize, nullptr))
+        VK_CHECK_EXCEPT(vkGetPipelineCacheData(m_ctxt.logicalDevice, m_cache, &cacheSize, nullptr))
         std::vector<char> cacheData(cacheSize);
-        VK_CHECK_EXCEPT(vkGetPipelineCache(m_ctxt.logicalDevice, m_cache, &cacheSize, cacheData.data()))
+        VK_CHECK_EXCEPT(vkGetPipelineCacheData(m_ctxt.logicalDevice, m_cache, &cacheSize, cacheData.data()))
 
             if (std::ofstream fileStream(a_filename, std::ios::binary | std::ios::out); fileStream.is_open())
             {

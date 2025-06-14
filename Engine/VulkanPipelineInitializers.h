@@ -68,19 +68,6 @@ namespace Vulkan::Initializers
 		.offset = a_offset };
 	}
 
-	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo(const std::vector<VkVertexInputBindingDescription>& a_vertexInput,
-		const std::vector<VkVertexInputAttributeDescription>& a_vertexAttributes)
-	{
-		return VkPipelineVertexInputStateCreateInfo{ .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = 0,
-			.vertexBindingDescriptionCount = static_cast<uint32_t>(a_vertexInput.size()),
-			.pVertexBindingDescriptions = a_vertexInput.data(),
-			.vertexAttributeDescriptionCount = static_cast<uint32_t>(a_vertexAttributes.size()),
-			.pVertexAttributeDescriptions = a_vertexAttributes.data()
-		};
-	}
-
 	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo(
 		const std::vector<VkVertexInputBindingDescription>& a_vertexBindingDescriptions,
 		const std::vector<VkVertexInputAttributeDescription>& a_vertexAttributeDescriptions

@@ -5,12 +5,12 @@
 * @author Roomain
 ************************************************/
 #include <vector>
+#include <memory>
 #include <vulkan/vulkan.hpp>
 #include "VulkanObject.h"
 #include "common/notCopiable.h"
 #include "VulkanLocalsContexts.h"
-
-class VulkanShader;
+#include "VulkanShader.h"
 
 
 
@@ -22,6 +22,7 @@ private:
 	std::vector<VkAttachmentDescription> m_attachement;						/*!< list of attachment*/
 	std::vector<VkPipelineShaderStageCreateInfo> m_shaderStageCreateInfo;
 	VkPipeline m_pipeline = VK_NULL_HANDLE;
+	VkPipelineCache m_pipelineCache = VK_NULL_HANDLE;
 	std::shared_ptr<VulkanShader> m_shader;
 	VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
 	VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
@@ -114,9 +115,9 @@ public:
 			VkRenderPass renderPass;
 			setupRenderPass(renderPass);
 			// bingings
-			VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = Vulkan::Initializers::descriptorSetLayoutCreateInfo(
+			VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCi = Vulkan::Initializers::descriptorSetLayoutCreateInfo(
 				m_shader->m_layoutBindings.data(), static_cast<uint32_t>(m_shader->m_layoutBindings.size()));
-			VK_CHECK_EXCEPT(vkCreateDescriptorSetLayout(m_ctxt.logicalDevice, &descriptorSetLayoutCI, nullptr,
+			VK_CHECK_EXCEPT(vkCreateDescriptorSetLayout(m_ctxt.logicalDevice, &descriptorSetLayoutCi, nullptr,
 				&m_descriptorSetLayout));
 
 			VkPipelineLayoutCreateInfo pipelineLayoutCi = Vulkan::Initializers::pipelineLayoutCreateInfo(m_descriptorSetLayout);
@@ -130,14 +131,14 @@ public:
 			VkPipelineTessellationStateCreateInfo tessellationState;
 			if (m_topology == VK_PRIMITIVE_TOPOLOGY_PATCH_LIST)
 			{
-				tessellationState = Vulkan::Initializers::Initializers(m_pathCtrlPoints);
+				tessellationState = Vulkan::Initializers::pipelineTessellationStateCreateInfo(m_pathCtrlPoints);
 				tessellationStateRef = &tessellationState;
 			}
 
 			VkPipelineViewportStateCreateInfo viewportState = Vulkan::Initializers::pipelineViewportStateCreateInfo(m_viewportCount, m_scissorCount);
 			VkPipelineRasterizationStateCreateInfo rasterizationState = Vulkan::Initializers::pipelineRasterizationStateCreateInfo(m_rasterSettings);
 			VkPipelineMultisampleStateCreateInfo multisampleState = Vulkan::Initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
-			VkPipelineDepthStencilStateCreateInfo depthStencilState = Vulkan::Initializers::pipelineDepthStencilStateCreateInfo(m_stencilSettings);
+			VkPipelineDepthStencilStateCreateInfo depthStencilState = Vulkan::Initializers::pipelineDepthStencilStateCreateInfo(m_depthSettings);
 
 			// todo
 			VkPipelineColorBlendAttachmentState blendAttachmentState = Vulkan::Initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
@@ -145,7 +146,7 @@ public:
 
 			VkPipelineDynamicStateCreateInfo dynamicState = Vulkan::Initializers::pipelineDynamicStateCreateInfo(m_dynamicStateEnables);
 
-			VkGraphicsPipelineCreateInfo pipelineCI = Vulkan::Initializers::createGraphicPipeline(
+			VkGraphicsPipelineCreateInfo pipelineCi = Vulkan::Initializers::createGraphicPipeline(
 				0,
 				m_shader->m_shaderStageCreateInfo,
 				&a_vertexInput,
@@ -159,10 +160,19 @@ public:
 				&dynamicState,
 				m_pipelineLayout,
 				renderPass,
-				uint32_t         a_subpass,
-				VkPipeline       a_basePipelineHandle = VK_NULL_HANDLE,
-				int32_t          a_basePipelineIndex = -1
+				0,
+				VK_NULL_HANDLE,
+				-1
 			);
+
+			//if (m_pipelineCache == VK_NULL_HANDLE)
+			//{
+			//	VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
+			//	pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+			//	VK_CHECK_LOG(vkCreatePipelineCache(m_ctxt.logicalDevice, &pipelineCacheCreateInfo, nullptr, &m_pipelineCache));
+			//}
+
+			VK_CHECK_EXCEPT(vkCreateGraphicsPipelines(m_ctxt.logicalDevice, m_pipelineCache, 1, &pipelineCi, nullptr, &m_pipeline))
 
 			return true;
 		}
