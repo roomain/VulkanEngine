@@ -303,4 +303,22 @@ namespace Vulkan::Initializers
 			.pDependencies = a_subpassesDepends.data(),
 		};
 	}
+
+	[[nodiscard]] constexpr VkRenderPassCreateInfo createRenderPass(
+		const VkRenderPassCreateFlags a_flag,
+		const std::vector<VkAttachmentDescription>& a_attachment,
+		const std::vector<VkSubpassDependency>& a_subpassesDepends)
+	{
+		return VkRenderPassCreateInfo{
+			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = a_flag,
+			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
+			.pAttachments = a_attachment.data(),
+			.subpassCount = 0,
+			.pSubpasses = nullptr,
+			.dependencyCount = static_cast<uint32_t>(a_subpassesDepends.size()),
+			.pDependencies = a_subpassesDepends.data(),
+		};
+	}
 }
