@@ -49,22 +49,23 @@ void VulkanPipeline::setupRenderPass(VkRenderPass& a_renderPass)
 {
 	std::vector<VkSubpassDependency> subpassesDepends;
 
-	int curIndex = 0;
-	for (const VkAttachmentDescription& attachment : m_attachement)
+	std::vector<VkAttachmentReference> colorAttach;
+	VkAttachmentReference depthRef;
+	for(int index = 0; index < m_attachement.size(); ++index)
 	{
 		VkSubpassDependency depends;
 		depends.srcSubpass = VK_SUBPASS_EXTERNAL;
 		depends.dstSubpass = 0;
 		depends.dependencyFlags = 0;
-		VkAttachmentReference ref{ .attachment = 0 };
-		if (curIndex == m_depthAttachmentIndex)
+		if (index == m_depthAttachmentIndex)
 		{
 			depends.srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
 			depends.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
 			depends.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 			depends.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
 
-			ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			depthRef.attachment = m_depthAttachmentIndex;
+			depthRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		}
 		else
 		{
@@ -72,14 +73,15 @@ void VulkanPipeline::setupRenderPass(VkRenderPass& a_renderPass)
 			depends.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			depends.srcAccessMask = 0;
 			depends.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-			
-			ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			colorAttach.emplace_back(VkAttachmentReference{ .attachment = static_cast<uint32_t>(index),
+				.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
 		}
 		subpassesDepends.emplace_back(depends);
-		subpassesDepends.emplace_back(ref);
-		++curIndex;
 	}
-
-	VkRenderPassCreateInfo renderPassCI = Vulkan::Initializers::createRenderPass(0, m_attachement, subpass, subpassesDepends);
+		
+	VkSubpassDescription subpassDescription = Vulkan::Initializers::createGraphicSubpassDesc(colorAttach, m_depthAttachmentIndex >= 0 ? &depthRef : nullptr);
+	
+	VkRenderPassCreateInfo renderPassCI = Vulkan::Initializers::createRenderPass(0, m_attachement, subpassDescription, subpassesDepends);
 	VK_CHECK_EXCEPT(vkCreateRenderPass(m_ctxt.logicalDevice, &renderPassCI, nullptr, &a_renderPass))
 }

@@ -84,7 +84,8 @@ namespace Vulkan::Initializers
 		 };
 	}
 
-	[[nodiscard]] inline VkDeviceCreateInfo deviceCreateInfo(const std::vector<VkDeviceQueueCreateInfo>& a_queueInfo,
+	template<typename QueueInfoContainer>
+	[[nodiscard]] inline VkDeviceCreateInfo deviceCreateInfo(const QueueInfoContainer& a_queueInfo,
 		const VkPhysicalDeviceFeatures* a_features,
 		const VkDeviceCreateFlags a_flags)
 	{
@@ -98,9 +99,10 @@ namespace Vulkan::Initializers
 		};
 	}
 
+	template<typename PrioritiesContainer>
 	[[nodiscard]] constexpr VkDeviceQueueCreateInfo queueCreateInfo(const uint32_t a_familyIndex,
 		const uint32_t a_queueCount,
-		const std::vector<float>& a_priorities,
+		const PrioritiesContainer& a_priorities,
 		const VkDeviceQueueCreateFlags a_flag = 0)
 	{
 		return VkDeviceQueueCreateInfo{ 
@@ -113,8 +115,9 @@ namespace Vulkan::Initializers
 			};
 	}
 
+	template<typename ImageViewContainer>
 	[[nodiscard]] constexpr VkFramebufferCreateInfo frameBufferCreateInfo(const VkRenderPass a_renderPass, 
-	const std::vector<VkImageView>& a_attachment, const uint32_t a_Width, const uint32_t a_Height)
+	const ImageViewContainer& a_attachment, const uint32_t a_Width, const uint32_t a_Height)
 	{
 		return VkFramebufferCreateInfo{ 
 			.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, 
@@ -257,10 +260,11 @@ namespace Vulkan::Initializers
 		};
 	}
 
+	template<typename BufferContainer, typename SemaphoreContainer>
 	[[nodiscard]] constexpr VkSubmitInfo submitInfo(const SemaphoreVector& a_waitSemaphore,
 		const VkPipelineStageFlagsVector& a_pipelineStages,
-		const VkCommandBufferVector& a_cmdBuffers,
-		const SemaphoreVector& a_signalSemaphore
+		const BufferContainer& a_cmdBuffers,
+		const SemaphoreContainer& a_signalSemaphore
 	)
 	{
 		return VkSubmitInfo{ 
@@ -298,11 +302,12 @@ namespace Vulkan::Initializers
 		};
 	}
 
+	template<typename IndexContainer>
 	[[nodiscard]] constexpr VkBufferCreateInfo bufferCreateInfo(const VkBufferCreateFlags a_flag,
 	const VkDeviceSize& a_size,
 	const VkBufferUsageFlags a_usage,
 	const VkSharingMode& a_shareMode,
-	const std::vector<uint32_t>& a_familyIndicies)
+	const IndexContainer& a_familyIndicies)
 	{
 		return VkBufferCreateInfo{ 
 			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, 
@@ -359,8 +364,9 @@ namespace Vulkan::Initializers
 		.pBindings = a_pBindings };
 	}
 
+	template<typename BindingContainer>
 	[[nodiscard]] constexpr VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo(
-		const std::vector<VkDescriptorSetLayoutBinding>& a_bindings)
+		const BindingContainer& a_bindings)
 	{
 		return VkDescriptorSetLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
@@ -390,6 +396,7 @@ namespace Vulkan::Initializers
 		.imageView = a_imageView,
 		.imageLayout = a_imageLayout };
 	}
+
 
 	[[nodiscard]] inline VkShaderModuleCreateInfo shaderModuleCreateInfo(std::vector<char>& a_shaderCode)
 	{

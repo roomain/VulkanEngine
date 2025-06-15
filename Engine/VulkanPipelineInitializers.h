@@ -9,9 +9,9 @@
 /*@brief functions for structure initialisation*/
 namespace Vulkan::Initializers
 {
-    
+    template<typename DescriptorSetContainer>
 	[[nodiscard]] constexpr VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
-		const std::vector<VkDescriptorSetLayout> a_pSetLayouts)
+		const DescriptorSetContainer& a_pSetLayouts)
 	{
 		return VkPipelineLayoutCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -68,9 +68,10 @@ namespace Vulkan::Initializers
 		.offset = a_offset };
 	}
 
+	template<typename VertexInputBindingDescContainer, typename VertexInputAttribDescContainer>
 	[[nodiscard]] constexpr VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo(
-		const std::vector<VkVertexInputBindingDescription>& a_vertexBindingDescriptions,
-		const std::vector<VkVertexInputAttributeDescription>& a_vertexAttributeDescriptions
+		const VertexInputBindingDescContainer& a_vertexBindingDescriptions,
+		const VertexInputAttribDescContainer& a_vertexAttributeDescriptions
 	)
 	{
 		return VkPipelineVertexInputStateCreateInfo{
@@ -130,8 +131,9 @@ namespace Vulkan::Initializers
 		.pAttachments = a_pAttachments };
 	}
 
+	template<typename PipelinColorBlendAttachContainer>
 	[[nodiscard]] constexpr VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo(
-		const std::vector<VkPipelineColorBlendAttachmentState>& a_pAttachments)
+		const PipelinColorBlendAttachContainer& a_pAttachments)
 	{
 		return VkPipelineColorBlendStateCreateInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
@@ -189,8 +191,9 @@ namespace Vulkan::Initializers
 		.pDynamicStates = a_pDynamicStates };
 	}
 
+	template<typename DynamicStateContainer>
 	[[nodiscard]] constexpr VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo(
-		const std::vector<VkDynamicState>& a_pDynamicStates,
+		const DynamicStateContainer& a_pDynamicStates,
 		VkPipelineDynamicStateCreateFlags a_flags = 0)
 	{
 		return VkPipelineDynamicStateCreateInfo{
@@ -285,11 +288,13 @@ namespace Vulkan::Initializers
 		.layout = layout };
 	}
     
+
+	template<typename AttachmentDescContainer, typename SubpassDependContainer>
 	[[nodiscard]] constexpr VkRenderPassCreateInfo createRenderPass(
-		const VkRenderPassCreateFlags a_flag, 
-		const std::vector<VkAttachmentDescription>& a_attachment,
-		const std::vector<VkSubpassDescription>& a_subpass,
-		const std::vector<VkSubpassDependency>& a_subpassesDepends)
+		const VkRenderPassCreateFlags a_flag,
+		const AttachmentDescContainer& a_attachment,
+		const VkSubpassDescription& a_subpass,
+		const SubpassDependContainer& a_subpassesDepends)
 	{
 		return VkRenderPassCreateInfo{
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -297,28 +302,28 @@ namespace Vulkan::Initializers
 			.flags = a_flag,
 			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
 			.pAttachments = a_attachment.data(),
-			.subpassCount = static_cast<uint32_t>(a_subpass.size()),
-			.pSubpasses = a_subpass.data(),
+			.subpassCount = 1,
+			.pSubpasses = &a_subpass,
 			.dependencyCount = static_cast<uint32_t>(a_subpassesDepends.size()),
 			.pDependencies = a_subpassesDepends.data(),
 		};
 	}
 
-	[[nodiscard]] constexpr VkRenderPassCreateInfo createRenderPass(
-		const VkRenderPassCreateFlags a_flag,
-		const std::vector<VkAttachmentDescription>& a_attachment,
-		const std::vector<VkSubpassDependency>& a_subpassesDepends)
+	template<typename ColorAttach>
+	[[nodiscard]] constexpr VkSubpassDescription createGraphicSubpassDesc(const ColorAttach& a_colorAttach, const VkAttachmentReference* a_depthReference)
 	{
-		return VkRenderPassCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = a_flag,
-			.attachmentCount = static_cast<uint32_t>(a_attachment.size()),
-			.pAttachments = a_attachment.data(),
-			.subpassCount = 0,
-			.pSubpasses = nullptr,
-			.dependencyCount = static_cast<uint32_t>(a_subpassesDepends.size()),
-			.pDependencies = a_subpassesDepends.data(),
+		return VkSubpassDescription{
+			.flags = 0,
+			.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+			.inputAttachmentCount = 0,
+			.pInputAttachments = nullptr,
+			.colorAttachmentCount = static_cast<uint32_t>(a_colorAttach.size()),
+			.pColorAttachments = a_colorAttach.data(),
+			.pResolveAttachments = nullptr,
+			.pDepthStencilAttachment = a_depthReference,
+			.preserveAttachmentCount = 0,
+			.pPreserveAttachments = nullptr
 		};
 	}
+
 }
