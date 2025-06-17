@@ -9,15 +9,15 @@
 
 // ajouter les en-têtes à précompiler ici
 #include "framework.h"
-#include "Vulkan_macros.h"
-#include "LoggingSystem/Exception.h"
-#include "VulkanInitializers.h"
-#include "VulkanPipelineInitializers.h"
 #include "common/string_utils.h"
 #include "common/contains.h"
 #include "common/enumerate.h"
-#include "VulkanRenderingContext.h"
-#include "VulkanDefines.h"
+#include "LoggingSystem/Exception.h"
+#include "VulkanObjects/Vulkan_macros.h"
+#include "VulkanObjects/VulkanInitializers.h"
+#include "VulkanObjects/VulkanPipelineInitializers.h"
+#include "VulkanObjects/VulkanRenderingContext.h"
+#include "VulkanObjects/VulkanDefines.h"
 #define VMA_VULKAN_VERSION 1003000
 
 #endif //PCH_H

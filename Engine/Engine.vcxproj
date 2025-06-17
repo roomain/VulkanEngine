@@ -117,7 +117,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)parameters;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)LoggingSystem;$(SolutionDir)Rtti;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)VulkanObjects;$(ProjectDir)parameters;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)LoggingSystem;$(SolutionDir)Rtti;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zc:nrvo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -145,7 +145,7 @@ reflectGen.py $(ProjectDir)Parameters
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)parameters;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)LoggingSystem;$(SolutionDir)Rtti;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Capabilities;$(ProjectDir)VulkanObjects;$(ProjectDir)parameters;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)LoggingSystem;$(SolutionDir)Rtti;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zc:nrvo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -177,24 +177,24 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="math\glmEx.h" />
     <ClInclude Include="parameters\VulkanParameter.h" />
     <ClInclude Include="ResourcesTypes\VulkanVertex.h" />
-    <ClInclude Include="VulkanContext.h" />
-    <ClInclude Include="VulkanDefines.h" />
-    <ClInclude Include="VulkanDevice.h" />
-    <ClInclude Include="VulkanInitializers.h" />
-    <ClInclude Include="VulkanLocalsContexts.h" />
-    <ClInclude Include="VulkanMemoryCallbacks.h" />
-    <ClInclude Include="VulkanObject.h" />
-    <ClInclude Include="VulkanPipeline.h" />
-    <ClInclude Include="VulkanPipelineCache.h" />
-    <ClInclude Include="VulkanPipelineInitializers.h" />
-    <ClInclude Include="VulkanRenderingContext.h" />
-    <ClInclude Include="VulkanShader.h" />
-    <ClInclude Include="VulkanSwapChain.h" />
-    <ClInclude Include="vulkan_enum_to_string.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Vulkan_macros.h" />
-    <ClInclude Include="vulkan_string_to_enum.h" />
+    <ClInclude Include="VulkanObjects\VulkanContext.h" />
+    <ClInclude Include="VulkanObjects\VulkanDefines.h" />
+    <ClInclude Include="VulkanObjects\VulkanDevice.h" />
+    <ClInclude Include="VulkanObjects\VulkanInitializers.h" />
+    <ClInclude Include="VulkanObjects\VulkanLocalsContexts.h" />
+    <ClInclude Include="VulkanObjects\VulkanMemoryCallbacks.h" />
+    <ClInclude Include="VulkanObjects\VulkanObject.h" />
+    <ClInclude Include="VulkanObjects\VulkanPipeline.h" />
+    <ClInclude Include="VulkanObjects\VulkanPipelineCache.h" />
+    <ClInclude Include="VulkanObjects\VulkanPipelineInitializers.h" />
+    <ClInclude Include="VulkanObjects\VulkanRenderingContext.h" />
+    <ClInclude Include="VulkanObjects\VulkanShader.h" />
+    <ClInclude Include="VulkanObjects\VulkanSwapChain.h" />
+    <ClInclude Include="VulkanObjects\vulkan_enum_to_string.h" />
+    <ClInclude Include="VulkanObjects\Vulkan_macros.h" />
+    <ClInclude Include="VulkanObjects\vulkan_string_to_enum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="capabilities\VulkanCapabilities.cpp" />
@@ -209,14 +209,14 @@ reflectGen.py $(ProjectDir)Parameters
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vmaAllocator.cpp" />
-    <ClCompile Include="VulkanContext.cpp" />
-    <ClCompile Include="VulkanDevice.cpp" />
-    <ClCompile Include="VulkanMemoryCallbacks.cpp" />
-    <ClCompile Include="VulkanPipeline.cpp" />
-    <ClCompile Include="VulkanPipelineCache.cpp" />
-    <ClCompile Include="VulkanShader.cpp" />
-    <ClCompile Include="VulkanSwapChain.cpp" />
+    <ClCompile Include="VulkanObjects\vmaAllocator.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanContext.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanDevice.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanMemoryCallbacks.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanPipeline.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanPipelineCache.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanShader.cpp" />
+    <ClCompile Include="VulkanObjects\VulkanSwapChain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

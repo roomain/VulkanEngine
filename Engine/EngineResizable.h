@@ -11,24 +11,16 @@
 
 #pragma warning(push)
 #pragma warning( disable : 4251 )
-class EngineResizable;
-
-using CallbackResize = std::function<void(const EngineResizable*, const unsigned int, const unsigned int)>;
 
 /*@base resizable object*/
 class VULKAN_ENGINE_LIB EngineResizable : public EngineObject
 {
-private:
-    std::vector<CallbackResize> m_vResizeCallback;  /*!< callback resize*/
-
 protected:
     virtual void internalResize(const unsigned int a_width, const unsigned int a_height) = 0;
 
 public:
     EngineResizable() = default;
     virtual  ~EngineResizable() = default;
-    void registerCallback(const CallbackResize& a_callback);
-    void unregisterCallback(const CallbackResize& a_callback);
     virtual [[nodiscard]] uint32_t width() const = 0;
     virtual [[nodiscard]] uint32_t height() const = 0;
     void onResize(const unsigned int a_width, const unsigned int a_height);

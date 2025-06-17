@@ -49,6 +49,12 @@
     <Filter Include="Fichiers d%27en-tête\ResourcesTypes">
       <UniqueIdentifier>{38e5330a-22eb-4233-baff-93f9acc743f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers sources\VulkanObjects">
+      <UniqueIdentifier>{fca8e971-c504-4e88-98dc-bfb9cd63a47c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\VulkanObjects">
+      <UniqueIdentifier>{061ac670-c3cf-44d0-8c76-c51ba2cff77d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,26 +66,11 @@
     <ClInclude Include="capabilities\VulkanDeviceCapabilities.h">
       <Filter>Fichiers d%27en-tête\Capabilities</Filter>
     </ClInclude>
-    <ClInclude Include="vulkan_enum_to_string.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="Vulkan_macros.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="capabilities\VulkanCapabilities.h">
       <Filter>Fichiers d%27en-tête\Capabilities</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanInitializers.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanContext.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="parameters\VulkanParameter.h">
       <Filter>Fichiers d%27en-tête\Parameters</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanDevice.h">
-      <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Engine_globals.h">
       <Filter>Fichiers d%27en-tête</Filter>
@@ -96,26 +87,8 @@
     <ClInclude Include="EngineEventStatus.h">
       <Filter>Fichiers d%27en-tête\Events</Filter>
     </ClInclude>
-    <ClInclude Include="vulkan_string_to_enum.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanSwapChain.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanObject.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanLocalsContexts.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="math\glmEx.h">
       <Filter>Fichiers d%27en-tête\math</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanPipeline.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanMemoryCallbacks.h">
-      <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="EngineTreeNode.h">
       <Filter>Fichiers d%27en-tête</Filter>
@@ -123,23 +96,56 @@
     <ClInclude Include="component\SceneComponent.h">
       <Filter>Fichiers d%27en-tête\component</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanRenderingContext.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanShader.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanPipelineCache.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanPipelineInitializers.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="ResourcesTypes\VulkanVertex.h">
       <Filter>Fichiers d%27en-tête\ResourcesTypes</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanDefines.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+    <ClInclude Include="VulkanObjects\VulkanPipelineInitializers.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanInitializers.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanPipeline.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanDefines.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanPipelineCache.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanRenderingContext.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanShader.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanMemoryCallbacks.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanDevice.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanSwapChain.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanLocalsContexts.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanContext.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\VulkanObject.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\vulkan_string_to_enum.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\vulkan_enum_to_string.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanObjects\Vulkan_macros.h">
+      <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -155,38 +161,38 @@
     <ClCompile Include="capabilities\VulkanCapabilities.cpp">
       <Filter>Fichiers sources\Capabilities</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanContext.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanDevice.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="EngineObject.cpp">
       <Filter>Fichiers sources\EngineObjects</Filter>
     </ClCompile>
     <ClCompile Include="EngineResizable.cpp">
       <Filter>Fichiers sources\EngineObjects</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanSwapChain.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="vmaAllocator.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanPipeline.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanMemoryCallbacks.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="component\SceneComponent.cpp">
       <Filter>Fichiers sources\component</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanShader.cpp">
-      <Filter>Fichiers sources</Filter>
+    <ClCompile Include="VulkanObjects\VulkanPipeline.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanPipelineCache.cpp">
-      <Filter>Fichiers sources</Filter>
+    <ClCompile Include="VulkanObjects\VulkanPipelineCache.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanObjects\VulkanShader.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanObjects\VulkanMemoryCallbacks.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanObjects\VulkanDevice.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanObjects\VulkanContext.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanObjects\VulkanSwapChain.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanObjects\vmaAllocator.cpp">
+      <Filter>Fichiers sources\VulkanObjects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

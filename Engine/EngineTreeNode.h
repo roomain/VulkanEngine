@@ -4,7 +4,7 @@
 * @date 24 / 03 / 2025
 * @author Roomain
 ************************************************/
-// Type your code here, or load an example.
+
 #include <vector>
 #include <memory>
 #include <ranges>
