@@ -170,6 +170,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="component\SceneComponent.h" />
     <ClInclude Include="EngineEvents.h" />
     <ClInclude Include="EngineEventStatus.h" />
+    <ClInclude Include="EngineRenderingContext.h" />
     <ClInclude Include="EngineResizable.h" />
     <ClInclude Include="EngineTreeNode.h" />
     <ClInclude Include="Engine_globals.h" />

@@ -147,6 +147,9 @@
     <ClInclude Include="VulkanObjects\Vulkan_macros.h">
       <Filter>Fichiers d%27en-tête\VulkanObjects</Filter>
     </ClInclude>
+    <ClInclude Include="EngineRenderingContext.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
