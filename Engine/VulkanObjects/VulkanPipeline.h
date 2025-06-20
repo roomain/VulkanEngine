@@ -48,6 +48,7 @@ public:
 	virtual ~VulkanPipeline();
 	inline std::shared_ptr<VulkanShader> shader()const { return m_shader; }
 	void setShader(const std::shared_ptr<VulkanShader>& a_shader);
+	virtual void bind(VkCommandBuffer& a_cmdBuffer)const;
 
 	void cleanup();
 	void setPrimitiveTopology(const VkPrimitiveTopology a_topology)
@@ -140,7 +141,6 @@ public:
 			VkPipelineMultisampleStateCreateInfo multisampleState = Vulkan::Initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
 			VkPipelineDepthStencilStateCreateInfo depthStencilState = Vulkan::Initializers::pipelineDepthStencilStateCreateInfo(m_depthSettings);
 
-			// todo
 			VkPipelineColorBlendAttachmentState blendAttachmentState = Vulkan::Initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
 			VkPipelineColorBlendStateCreateInfo colorBlendState = Vulkan::Initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
 
@@ -181,6 +181,4 @@ public:
 
 	void addAttachment(const VkAttachmentDescription& a_attachement);
 	void setDepthAttachment(const VkAttachmentDescription& a_attachement);
-
-	// todo
 };

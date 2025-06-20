@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)VulkanObjects;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:nrvo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -132,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)VulkanObjects;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:nrvo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

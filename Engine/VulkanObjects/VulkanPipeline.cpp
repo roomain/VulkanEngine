@@ -19,6 +19,11 @@ void VulkanPipeline::setShader(const std::shared_ptr<VulkanShader>& a_shader)
 	m_shader = a_shader;
 }
 
+void VulkanPipeline::bind(VkCommandBuffer& a_cmdBuffer)const
+{
+	vkCmdBindPipeline(a_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+}
+
 void VulkanPipeline::cleanup()
 {
 	if (m_pipeline != VK_NULL_HANDLE)
