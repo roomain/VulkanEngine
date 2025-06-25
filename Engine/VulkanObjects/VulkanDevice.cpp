@@ -2,6 +2,7 @@
 #include "VulkanDevice.h"
 #include "VulkanSwapChain.h"
 #include "VulkanMemoryCallbacks.h"
+#include "ResourcesTypes/VulkanBuffers.h"
 
 
 void VulkanDevice::createMemoryAllocator()
@@ -142,10 +143,13 @@ VkQueue VulkanDevice::createQueue(const QueueFlag a_flag)
 {
 	if (auto iter = findQueueMng(a_flag); iter != m_deviceQueues.cend() && iter->available > 0)
 	{
-		VkQueue queue;
+		VkQueue queue = VK_NULL_HANDLE;
 		vkGetDeviceQueue(m_ctxt.logicalDevice, iter->familyIndex, static_cast<uint32_t>(iter->queues.size()), &queue);
-		iter->queues.emplace_back(queue);
-		iter->available--;
+		if (queue != VK_NULL_HANDLE)
+		{
+			iter->queues.emplace_back(queue);
+			iter->available--;
+		}
 		return queue;
 	}
 	throw Exception("Can't get queue");
@@ -170,10 +174,13 @@ VkQueue VulkanDevice::createPresentationQueue()
 	if(m_deviceQueues[m_presentationQueueIndex].available <= 0)
 		throw Exception("Can't get queue");
 
-	VkQueue queue;
+	VkQueue queue = VK_NULL_HANDLE;
 	vkGetDeviceQueue(m_ctxt.logicalDevice, m_deviceQueues[m_presentationQueueIndex].familyIndex, static_cast<uint32_t>(m_deviceQueues[m_presentationQueueIndex].queues.size()), &queue);
-	m_deviceQueues[m_presentationQueueIndex].queues.emplace_back(queue);
-	m_deviceQueues[m_presentationQueueIndex].available--;
+	if (queue != VK_NULL_HANDLE)
+	{
+		m_deviceQueues[m_presentationQueueIndex].queues.emplace_back(queue);
+		m_deviceQueues[m_presentationQueueIndex].available--;
+	}
 	return queue;
 
 }
@@ -185,4 +192,22 @@ VkQueue VulkanDevice::createPresentationQueue()
 #pragma endregion
 
 #pragma region buffer
+void VulkanDevice::createStagingBuffer(const VkDeviceSize& a_size, VulkanBuffer& a_buffer)const
+{
+	// don't need family index with VMA (see examples)
+	VkBufferCreateInfo stagingBufInfo = Vulkan::Initializers::bufferCreateInfo(
+		VkBufferCreateFlags{ 0 }, a_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_SHARING_MODE_EXCLUSIVE,0,  nullptr);
+	
+	VmaAllocationCreateInfo stagingBufAllocCreateInfo = {};
+	stagingBufAllocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
+	stagingBufAllocCreateInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+
+
+	VK_CHECK_EXCEPT(vmaCreateBuffer(m_memAllocator, 
+		&stagingBufInfo, 
+		&stagingBufAllocCreateInfo, 
+		&a_buffer.m_stagingBuffer,
+		&a_buffer.m_stagingBufAlloc,
+		&a_buffer.m_stagingBufAllocInfo))
+}
 #pragma endregion

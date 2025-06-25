@@ -13,6 +13,9 @@
 #include "iLogDisplayer.h"
 #include "vulkan_string_to_enum.h"
 
+#include "VulkanDevice.h"
+#include "ResourcesTypes/VulkanBuffers.h"
+
 template<typename Enum> requires std::is_enum_v<Enum>
 int convertEnum(const std::string& a_flag)
 {
@@ -219,7 +222,11 @@ int main()
 	displayCapabilities(engineCtxt.capabilities());
 
 	auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
-	//
+	
+	// test
+	VulkanBuffer buffer;
+	device->createStagingBuffer(50 * sizeof(int), buffer);
+
 	int eventRet = eventLoop(window);
 	glfwDestroyWindow(window);
 	glfwTerminate();

@@ -177,6 +177,7 @@ reflectGen.py $(ProjectDir)Parameters
     <ClInclude Include="EngineObject.h" />
     <ClInclude Include="math\glmEx.h" />
     <ClInclude Include="parameters\VulkanParameter.h" />
+    <ClInclude Include="ResourcesTypes\VulkanBuffers.h" />
     <ClInclude Include="ResourcesTypes\VulkanVertex.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />

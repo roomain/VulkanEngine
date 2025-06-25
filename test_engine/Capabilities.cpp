@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "Capabilities.h"
+#include "VulkanCapabilities.h"
 #include "VulkanContext.h"
 #include "vulkan_enum_to_string.h"
 

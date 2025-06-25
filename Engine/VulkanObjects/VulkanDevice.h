@@ -14,7 +14,7 @@
 #include <vector>
 #include <array>
 #include <unordered_map>
-#include "VulkanParameter.h"
+#include "Parameters/VulkanParameter.h"
 #include "vulkan/vulkan.hpp"
 #include "VulkanObject.h"
 #include "VulkanCapabilities.h"
@@ -25,7 +25,7 @@
 #pragma warning( disable : 4251 )
 
 struct VulkanDeviceParameter;
-
+struct VulkanBuffer;
 
 class VulkanSwapChain;
 using VulkanSwapChainPtr = std::shared_ptr<VulkanSwapChain>;
@@ -37,7 +37,7 @@ class VULKAN_ENGINE_LIB VulkanDevice : public VulkanObject<VulkanDeviceContext>
 	friend class VulkanContext;
 
 public:
-	static constexpr int MAX_FRAME = 2;
+	static constexpr int MAX_FRAME = 2; // why ?
 
 private:
 	VulkanDeviceCapabilities m_deviceCapabilities;					/*!< current device capabilities*/
@@ -80,10 +80,13 @@ public:
 
 
 #pragma region image
+	//void createImage(const uint32_t a_width, const uint32_t a_height);
 #pragma endregion
 
 #pragma region buffer
+	void createStagingBuffer(const VkDeviceSize& a_size, VulkanBuffer& a_buffer)const;
 #pragma endregion
+
 	// create buffer
 	//template<typename Type>
 	//void createBuffer(/*todo*/);

@@ -325,6 +325,7 @@ namespace Vulkan::Initializers
 	const VkDeviceSize& a_size,
 	const VkBufferUsageFlags a_usage,
 	const VkSharingMode& a_shareMode,
+	const uint32_t a_familyCount,
 	const uint32_t* a_familyIndex)
 	{
 		return VkBufferCreateInfo{ 
@@ -334,7 +335,7 @@ namespace Vulkan::Initializers
 			.size = a_size,
 			.usage = a_usage,
 			.sharingMode = a_shareMode,
-			.queueFamilyIndexCount = 1, 
+			.queueFamilyIndexCount = a_familyCount,
 			.pQueueFamilyIndices = a_familyIndex
 			};
 	}

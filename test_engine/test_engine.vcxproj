@@ -68,12 +68,14 @@
     <Import Project="..\props\vulkan.props" />
     <Import Project="..\props\SDL.props" />
     <Import Project="..\props\GLFW.props" />
+    <Import Project="..\props\VMA.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\props\vulkan.props" />
     <Import Project="..\props\SDL.props" />
     <Import Project="..\props\GLFW.props" />
+    <Import Project="..\props\VMA.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,7 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)VulkanObjects;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Engine\Capabilities;$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)Engine\VulkanObjects;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:nrvo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -132,7 +134,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)VulkanObjects;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Engine\Capabilities;$(SolutionDir)Reflection;$(SolutionDir)LoggingSystem;$(SolutionDir)Reflection\ReflectionLib;$(SolutionDir)Engine\VulkanObjects;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:nrvo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
