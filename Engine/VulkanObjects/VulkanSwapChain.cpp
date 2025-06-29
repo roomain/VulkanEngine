@@ -97,7 +97,7 @@ void VulkanSwapChain::internal_createBuffers(const VkFormat a_colorFormat)
 		VkImageView imageView = VK_NULL_HANDLE;
 
 
-		VkImageViewCreateInfo colorAttachmentView = Vulkan::Initializers::imageViewCreateInfo(a_colorFormat, img, VK_IMAGE_VIEW_TYPE_2D, a_colorFormat,
+		VkImageViewCreateInfo colorAttachmentView = Vulkan::Initializers::imageViewCreateInfo(a_colorFormat, img, VK_IMAGE_VIEW_TYPE_2D, 0,
 			VkImageSubresourceRange{
 				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 				.baseMipLevel = 0,

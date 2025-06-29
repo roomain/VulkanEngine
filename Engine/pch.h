@@ -8,6 +8,7 @@
 #define PCH_H
 
 // ajouter les en-têtes à précompiler ici
+#define GLM_ENABLE_EXPERIMENTAL
 #include "framework.h"
 #include "common/string_utils.h"
 #include "common/contains.h"
