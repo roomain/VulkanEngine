@@ -31,10 +31,10 @@ uint32_t VulkanSwapChain::internal_swapChainImageCount(const VkSurfaceCapabiliti
 
 void VulkanSwapChain::internal_releaseSwapchain(VkSwapchainKHR a_oldSwapChain)
 {
-	for (const auto& img : m_buffer)
+	for (const auto& img : m_SwapChainsBuffers)
 		vkDestroyImageView(m_ctxt.logicalDevice, img.imageView, nullptr);
 	vkDestroySwapchainKHR(m_ctxt.logicalDevice, a_oldSwapChain, nullptr);
-	m_buffer.clear();
+	m_SwapChainsBuffers.clear();
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::internal_findSurfaceFormat(const VulkanSwapChainContext& a_ctxt)
@@ -107,9 +107,9 @@ void VulkanSwapChain::internal_createBuffers(const VkFormat a_colorFormat)
 			});
 
 
-		VK_CHECK_EXCEPT(vkCreateImageView(m_ctxt.logicalDevice, &colorAttachmentView, nullptr, &imageView));
+		VK_CHECK_EXCEPT(vkCreateImageView(m_ctxt.logicalDevice, &colorAttachmentView, nullptr, &imageView))
 
-		m_buffer.emplace_back(SwapChainBuffer{
+		m_SwapChainsBuffers.emplace_back(SwapChainBuffer{
 			img,
 			imageView
 			});
@@ -120,7 +120,7 @@ void VulkanSwapChain::internal_createSwapChain(const uint32_t a_width, const uin
 {
 	// Get physical device surface properties and formats
 	VkSurfaceCapabilitiesKHR surfCaps;
-	VK_CHECK_EXCEPT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_ctxt.physicalDevice, m_ctxt.surface, &surfCaps));
+	VK_CHECK_EXCEPT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_ctxt.physicalDevice, m_ctxt.surface, &surfCaps))
 
 	std::vector<VkPresentModeKHR> presentationModes;
 	enumerate(&vkGetPhysicalDeviceSurfacePresentModesKHR, presentationModes, m_ctxt.physicalDevice, m_ctxt.surface);
@@ -172,7 +172,7 @@ void VulkanSwapChain::reset(const uint32_t a_width, const uint32_t a_height)
 void VulkanSwapChain::acquireNextImage(VkSemaphore presentCompleteSemaphore, VkFence a_fence, uint32_t& a_imageIndex, SwapChainBuffer& a_image)const
 {
 	VK_CHECK_LOG(vkAcquireNextImageKHR(m_ctxt.logicalDevice, m_ctxt.swapChain, UINT64_MAX, presentCompleteSemaphore, a_fence, &a_imageIndex))
-		a_image = m_buffer[a_imageIndex];
+		a_image = m_SwapChainsBuffers[a_imageIndex];
 }
 
 void VulkanSwapChain::present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, VkSemaphore a_waitSemaphore)const

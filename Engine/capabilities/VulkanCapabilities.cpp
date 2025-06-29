@@ -143,10 +143,10 @@ void VulkanCapabilities::findDeviceCompatibleConfiguration(const VulkanDevicePar
 					}
 
 					if (isGraphics)
-						devConf.graphicQueueIndex = static_cast<int>(devConf.baseCreateInfo.size()) + 1;
+						devConf.graphicQueueIndex = static_cast<int>(devConf.baseCreateInfo.size());
 
 					if (bPresentableOk)
-						devConf.presentationQueueIndex = static_cast<int>(devConf.baseCreateInfo.size()) + 1;
+						devConf.presentationQueueIndex = static_cast<int>(devConf.baseCreateInfo.size());
 
 					devConf.queueFlags.emplace_back(iter->queueFlags);
 					devConf.baseCreateInfo.emplace_back(

@@ -216,16 +216,25 @@ int main()
 	// Get GLFW extensions
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 	VulkanContext engineCtxt(engineParam, &logVulkan, glfwExtensions, glfwExtensionCount);
-	//glfwCreateWindowSurface(engineCtxt.vulkanInstance(), a_window, nullptr, &a_surface);
-
-	VkSurfaceKHR surface = engineCtxt.createSurface(window);
+		
+	auto createCallback = [window](VkInstance a_instance, const VkAllocationCallbacks* a_alloc, VkSurfaceKHR* a_surface)
+		{
+			glfwCreateWindowSurface(a_instance, window, a_alloc, a_surface);
+		};
+	VkSurfaceKHR surface = engineCtxt.createSurface(createCallback);
 	displayCapabilities(engineCtxt.capabilities());
 
 	auto device = engineCtxt.createNewDevice(devParam, &deviceChoice, surface);
 	
 	// test
+#pragma warning(push)
+#pragma warning( disable : 4189 )
+	const auto queuePres = device->createPresentationQueue();
+	const auto swapchain = device->createNewSwapChain(surface, 800, 800);
 	VulkanBuffer buffer;
 	device->createStagingBuffer(50 * sizeof(int), buffer);
+
+#pragma warning(pop)
 
 	int eventRet = eventLoop(window);
 	glfwDestroyWindow(window);

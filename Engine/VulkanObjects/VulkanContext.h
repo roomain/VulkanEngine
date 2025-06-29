@@ -26,6 +26,7 @@ class VulkanContext;
 /*@brief callback to choose device : get index of compatible device, return the chosen device*/
 using DeviceChoice = std::function<int(const std::vector<int>&, const VulkanContext*)>;
 using DebugLog = std::function<void(const char*)>;
+using CreateSurfaceCallback = std::function<void(VkInstance, const VkAllocationCallbacks*, VkSurfaceKHR*)>;
 
 class VULKAN_ENGINE_LIB VulkanContext : public std::enable_shared_from_this<VulkanContext>
 {
@@ -50,6 +51,8 @@ public:
 	VulkanContext() = delete;
 	[[nodiscard]] bool isValid()const noexcept;
 	[[nodiscard]] VkInstance vulkanInstance()const noexcept { return m_instance; }
+
+	[[nodiscard]] VkSurfaceKHR createSurface(CreateSurfaceCallback a_callback)const;
 	[[nodiscard]] VkSurfaceKHR createSurface(void* a_platformWindow)const;
 	[[nodiscard]] VulkanDevicePtr createNewDevice(const VulkanDeviceParameter& a_param, const DeviceChoice& a_choose, VkSurfaceKHR a_surface = VK_NULL_HANDLE);
 	[[nodiscard]] std::shared_ptr<VulkanCapabilities> capabilities()const noexcept { return m_capabilities; }

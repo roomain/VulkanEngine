@@ -19,7 +19,7 @@ class VulkanSwapChain : public VulkanObject<VulkanSwapChainContext>
 {
 	friend class VulkanDevice;
 private:
-	std::vector<SwapChainBuffer> m_buffer;			/*!< image buffer to display*/
+	std::vector<SwapChainBuffer> m_SwapChainsBuffers;			/*!< image buffer to display*/
 
 #pragma region Internal
 	/************************* creation functions*******************************************/

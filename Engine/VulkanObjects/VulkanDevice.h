@@ -51,8 +51,8 @@ private:
 		uint32_t available = 0;									/*!< available queues*/
 		std::vector<VkQueue> queues;							/*!< used queues*/
 		VkCommandPool commandPool = VK_NULL_HANDLE;				/*!< command pool associated to queue family*/
-		std::array<VkCommandBuffer, MAX_FRAME> commandBuffers;
-		std::array<VkFence, MAX_FRAME> waitFences;
+		std::vector<VkCommandBuffer> commandBuffers;			/*!< instanciated command buffer*/
+		std::vector<VkFence> waitFences;						/*!< instanciated fence*/
 	};
 
 	int32_t m_presentationQueueIndex = -1;
@@ -68,11 +68,11 @@ private:
 public:
 	VulkanDevice() = delete;
 	virtual ~VulkanDevice();
-	[[nodiscard]] VulkanSwapChainPtr createNewSwapChain(const VulkanDeviceContext& a_devCtxt, VkSurfaceKHR a_surface, const uint32_t a_width, const uint32_t a_height);
+	[[nodiscard]] VulkanSwapChainPtr createNewSwapChain(VkSurfaceKHR a_surface, const uint32_t a_width, const uint32_t a_height);
 	[[nodiscard]] VulkanSwapChainPtr swapChain()const;
 
 #pragma region command
-	void createCommandBuffers(const QueueFlag a_flag);
+	void createCommandBuffers(const QueueFlag a_flag, const uint32_t a_numBuffers = 1);
 	VkQueue createQueue(const QueueFlag a_flag);
 	VkQueue createPresentationQueue();
 	VkQueue presentationQueue(const int a_queueIndex = 0)const;

@@ -110,6 +110,13 @@ bool VulkanContext::isValid()const noexcept
 	return m_instance != VK_NULL_HANDLE;
 }
 
+VkSurfaceKHR VulkanContext::createSurface(CreateSurfaceCallback a_callback)const
+{
+	VkSurfaceKHR surface;
+	a_callback(m_instance, nullptr, &surface);
+	return surface;
+}
+
 VkSurfaceKHR VulkanContext::createSurface(void* a_platformWindow)const
 {
 	VkSurfaceKHR surface;

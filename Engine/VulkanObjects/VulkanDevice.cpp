@@ -95,9 +95,9 @@ VulkanDevice::~VulkanDevice()
 	vkDestroyDevice(m_ctxt.logicalDevice, nullptr);
 }
 
-VulkanSwapChainPtr VulkanDevice::createNewSwapChain(const VulkanDeviceContext& a_devCtxt, VkSurfaceKHR a_surface, const uint32_t a_width, const uint32_t a_height)
+VulkanSwapChainPtr VulkanDevice::createNewSwapChain(VkSurfaceKHR a_surface, const uint32_t a_width, const uint32_t a_height)
 {
-	const VulkanSwapChainContext context{ a_devCtxt,  a_surface };
+	const VulkanSwapChainContext context{ m_ctxt,  a_surface };
 	// because ctor is private
 	m_deviceSwapChain =  std::shared_ptr<VulkanSwapChain>(new VulkanSwapChain(context, a_width, a_height));
 	return m_deviceSwapChain;
@@ -125,17 +125,25 @@ std::vector<VulkanDevice::QueueFamilyManager>::const_iterator VulkanDevice::find
 }
 
 #pragma region command
-void VulkanDevice::createCommandBuffers(const QueueFlag a_flag)
+void VulkanDevice::createCommandBuffers(const QueueFlag a_flag, const uint32_t a_numBuffers)
 {
+	if (a_numBuffers == 0)
+		return;
+
 	if (auto iter = findQueueMng(a_flag); iter != m_deviceQueues.cend() && iter->commandPool == VK_NULL_HANDLE)
 	{
 		// All command buffers are allocated from a command pool
-		VkCommandPoolCreateInfo commandPoolCI = Vulkan::Initializers::commandPoolCreateInfo(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, iter->familyIndex);
-		VK_CHECK_EXCEPT(vkCreateCommandPool(m_ctxt.logicalDevice, &commandPoolCI, nullptr, &iter->commandPool))
+		if (iter->commandPool == VK_NULL_HANDLE)
+		{
+			VkCommandPoolCreateInfo commandPoolCI = Vulkan::Initializers::commandPoolCreateInfo(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, iter->familyIndex);
+			VK_CHECK_EXCEPT(vkCreateCommandPool(m_ctxt.logicalDevice, &commandPoolCI, nullptr, &iter->commandPool))
+		}
 
 		// Allocate one command buffer per max. concurrent frame from above pool
-		VkCommandBufferAllocateInfo cmdBufAllocateInfo = Vulkan::Initializers::commandBufferCreateInfo(iter->commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, VulkanDevice::MAX_FRAME);
-		VK_CHECK_EXCEPT(vkAllocateCommandBuffers(m_ctxt.logicalDevice, &cmdBufAllocateInfo, iter->commandBuffers.data()))
+		VkCommandBufferAllocateInfo cmdBufAllocateInfo = Vulkan::Initializers::commandBufferCreateInfo(iter->commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, a_numBuffers);
+		const size_t offset = iter->commandBuffers.size();
+		iter->commandBuffers.resize(offset + a_numBuffers);
+		VK_CHECK_EXCEPT(vkAllocateCommandBuffers(m_ctxt.logicalDevice, &cmdBufAllocateInfo, iter->commandBuffers.data() + offset))
 	}
 }
 
