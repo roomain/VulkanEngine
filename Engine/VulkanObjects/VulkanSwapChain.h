@@ -19,7 +19,7 @@ class VulkanSwapChain : public VulkanObject<VulkanSwapChainContext>
 {
 	friend class VulkanDevice;
 private:
-	std::vector<SwapChainBuffer> m_SwapChainsBuffers;			/*!< image buffer to display*/
+	std::vector<SwapChainBuffer> m_swapChainsBuffers;			/*!< image buffer to display*/
 
 #pragma region Internal
 	/************************* creation functions*******************************************/
@@ -40,6 +40,7 @@ public:
 	NOT_COPIABLE(VulkanSwapChain)
 	virtual ~VulkanSwapChain();
 	void reset(const uint32_t a_width, const uint32_t a_height);
+	uint32_t swapBufferCount()const;
 	void acquireNextImage(VkSemaphore presentCompleteSemaphore, VkFence a_fence, uint32_t& a_imageIndex, SwapChainBuffer& a_image)const;
 	void present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, VkSemaphore a_waitSemaphore)const;
 	void present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, std::vector<VkSemaphore>& a_waitSemaphore)const;

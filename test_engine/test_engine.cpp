@@ -15,6 +15,7 @@
 
 #include "VulkanDevice.h"
 #include "ResourcesTypes/VulkanBuffers.h"
+#include "VulkanSwapChain.h"
 
 template<typename Enum> requires std::is_enum_v<Enum>
 int convertEnum(const std::string& a_flag)
@@ -228,11 +229,12 @@ int main()
 	
 	// test
 #pragma warning(push)
-#pragma warning( disable : 4189 )
+#pragma warning( disable : 4189 )// because unsed local variable
 	const auto queuePres = device->createPresentationQueue();
 	const auto swapchain = device->createNewSwapChain(surface, 800, 800);
 	VulkanBuffer buffer;
 	device->createStagingBuffer(50 * sizeof(int), buffer);
+	unsigned int numImages = swapchain->swapBufferCount();
 
 #pragma warning(pop)
 
