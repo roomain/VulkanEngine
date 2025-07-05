@@ -36,9 +36,6 @@ class VULKAN_ENGINE_LIB VulkanDevice : public VulkanObject<VulkanDeviceContext>
 {
 	friend class VulkanContext;
 
-public:
-	static constexpr int MAX_FRAME = 2; // why ?
-
 private:
 	VulkanDeviceCapabilities m_deviceCapabilities;					/*!< current device capabilities*/
 	VulkanSwapChainPtr m_deviceSwapChain;							/*!< device swapchain*/

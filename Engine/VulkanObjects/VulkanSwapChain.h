@@ -8,14 +8,17 @@
 #include "VulkanObject.h"
 #include "common/notCopiable.h"
 #include "VulkanLocalsContexts.h"
+#include "Engine_globals.h"
 
+#pragma warning(push)
+#pragma warning( disable : 4251 )
 struct SwapChainBuffer
 {
 	VkImage image = VK_NULL_HANDLE;
 	VkImageView imageView = VK_NULL_HANDLE;
 };
 
-class VulkanSwapChain : public VulkanObject<VulkanSwapChainContext>
+class VULKAN_ENGINE_LIB VulkanSwapChain : public VulkanObject<VulkanSwapChainContext>
 {
 	friend class VulkanDevice;
 private:
@@ -46,3 +49,4 @@ public:
 	void present(VkQueue a_presentationQueue, const uint32_t a_imageIndex, std::vector<VkSemaphore>& a_waitSemaphore)const;
 	void present(VkQueue a_presentationQueue, const std::vector<uint32_t>& a_imageIndices, std::vector<VkSemaphore>& a_waitSemaphore)const;
 };
+#pragma warning(pop)
