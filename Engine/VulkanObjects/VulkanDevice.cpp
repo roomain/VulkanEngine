@@ -174,6 +174,11 @@ VkQueue VulkanDevice::presentationQueue(const int a_queueIndex)const
 	return queue;
 }
 
+uint32_t VulkanDevice::numPresentationQueue()const
+{
+	return static_cast<uint32_t>(m_deviceQueues[m_presentationQueueIndex].queues.size());
+}
+
 VkQueue VulkanDevice::createPresentationQueue()
 {
 	if(m_presentationQueueIndex < 0)

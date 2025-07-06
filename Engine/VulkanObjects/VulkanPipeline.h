@@ -32,7 +32,7 @@ private:
 	DepthStencilSettings m_depthSettings;									/*!< depth settings*/
 	RasterizationSettings m_rasterSettings;									/*!< raster settings*/
 	std::vector<VkDynamicState> m_dynamicStateEnables;						/*!< pipeline dynamic states*/
-	uint32_t m_pathCtrlPoints = 0;											/*!< number of control point useles if m_topology != VK_PRIMITIVE_TOPOLOGY_PATCH_LIST*/
+	uint32_t m_pathCtrlPoints = 0;											/*!< number of control point useless if m_topology != VK_PRIMITIVE_TOPOLOGY_PATCH_LIST*/
 	uint32_t m_viewportCount = 1;
 	uint32_t m_scissorCount = 1;
 	
@@ -106,7 +106,6 @@ public:
 		);
 		return vertexInput;
 	}
-
 
 	template<typename VertexType>
 	bool create(const VkPipelineVertexInputStateCreateInfo& a_vertexInput)

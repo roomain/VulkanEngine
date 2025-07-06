@@ -52,8 +52,8 @@ private:
 		std::vector<VkFence> waitFences;						/*!< instanciated fence*/
 	};
 
-	int32_t m_presentationQueueIndex = -1;
-	std::vector<QueueFamilyManager> m_deviceQueues;	/*!< queues availables/used by device*/
+	int32_t m_presentationQueueIndex = -1;						/*!< index of family with presentation queue*/
+	std::vector<QueueFamilyManager> m_deviceQueues;				/*!< queues availables/used by device*/
 
 	std::vector<QueueFamilyManager>::iterator findQueueMng(const QueueFlag a_flag);
 	std::vector<QueueFamilyManager>::const_iterator findQueueMng(const QueueFlag a_flag)const;
@@ -73,6 +73,7 @@ public:
 	VkQueue createQueue(const QueueFlag a_flag);
 	VkQueue createPresentationQueue();
 	VkQueue presentationQueue(const int a_queueIndex = 0)const;
+	uint32_t numPresentationQueue()const;
 #pragma endregion
 
 
