@@ -25,7 +25,7 @@
       %(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(OCC_BIN_DIR)\*SDL3.dll $(OutDir) </Command>
+      <Command>copy /Y $(OCC_BIN_DIR)\*.dll $(OutDir) </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
